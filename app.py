@@ -1,33 +1,32 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, send_file
-from supabase import create_client, Client
+from supabase import create_client
 import pandas as pd
+import openpyxl
 from datetime import datetime
 
 app = Flask(__name__)
 
-# الاتصال بـ Supabase باستخدام متغيرات البيئة
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+# جلب بيانات الاتصال من متغيرات البيئة في Render
+url = os.environ.get("SUPABASE_URL")
+key = os.environ.get("SUPABASE_KEY")
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
+supabase = create_client(url, key) if url and key else None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # استقبال البيانات من النموذج
         patient_name = request.form.get('patient_name')
         national_id = request.form.get('national_id')
         file_number = request.form.get('file_number')
         service = request.form.get('service')
         employee_name = request.form.get('employee_name')
         
-        # الحصول على التاريخ والوقت الحالي بتوقيت السعودية/المحلي
+        # الوقت والتاريخ الحالي بتوقيت السعودية أو النظام
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+        
         if supabase:
             try:
-                # إدخال البيانات في جدول Supabase (تأكدي أن اسم الجدول لديك هو records أو تعديل الاسم هنا)
                 supabase.table("records").insert({
                     "patient_name": patient_name,
                     "national_id": national_id,
@@ -38,10 +37,10 @@ def index():
                 }).execute()
             except Exception as e:
                 print(f"Error saving to Supabase: {e}")
-
+                
         return redirect(url_for('index'))
-
-    # جلب السجلات لعرضها في الجدول أسفل الصفحة
+    
+    # جلب السجلات لعرضها في الجدول
     records = []
     if supabase:
         try:
@@ -49,24 +48,24 @@ def index():
             records = response.data
         except Exception as e:
             print(f"Error fetching from Supabase: {e}")
-
+            
     return render_template('index.html', records=records)
 
 @app.route('/export_excel')
 def export_excel():
-    # تصدير السجلات إلى ملف Excel
     if supabase:
         try:
             response = supabase.table("records").select("*").execute()
             data = response.data
             if data:
                 df = pd.DataFrame(data)
-                file_path = "hospital_records.xlsx"
-                df.to_excel(file_path, index=False)
+                file_path = "patient_records.xlsx"
+                df.to_excel(file_path, index=False, engine='openpyxl')
                 return send_file(file_path, as_attachment=True)
         except Exception as e:
             print(f"Error exporting excel: {e}")
-    return "لا توجد بيانات للتصدير أو حدث خطأ.", 400
+            
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
