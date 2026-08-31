@@ -1,116 +1,30 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وحدة الدعم والمساندة - إدخال البيانات</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <style>
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .header-banner { background-color: #1F4E78; color: white; padding: 18px; border-radius: 8px; }
-        .card { border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-    </style>
-</head>
-<body class="py-4">
+<!-- داخل قائمة الخدمات المنسدلة (select) -->
+<select name="service" class="form-control" required>
+    <option value="">اختر الخدمة من القائمة...</option>
+    <option value="اطباء الباطنة">اطباء الباطنة</option>
+    <option value="تمريض الباطنة">تمريض الباطنة</option>
+    <option value="اطباء الجراحة">اطباء الجراحة</option>
+    <option value="تمريض الجراحة">تمريض الجراحة</option>
+    <option value="اطباء العظام">اطباء العظام</option>
+    <option value="تمريض العظام">تمريض العظام</option>
+    <option value="اطباء المخ والاعصاب">اطباء المخ والاعصاب</option>
+    <option value="تمريض المخ والاعصاب">تمريض المخ والاعصاب</option>
+    <option value="صيدلية">صيدلية</option>
+    <option value="الاشعة">الاشعة</option>
+    <option value="المعلومات الصحية">المعلومات الصحية</option>
+    <option value="مكتب الدخول">مكتب الدخول</option>
+    <option value="الصحة الرقمية">الصحة الرقمية</option>
+    <option value="اداره المرافق">اداره المرافق</option>
+    <option value="الطب المنزلي">الطب المنزلي</option>
+    <option value="الوفيات">الوفيات</option>
+    <option value="الخدمه الاجتماعية">الخدمه الاجتماعية</option>
+    <option value="العلاج الطبيعي">العلاج الطبيعي</option>
+    <option value="اطباء النفسية">اطباء النفسية</option>
+    <option value="تمريض النفسية">تمريض النفسية</option>
+    <option value="الإمداد">الإمداد</option>
+    <option value="المختبر">المختبر</option>
+    <option value="أدارة القبول">أدارة القبول</option>
+</select>
 
-<div class="container">
-    <div class="header-banner text-center mb-4">
-        <h2>وحدة الدعم و المساندة — نموذج إدخال البيانات</h2>
-        <p class="mb-0">نظام استقبال المستشفى التسجيلي</p>
-    </div>
-
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-info text-center">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <div class="row">
-        <!-- نموذج الإدخال -->
-        <div class="col-md-5 mb-4">
-            <div class="card p-4">
-                <h4 class="card-title text-primary mb-3 text-center">نموذج إدخال جديد</h4>
-                <form action="/add_record" method="POST">
-                    
-                    <div class="mb-3">
-                        <label class="form-label font-weight-bold">الاسم الكامل:</label>
-                        <input type="text" name="patient_name" class="form-control" placeholder="اسم المريض" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10XXXXXXXX" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">رقم الملف:</label>
-                        <input type="text" name="file_number" class="form-control" placeholder="20XXXXXX" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">الخدمة المقدمة:</label>
-                        <select name="service_name" class="form-select" required>
-                            <option value="" disabled selected>اختر الخدمة من القائمة...</option>
-                            {% for service in services %}
-                                <option value="{{ service['name'] }}">{{ service['name'] }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">اسم الموظف:</label>
-                        <select name="employee_name" class="form-select" required>
-                            <option value="" disabled selected>اختر اسم الموظف...</option>
-                            {% for employee in employees %}
-                                <option value="{{ employee['name'] }}">{{ employee['name'] }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 mt-2">حفظ السجل</button>
-                    <button type="reset" class="btn btn-outline-secondary w-100 mt-2">مسح الحقول</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- جدول السجلات -->
-        <div class="col-md-7">
-            <div class="card p-4">
-                <h4 class="card-title text-secondary mb-3 text-center">آخر السجلات المسجلة</h4>
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover text-center align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>الاسم</th>
-                                <th>الهوية</th>
-                                <th>الملف</th>
-                                <th>الخدمة</th>
-                                <th>الموظف</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for record in records %}
-                            <tr>
-                                <td>{{ record['patient_name'] }}</td>
-                                <td>{{ record['national_id'] }}</td>
-                                <td>{{ record['file_number'] }}</td>
-                                <td>{{ record['service_name'] }}</td>
-                                <td>{{ record['employee_name'] }}</td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="5" class="text-muted">لا توجد سجلات مضافة حتى الآن.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-</body>
-</html>
+<!-- زر تحميل ملف الاكسل بجانب جدول السجلات أو فوقه -->
+<a href="/export_excel" class="btn btn-success mt-3">تحميل السجلات كملف Excel 📊</a>
