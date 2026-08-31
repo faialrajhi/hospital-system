@@ -1,17 +1,16 @@
-import os
+  import os
 from flask import Flask, render_template, request, redirect, url_for, send_file
-from supabase import create_client
+from supabase import create_client, Client
 import pandas as pd
 import openpyxl
 from datetime import datetime
 
 app = Flask(__name__)
 
-# جلب بيانات الاتصال من متغيرات البيئة في Render
-url = os.environ.get("SUPABASE_URL")
-key = os.environ.get("SUPABASE_KEY")
+url: str = os.environ.get("SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_KEY")
 
-supabase = create_client(url, key) if url and key else None
+supabase: Client = create_client(url, key) if url and key else None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -22,7 +21,6 @@ def index():
         service = request.form.get('service')
         employee_name = request.form.get('employee_name')
         
-        # الوقت والتاريخ الحالي بتوقيت السعودية أو النظام
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         if supabase:
@@ -40,7 +38,6 @@ def index():
                 
         return redirect(url_for('index'))
     
-    # جلب السجلات لعرضها في الجدول
     records = []
     if supabase:
         try:
