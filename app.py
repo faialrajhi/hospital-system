@@ -13,7 +13,7 @@ import pandas as pd
 import io
 from datetime import datetime
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = "hospital_secret_key"
 
 url: str = os.environ.get("SUPABASE_URL")
@@ -47,7 +47,6 @@ SERVICES_LIST = [
 ]
 
 EMPLOYEES_LIST = [
-    {"name": "فيّ"},
     {"name": "صالح حنيف"},
     {"name": "محمد سعد"},
     {"name": "أحلام"}
@@ -151,5 +150,5 @@ def export_excel():
     return redirect(url_for("index"))
 
 
-if _name_ == "_main_":
+if _name_ == "__main__":
   app.run(host="0.0.0.0", port=5000)
