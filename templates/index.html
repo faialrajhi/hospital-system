@@ -98,13 +98,13 @@
                 <th>الوقت</th>
             </tr>
         </thead>
-        <tbody>
+       <tbody>
             {% for record in records %}
             <tr>
                 <td>{{ record.get('patient_name', '-') }}</td>
                 <td>{{ record.get('national_id', '-') }}</td>
                 <td>{{ record.get('file_number', '-') }}</td>
-                <td>{{ record.get('service_name', '-') }}</td>
+                <td>{{ record.get('service_name', record.get('service', '-')) }}</td>
                 <td>{{ record.get('employee_name', '-') }}</td>
                 <td>{{ record.get('record_date', '-') }}</td>
                 <td>{{ record.get('record_time', '-') }}</td>
