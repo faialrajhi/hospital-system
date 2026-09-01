@@ -76,39 +76,38 @@
                     <h4 class="card-title text-secondary mb-0">آخر السجلات المسجلة</h4>
                     <a href="{{ url_for('export_excel') }}" class="btn btn-success btn-sm">📊 تحميل إلى Excel</a>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover text-center align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>الاسم</th>
-                                <th>الهوية</th>
-                                <th>الملف</th>
-                                <th>الخدمة</th>
-                                <th>الموظف</th>
-                                <th>التاريخ</th>
-                                <th>الوقت</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for record in records %}
-                            <tr>
-                                <td>{{ record['patient_name'] }}</td>
-                                <td>{{ record['national_id'] }}</td>
-                                <td>{{ record['file_number'] }}</td>
-                                <td>{{ record['service_name'] }}</td>
-                                <td>{{ record['employee_name'] }}</td>
-                                <td>{{ record.get('record_date', '-') }}</td>
-                                <td>{{ record.get('record_time', '-') }}</td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="7" class="text-muted">لا توجد سجلات مضافة حتى الآن.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+              <div class="table-responsive">
+    <table class="table table-striped table-hover text-center align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>الاسم</th>
+                <th>الهوية</th>
+                <th>الملف</th>
+                <th>الخدمة</th>
+                <th>الموظف</th>
+                <th>التاريخ</th>
+                <th>الوقت</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.get('patient_name', '-') }}</td>
+                <td>{{ record.get('national_id', '-') }}</td>
+                <td>{{ record.get('file_number', '-') }}</td>
+                <td>{{ record.get('service_name', '-') }}</td>
+                <td>{{ record.get('employee_name', '-') }}</td>
+                <td>{{ record.get('record_date', '-') }}</td>
+                <td>{{ record.get('record_time', '-') }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-muted">لا توجد سجلات مضافة حتى الآن.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
         </div>
     </div>
 </div>
