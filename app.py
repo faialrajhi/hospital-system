@@ -10,7 +10,7 @@ from flask import (
 from supabase import Client, create_client
 from datetime import datetime
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = "hospital_secret_key"
 
 url: str = os.environ.get("SUPABASE_URL")
@@ -102,5 +102,5 @@ def index():
   )
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
   app.run(host="0.0.0.0", port=5000)
