@@ -44,7 +44,6 @@ SERVICES_LIST = [
 ]
 
 EMPLOYEES_LIST = [
-    {"name": "فيّ"},
     {"name": "صالح حنيف"},
     {"name": "محمد سعد"},
     {"name": "أحلام"}
