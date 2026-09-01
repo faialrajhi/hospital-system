@@ -13,7 +13,7 @@ import pandas as pd
 import openpyxl
 from datetime import datetime
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = "hospital_secret_key"
 
 url: str = os.environ.get("SUPABASE_URL")
