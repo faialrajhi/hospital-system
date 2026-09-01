@@ -5,22 +5,18 @@ from flask import (
     redirect,
     render_template,
     request,
-    send_file,
     url_for,
 )
 from supabase import Client, create_client
-import pandas as pd
-import openpyxl
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.secret_key = "hospital_secret_key"
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key) if url and key else None
 
-# قائمة الخدمات الكاملة للمستشفى
 SERVICES_LIST = [
     {"name": "أطباء الباطنة"},
     {"name": "تمريض الباطنة"},
@@ -47,7 +43,12 @@ SERVICES_LIST = [
     {"name": "إدارة القبول"},
 ]
 
-EMPLOYEES_LIST = [{"name": "فيّ"}, {"name": "موظف آخر"}]
+EMPLOYEES_LIST = [
+    {"name": "فيّ"},
+    {"name": "صالح حنيف"},
+    {"name": "محمد سعد"},
+    {"name": "أحلام"}
+]
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -59,7 +60,6 @@ def index():
     service_name = request.form.get("service_name")
     employee_name = request.form.get("employee_name")
 
-    # استخراج تاريخ اليوم ووقت الإدخال بشكل منفصل أو معاً
     current_date = datetime.now().strftime("%Y-%m-%d")
     current_time = datetime.now().strftime("%H:%M:%S")
 
@@ -102,5 +102,5 @@ def index():
   )
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
   app.run(host="0.0.0.0", port=5000)
