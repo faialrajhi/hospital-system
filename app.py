@@ -5,9 +5,12 @@ from flask import (
     redirect,
     render_template,
     request,
+    send_file,
     url_for,
 )
 from supabase import Client, create_client
+import pandas as pd
+import io
 from datetime import datetime
 
 app = Flask(__name__)
@@ -99,6 +102,51 @@ def index():
       services=SERVICES_LIST,
       employees=EMPLOYEES_LIST,
   )
+
+
+@app.route("/export_excel")
+def export_excel():
+  if not supabase:
+    return redirect(url_for("index"))
+  try:
+    response = supabase.table("records").select("*").execute()
+    data = response.data
+    if not data:
+      return redirect(url_for("index"))
+    
+    df = pd.DataFrame(data)
+    
+    # إعادة تسمية الأعمدة لتكون عربية وواضحة في الإكسل
+    column_mapping = {
+        "patient_name": "اسم المريض",
+        "national_id": "رقم الهوية",
+        "file_number": "رقم الملف",
+        "service_name": "الخدمة المقدمة",
+        "employee_name": "اسم الموظف",
+        "record_date": "التاريخ",
+        "record_time": "الوقت"
+    }
+    df = df.rename(columns=column_mapping)
+    
+    # اختيار الأعمدة المطلوبة فقط إذا كانت موجودة
+    available_cols = [c for c in column_mapping.values() if c in df.columns]
+    df = df[available_cols]
+
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+      df.to_excel(writer, index=False, sheet_name='السجلات')
+    output.seek(0)
+
+    filename = f"hospital_records_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    return send_file(
+        output,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        as_attachment=True,
+        download_name=filename
+    )
+  except Exception as e:
+    print(f"Error exporting excel: {e}")
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
