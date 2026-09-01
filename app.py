@@ -61,9 +61,10 @@ def index():
     file_number = request.form.get("file_number")
     service_name = request.form.get("service_name")
     employee_name = request.form.get("employee_name")
-
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    current_time = datetime.now().strftime("%H:%M:%S")
+    
+    # استقبال التاريخ والوقت المدخلين من لوحة الموظف
+    record_date = request.form.get("record_date")
+    record_time = request.form.get("record_time")
 
     if supabase:
       try:
@@ -73,8 +74,8 @@ def index():
             "file_number": file_number,
             "service_name": service_name,
             "employee_name": employee_name,
-            "record_date": current_date,
-            "record_time": current_time,
+            "record_date": record_date,
+            "record_time": record_time,
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }).execute()
         flash("تم حفظ السجل بنجاح!", "success")
@@ -130,7 +131,8 @@ def export_excel():
     
     # اختيار الأعمدة المطلوبة فقط إذا كانت موجودة
     available_cols = [c for c in column_mapping.values() if c in df.columns]
-    df = df[available_cols]
+    if available_cols:
+      df = df[available_cols]
 
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
