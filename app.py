@@ -86,13 +86,13 @@ def index():
 
   records = []
   if supabase:
-    try:
+   try:
       response = (
           supabase.table("records")
           .select("*")
-          .order("created_at", desc=True)
           .execute()
       )
+      records = response.data
       records = response.data
     except Exception as e:
       print(f"Error fetching from Supabase: {e}")
