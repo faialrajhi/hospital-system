@@ -84,20 +84,17 @@ def index():
 
     return redirect(url_for("index"))
 
-  records = []
+records = []
   if supabase:
-   try:
+    try:
       response = (
           supabase.table("records")
           .select("*")
           .execute()
       )
       records = response.data
-      records = response.data
     except Exception as e:
       print(f"Error fetching from Supabase: {e}")
-
-  return render_template(
       "index.html",
       records=records,
       services=SERVICES_LIST,
