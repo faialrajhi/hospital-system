@@ -16,9 +16,7 @@
 <div class="container">
     <div class="header-banner mb-4 position-relative">
         <div class="d-flex align-items-center justify-content-center px-3 position-relative">
-            <!-- الشعار في اليمين وبحجم كبير واضح -->
             <img src="{{ url_for('static', filename='logo.png') }}" alt="شعار المستشفى" style="height: 150px; width: auto;" class="position-absolute start-0 ms-3">
-            <!-- العنوان في المنتصف تماماً -->
             <h2 class="mb-0 text-center w-100">إدارة تجربة المريض — وحدة الدعم المساندة</h2>
         </div>
     </div>
@@ -74,7 +72,10 @@
         <!-- جدول السجلات -->
         <div class="col-md-7">
             <div class="card p-4">
-                <h4 class="card-title text-secondary mb-3 text-center">آخر السجلات المسجلة</h4>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="card-title text-secondary mb-0">آخر السجلات المسجلة</h4>
+                    <a href="{{ url_for('export_excel') }}" class="btn btn-success btn-sm">📊 تحميل إلى Excel</a>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover text-center align-middle">
                         <thead class="table-dark">
