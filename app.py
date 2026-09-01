@@ -83,19 +83,13 @@ def index():
         print(f"Error saving to Supabase: {e}")
 
     return redirect(url_for("index"))
-
-  records = []
+records = []
   if supabase:
     try:
-      response = (
-          supabase.table("records")
-          .select("*")
-          .execute()
-      )
+      response = supabase.table("records").select("*").execute()
       records = response.data
     except Exception as e:
       print(f"Error fetching from Supabase: {e}")
-
   return render_template(
       "index.html",
       records=records,
