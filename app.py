@@ -61,13 +61,14 @@ def index():
         file_number = request.form.get("file_number")
         service_name = request.form.get("service_name")
         employee_name = request.form.get("employee_name")
-        
         record_date = request.form.get("record_date")
         record_time = request.form.get("record_time")
 
+        print(f"DEBUG DATA: {patient_name}, {national_id}, {service_name}") # هذا بيطبع البيانات في الـ Logs
+
         if supabase:
             try:
-                supabase.table("records").insert({
+                response = supabase.table("records").insert({
                     "patient_name": patient_name,
                     "national_id": national_id,
                     "file_number": file_number,
@@ -75,14 +76,13 @@ def index():
                     "employee_name": employee_name,
                     "record_date": record_date,
                     "record_time": record_time,
-                    "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 }).execute()
+                print(f"Supabase Response: {response}")
                 flash("تم حفظ السجل بنجاح!", "success")
             except Exception as e:
                 print(f"Error saving to Supabase: {e}")
 
         return redirect(url_for("index"))
-
     records = []
     if supabase:
         try:
