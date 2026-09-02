@@ -56,7 +56,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
-        /* تعديل العروض: تصغير نموذج الإدخال وتوسيع السجلات */
         .form-container {
             flex: 1;
             min-width: 280px;
@@ -97,7 +96,6 @@
             border-color: #1F4E78;
             box-shadow: 0 0 5px rgba(31, 78, 120, 0.2);
         }
-        /* تنسيق مجموعة الـ Checkboxes الخاصة بالموظفين */
         .checkbox-group {
             display: flex;
             flex-direction: column;
@@ -171,7 +169,7 @@
             border-collapse: collapse;
             text-align: center;
             font-size: 0.9rem;
-            white-space: nowrap; /* لضمان بقاء البيانات في صف واحد دون التفاف */
+            white-space: nowrap;
         }
         th, td {
             padding: 12px 10px;
@@ -201,7 +199,7 @@
     </div>
 
     <div class="main-layout">
-        <!-- نموذج الإدخال (عرض أصغر) -->
+        <!-- نموذج الإدخال -->
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
@@ -218,11 +216,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label>رقم الملف:</label>
-                        <input type="text" name="file_number" class="form-control" placeholder="20XXXXXX" required>
-                    </div>
-
-                    <div class="mb-3">
                         <label>الخدمة المقدمة:</label>
                         <select name="service_name" class="form-select" required>
                             <option value="" disabled selected>اختر الخدمة...</option>
@@ -232,7 +225,6 @@
                         </select>
                     </div>
 
-                    <!-- تم تحويل اسم الموظف إلى Checkboxes لاختيار موظفين -->
                     <div class="mb-3">
                         <label>اسم الموظف (اختر الموظفين):</label>
                         <div class="checkbox-group">
@@ -261,12 +253,12 @@
             </div>
         </div>
 
-        <!-- جدول السجلات (عرض أكبر وصف واحد) -->
+        <!-- جدول السجلات -->
         <div class="table-container">
             <div class="card">
                 <div class="table-header-flex">
                     <h4 class="card-title" style="border:none; margin:0; padding:0;">آخر السجلات المسجلة</h4>
-                    <a href="{{ url_for('export_excel') }}" class="btn-success"> تحميل إلى Excel</a>
+                    <a href="{{ url_for('export_excel') }}" class="btn-success">📊 تحميل إلى Excel</a>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -274,7 +266,6 @@
                             <tr>
                                 <th>الاسم</th>
                                 <th>الهوية</th>
-                                <th>الملف</th>
                                 <th>الخدمة</th>
                                 <th>الموظف</th>
                                 <th>التاريخ</th>
@@ -286,7 +277,6 @@
                             <tr>
                                 <td>{{ record.get('patient_name', '-') }}</td>
                                 <td>{{ record.get('national_id', '-') }}</td>
-                                <td>{{ record.get('file_number', '-') }}</td>
                                 <td>{{ record.get('service_name', record.get('service', '-')) }}</td>
                                 <td>{{ record.get('employee_name', '-') }}</td>
                                 <td>{{ record.get('record_date', '-') }}</td>
@@ -294,7 +284,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="7" class="text-muted">لا توجد سجلات مضافة حتى الآن.</td>
+                                <td colspan="6" class="text-muted">لا توجد سجلات مضافة حتى الآن.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
