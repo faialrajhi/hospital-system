@@ -33,7 +33,6 @@
             align-items: center;
             justify-content: center;
         }
-        /* تعديل حجم الصورة إلى 160px */
         .header-banner img {
             height: 160px;
             width: auto;
@@ -194,6 +193,12 @@
                         <input type="text" name="national_id" class="form-control" placeholder="10XXXXXXXX" required>
                     </div>
 
+                    <!-- تم إزالة خاصية required لكي يكون حقل رقم الملف اختيارياً -->
+                    <div class="mb-3">
+                        <label>رقم الملف (اختياري):</label>
+                        <input type="text" name="file_number" class="form-control" placeholder="20XXXXXX">
+                    </div>
+
                     <div class="mb-3">
                         <label>الخدمة المقدمة:</label>
                         <select name="service_name" class="form-select" required>
@@ -235,7 +240,7 @@
             <div class="card">
                 <div class="table-header-flex">
                     <h4 class="card-title" style="border:none; margin:0; padding:0;">آخر السجلات المسجلة</h4>
-                    <a href="{{ url_for('export_excel') }}" class="btn-success"> تحميل إلى Excel</a>
+                    <a href="{{ url_for('export_excel') }}" class="btn-success">📊 تحميل إلى Excel</a>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -243,6 +248,7 @@
                             <tr>
                                 <th>الاسم</th>
                                 <th>الهوية</th>
+                                <th>رقم الملف</th>
                                 <th>الخدمة</th>
                                 <th>الموظف</th>
                                 <th>التاريخ</th>
@@ -254,6 +260,7 @@
                             <tr>
                                 <td>{{ record.get('patient_name', '-') }}</td>
                                 <td>{{ record.get('national_id', '-') }}</td>
+                                <td>{{ record.get('file_number', '-') }}</td>
                                 <td>{{ record.get('service_name', record.get('service', '-')) }}</td>
                                 <td>{{ record.get('employee_name', '-') }}</td>
                                 <td>{{ record.get('record_date', '-') }}</td>
@@ -261,7 +268,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="6" class="text-muted">لا توجد سجلات مضافة حتى الآن.</td>
+                                <td colspan="7" class="text-muted">لا توجد سجلات مضافة حتى الآن.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
