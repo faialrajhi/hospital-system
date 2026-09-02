@@ -96,28 +96,6 @@
             border-color: #1F4E78;
             box-shadow: 0 0 5px rgba(31, 78, 120, 0.2);
         }
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: #fafafa;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: normal;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .checkbox-label input {
-            cursor: pointer;
-            width: 16px;
-            height: 16px;
-        }
         .btn {
             width: 100%;
             padding: 11px;
@@ -226,15 +204,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <label>اسم الموظف (اختر الموظفين):</label>
-                        <div class="checkbox-group">
+                        <label>اسم الموظف:</label>
+                        <select name="employee_name" class="form-select" required>
+                            <option value="" disabled selected>اختر اسم الموظف...</option>
                             {% for employee in employees %}
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="employee_name" value="{{ employee['name'] }}">
-                                {{ employee['name'] }}
-                            </label>
+                                <option value="{{ employee['name'] }}">{{ employee['name'] }}</option>
                             {% endfor %}
-                        </div>
+                        </select>
                     </div>
 
                     <div class="mb-3">
