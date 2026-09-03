@@ -13,7 +13,7 @@ import pandas as pd
 import io
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.secret_key = "hospital_secret_key"
 
 url: str = os.environ.get("SUPABASE_URL")
@@ -88,10 +88,11 @@ def index():
 
         return redirect(url_for("index"))
     
+    # جلب السجلات للرئيسية مرتبة تنازلياً حسب التاريخ والوقت
     records = []
     if supabase:
         try:
-            response = supabase.table("records").select("*").order("created_at", desc=True).limit(50).execute()
+            response = supabase.table("records").select("*").order("record_date", desc=True).order("record_time", desc=True).limit(50).execute()
             records = response.data
         except Exception as e:
             print(f"Error fetching from Supabase: {e}")
@@ -103,15 +104,15 @@ def index():
         employees=EMPLOYEES_LIST
     )
 
-# دالة مساعدة لتصفية السجلات بأمان في بايثون
+# دالة لتصفية وجلب السجلات مع ترتيبها تنازلياً حسب التاريخ والوقت
 def get_filtered_records(start_date, end_date):
     if not supabase:
         return []
     try:
-        response = supabase.table("records").select("*").execute()
+        # جلب البيانات وترتيبها مباشرة من قاعدة البيانات
+        response = supabase.table("records").select("*").order("record_date", desc=True).order("record_time", desc=True).execute()
         all_data = response.data if response.data else []
         
-        # إذا لم يتم تحديد تواريخ، أرجع كل البيانات
         if not start_date and not end_date:
             return all_data
             
@@ -121,7 +122,6 @@ def get_filtered_records(start_date, end_date):
             if not r_date:
                 continue
             
-            # مقارنة النصوص (الشكل YYYY-MM-DD يتيح المقارنة الأبجدية المباشرة بكل نجاح)
             match = True
             if start_date and r_date < start_date:
                 match = False
@@ -174,7 +174,7 @@ def export_excel():
         }
         df = df.rename(columns=column_mapping)
         
-        available_cols = [c for c in ["اسم المريض", "رقم الهوية", "رقم الملف", "الخدمة المقدمة", "اسم الموظف", "التاريخ", "الوقت"] if c in df.columns]
+        available_cols = [c for c in ["اسم المريض", "رقم الهوية", "رقم الملف", "القسم", "اسم الموظف", "التاريخ", "الوقت"] if c in df.columns]
         if available_cols:
             df = df[available_cols]
 
@@ -194,5 +194,5 @@ def export_excel():
         print(f"Error exporting excel: {e}")
         return redirect(url_for("index"))
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+if _name_ == "_main_":
+    app.run(host="0.0.0.0", port=5000)
