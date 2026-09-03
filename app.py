@@ -104,7 +104,7 @@ def index():
         employees=EMPLOYEES_LIST
     )
 
-# مسار صفحة المعاينة المستقلة
+# مسار صفحة المعاينة المستقلة (محدث وآمن تماماً ضد الأخطاء)
 @app.route("/preview")
 def preview_data():
     start_date = request.args.get("start_date")
@@ -114,15 +114,18 @@ def preview_data():
     if supabase:
         try:
             query = supabase.table("records").select("*")
-            if start_date:
+            
+            # التحقق من أن القيم غير فارغة قبل إضافتها للفلتر
+            if start_date and start_date.strip():
                 query = query.gte("record_date", start_date)
-            if end_date:
+            if end_date and end_date.strip():
                 query = query.lte("record_date", end_date)
             
-            response = query.execute()
+            response = query.order("created_at", desc=True).execute()
             records = response.data
         except Exception as e:
             print(f"Error fetching preview data: {e}")
+            records = []
 
     return render_template(
         "preview_data.html",
@@ -141,9 +144,9 @@ def export_excel():
     
     try:
         query = supabase.table("records").select("*")
-        if start_date:
+        if start_date and start_date.strip():
             query = query.gte("record_date", start_date)
-        if end_date:
+        if end_date and end_date.strip():
             query = query.lte("record_date", end_date)
             
         response = query.execute()
