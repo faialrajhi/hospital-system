@@ -88,7 +88,6 @@ def index():
 
         return redirect(url_for("index"))
     
-    # جلب آخر السجلات للجدول الرئيسي
     records = []
     if supabase:
         try:
@@ -104,53 +103,59 @@ def index():
         employees=EMPLOYEES_LIST
     )
 
-# مسار صفحة المعاينة المستقلة (محدث وآمن تماماً ضد الأخطاء)
+# دالة مساعدة لتصفية السجلات بأمان في بايثون
+def get_filtered_records(start_date, end_date):
+    if not supabase:
+        return []
+    try:
+        response = supabase.table("records").select("*").execute()
+        all_data = response.data if response.data else []
+        
+        # إذا لم يتم تحديد تواريخ، أرجع كل البيانات
+        if not start_date and not end_date:
+            return all_data
+            
+        filtered = []
+        for row in all_data:
+            r_date = row.get("record_date")
+            if not r_date:
+                continue
+            
+            # مقارنة النصوص (الشكل YYYY-MM-DD يتيح المقارنة الأبجدية المباشرة بكل نجاح)
+            match = True
+            if start_date and r_date < start_date:
+                match = False
+            if end_date and r_date > end_date:
+                match = False
+                
+            if match:
+                filtered.append(row)
+        return filtered
+    except Exception as e:
+        print(f"Error filtering records: {e}")
+        return []
+
 @app.route("/preview")
 def preview_data():
-    start_date = request.args.get("start_date")
-    end_date = request.args.get("end_date")
+    start_date = request.args.get("start_date", "").strip()
+    end_date = request.args.get("end_date", "").strip()
     
-    records = []
-    if supabase:
-        try:
-            query = supabase.table("records").select("*")
-            
-            # التحقق من أن القيم غير فارغة قبل إضافتها للفلتر
-            if start_date and start_date.strip():
-                query = query.gte("record_date", start_date)
-            if end_date and end_date.strip():
-                query = query.lte("record_date", end_date)
-            
-            response = query.order("created_at", desc=True).execute()
-            records = response.data
-        except Exception as e:
-            print(f"Error fetching preview data: {e}")
-            records = []
+    records = get_filtered_records(start_date, end_date)
 
     return render_template(
         "preview_data.html",
         records=records,
-        start_date=start_date or "",
-        end_date=end_date or ""
+        start_date=start_date,
+        end_date=end_date
     )
 
 @app.route("/export_excel")
 def export_excel():
-    if not supabase:
-        return redirect(url_for("index"))
-    
-    start_date = request.args.get("start_date")
-    end_date = request.args.get("end_date")
+    start_date = request.args.get("start_date", "").strip()
+    end_date = request.args.get("end_date", "").strip()
     
     try:
-        query = supabase.table("records").select("*")
-        if start_date and start_date.strip():
-            query = query.gte("record_date", start_date)
-        if end_date and end_date.strip():
-            query = query.lte("record_date", end_date)
-            
-        response = query.execute()
-        data = response.data
+        data = get_filtered_records(start_date, end_date)
         
         if not data:
             df = pd.DataFrame(columns=["اسم المريض", "رقم الهوية", "رقم الملف", "الخدمة المقدمة", "اسم الموظف", "التاريخ", "الوقت"])
