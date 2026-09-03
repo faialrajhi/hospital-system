@@ -1,172 +1,77 @@
-import os
-from flask import (
-    Flask,
-    flash,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    url_for,
-)
-from supabase import Client, create_client
+from flask import Flask, render_template, request, send_file, redirect, url_for
+from supabase import create_client, Client
 import pandas as pd
 import io
-from datetime import datetime
+import os
 
 app = Flask(__name__)
-app.secret_key = "hospital_secret_key"
 
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key) if url and key else None
+# إعدادات الاتصال بـ Supabase (تأكدِ أن المتغيرات معرفة أو ضعي الروابط مباشرة هنا)
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "رابط_سูปابيز_حقك")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "مفتاح_سูปابيز_حقك")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-SERVICES_LIST = [
-    {"name": "أطباء الباطنة"},
-    {"name": "تمريض الباطنة"},
-    {"name": "أطباء الجراحة"},
-    {"name": "تمريض الجراحة"},
-    {"name": "أطباء العظام"},
-    {"name": "تمريض العظام"},
-    {"name": "أطباء المخ والأعصاب"},
-    {"name": "تمريض المخ والأعصاب"},
-    {"name": "صيدلية"},
-    {"name": "الأشعة"},
-    {"name": "المعلومات الصحية"},
-    {"name": "مكتب الدخول"},
-    {"name": "الصحة الرقمية"},
-    {"name": "إدارة المرافق"},
-    {"name": "الطب المنزلي"},
-    {"name": "الوفيات"},
-    {"name": "الخدمة الاجتماعية"},
-    {"name": "العلاج الطبيعي"},
-    {"name": "أطباء النفسية"},
-    {"name": "تمريض النفسية"},
-    {"name": "الإمداد"},
-    {"name": "المختبر"},
-    {"name": "إدارة القبول"},
-]
-
-EMPLOYEES_LIST = [
-    {"name": "صالح حنيف"},
-    {"name": "ابراهيم بخاري"},
-    {"name": "احلام هوساوي"},
-    {"name": "معتوق سيف"},
-    {"name": "تركي عبدالعزيز"},
-    {"name": "سليم الشريف"},
-    {"name": "فوزي بليلة"},
-    {"name": "رامي اللقماني"},
-    {"name": "متدرب"},
-    {"name": "تمهير"},
-    {"name": "تطوع"}
-]
-
-
-@app.route("/", methods=["GET", "POST"])
+@app.route('/')
 def index():
-    if request.method == "POST":
-        patient_name = request.form.get("patient_name")
-        national_id = request.form.get("national_id")
-        file_number = request.form.get("file_number")
-        service_name = request.form.get("service_name")
-        employee_name = request.form.get("employee_name")
-        record_date = request.form.get("record_date")
-        record_time = request.form.get("record_time")
+    # الصفحة الرئيسية اللي فيها نموذج (Form) اختيار التواريخ
+    return render_template('index.html')
 
-        print(f"DEBUG DATA: {patient_name}, {national_id}, {service_name}")
-
-        if supabase:
-            try:
-                response = supabase.table("records").insert({
-                    "patient_name": patient_name,
-                    "national_id": national_id,
-                    "file_number": file_number,
-                    "service_name": service_name,
-                    "employee_name": employee_name,
-                    "record_date": record_date,
-                    "record_time": record_time,
-                }).execute()
-                print(f"Supabase Response: {response}")
-                flash("تم حفظ السجل بنجاح!", "success")
-            except Exception as e:
-                print(f"Error saving to Supabase: {e}")
-
-        return redirect(url_for("index"))
-    
-    records = []
-    if supabase:
-        try:
-            response = supabase.table("records").select("*").execute()
-            records = response.data
-        except Exception as e:
-            print(f"Error fetching from Supabase: {e}")
-
-    return render_template(
-        "index.html",
-        records=records,
-        services=SERVICES_LIST,
-        employees=EMPLOYEES_LIST,
-    )
-
-
-@app.route("/export_excel")
-def export_excel():
-    if not supabase:
-        return redirect(url_for("index"))
-    
-    # استقبال التواريخ من رابط الطلب (Query Parameters)
-    start_date = request.args.get("start_date")
-    end_date = request.args.get("end_date")
+@app.route('/filter_data', methods=['POST'])
+def filter_data():
+    # 1. استقبال التواريخ المحددة من النموذج
+    start_date = request.form.get('start_date')
+    end_date = request.form.get('end_date')
     
     try:
-        # بناء استعلام قاعدة البيانات
-        query = supabase.table("records").select("*")
+        # 2. استعلام البيانات من Supabase حسب التواريخ المحددة
+        # ملاحظة: استبدلي 'your_table_name' باسم جدولك، و 'created_at' باسم عمود التاريخ عندك
+        response = supabase.table('your_table_name') \
+            .select("*") \
+            .gte('created_at', start_date) \
+            .lte('created_at', end_date) \
+            .execute()
         
-        # تطبيق الفلترة حسب التاريخ المدخل
-        if start_date:
-            query = query.gte("record_date", start_date)
-        if end_date:
-            query = query.lte("record_date", end_date)
-            
-        response = query.execute()
+        data = response.data
+    except Exception as e:
+        data = []
+        print(f"Error fetching data: {e}")
+
+    # 3. تمرير البيانات لصفحة المعاينة HTML لعرضها بجدول
+    return render_template('preview_data.html', data=data, start_date=start_date, end_date=end_date)
+
+@app.route('/download_excel', methods=['POST'])
+def download_excel():
+    # 4. مسار تحميل ملف Excel بناءً على نفس التواريخ المعتمدة
+    start_date = request.form.get('start_date')
+    end_date = request.form.get('end_date')
+    
+    try:
+        response = supabase.table('your_table_name') \
+            .select("*") \
+            .gte('created_at', start_date) \
+            .lte('created_at', end_date) \
+            .execute()
+        
         data = response.data
         
-        if not data:
-            df = pd.DataFrame(columns=["اسم المريض", "رقم الهوية", "رقم الملف", "الخدمة المقدمة", "اسم الموظف", "التاريخ", "الوقت"])
-        else:
+        if data:
+            # تحويل البيانات إلى Pandas DataFrame ثم إلى ملف Excel
             df = pd.DataFrame(data)
-        
-        column_mapping = {
-            "patient_name": "اسم المريض",
-            "national_id": "رقم الهوية",
-            "file_number": "رقم الملف",
-            "service_name": "الخدمة المقدمة",
-            "service": "الخدمة المقدمة",
-            "employee_name": "اسم الموظف",
-            "record_date": "التاريخ",
-            "record_time": "الوقت"
-        }
-        df = df.rename(columns=column_mapping)
-        
-        available_cols = [c for c in ["اسم المريض", "رقم الهوية", "رقم الملف", "الخدمة المقدمة", "اسم الموظف", "التاريخ", "الوقت"] if c in df.columns]
-        if available_cols:
-            df = df[available_cols]
-
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='السجلات')
-        output.seek(0)
-
-        filename = f"hospital_records_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
-        return send_file(
-            output,
-            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            as_attachment=True,
-            download_name=filename
-        )
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False, sheet_name='Filtered Data')
+            output.seek(0)
+            
+            return send_file(
+                output,
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                as_attachment=True,
+                download_name=f'report_{start_date}to{end_date}.xlsx'
+            )
     except Exception as e:
         print(f"Error exporting excel: {e}")
-        return redirect(url_for("index"))
+        
+    return redirect(url_for('index'))
 
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == '__main__':
+    app.run(debug=True)
