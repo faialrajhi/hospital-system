@@ -126,9 +126,9 @@
             color: white;
             text-decoration: none;
             display: inline-block;
-            padding: 7px 15px;
+            padding: 7px 16px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             text-align: center;
         }
@@ -216,6 +216,7 @@
 
                     <div class="mb-3">
                         <label for="record_date">التاريخ:</label>
+                        <!-- تم إضافة max للتقييد بحيث لا يمكن اختيار تاريخ مستقبلّي -->
                         <input type="date" class="form-control" id="record_date" name="record_date" required>
                     </div>
 
@@ -240,11 +241,11 @@
                     <form method="GET" action="{{ url_for('index') }}" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
                         <div>
                             <label for="start_date" style="font-size: 0.85rem; margin-bottom: 4px;">من تاريخ:</label>
-                            <input type="date" id="start_date" name="start_date" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;" value="{{ request.args.get('start_date', '') }}">
+                            <input type="date" id="start_date" name="start_date" class="form-control max-today" style="padding: 6px 10px; font-size: 0.9rem;" value="{{ request.args.get('start_date', '') }}">
                         </div>
                         <div>
                             <label for="end_date" style="font-size: 0.85rem; margin-bottom: 4px;">إلى تاريخ:</label>
-                            <input type="date" id="end_date" name="end_date" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;" value="{{ request.args.get('end_date', '') }}">
+                            <input type="date" id="end_date" name="end_date" class="form-control max-today" style="padding: 6px 10px; font-size: 0.9rem;" value="{{ request.args.get('end_date', '') }}">
                         </div>
                         <button type="submit" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 16px; font-size: 0.9rem; width: auto; border-radius: 6px; cursor: pointer;">عرض النتائج</button>
                         <a href="{{ url_for('export_excel', start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}" class="btn-success" style="padding: 7px 16px; font-size: 0.9rem; border-radius: 6px;">تحميل إلى Excel</a>
@@ -287,6 +288,15 @@
         </div>
     </div>
 </div>
+
+<!-- سكريبت بسيط يمنع اختيار أي تاريخ بعد تاريخ اليوم الحالي تلقائياً -->
+<script>
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('record_date').setAttribute('max', today);
+    document.querySelectorAll('.max-today').forEach(input => {
+        input.setAttribute('max', today);
+    });
+</script>
 
 </body>
 </html>
