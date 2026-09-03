@@ -60,7 +60,6 @@ EMPLOYEES_LIST = [
     {"name": "تطوع"}
 ]
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -89,7 +88,25 @@ def index():
 
         return redirect(url_for("index"))
     
-    # جلب التواريخ للفلترة المباشرة من الواجهة إذا وجدت
+    # جلب آخر السجلات للجدول الرئيسي
+    records = []
+    if supabase:
+        try:
+            response = supabase.table("records").select("*").order("created_at", desc=True).limit(50).execute()
+            records = response.data
+        except Exception as e:
+            print(f"Error fetching from Supabase: {e}")
+
+    return render_template(
+        "index.html",
+        records=records,
+        services=SERVICES_LIST,
+        employees=EMPLOYEES_LIST
+    )
+
+# مسار صفحة المعاينة المستقلة
+@app.route("/preview")
+def preview_data():
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
     
@@ -105,17 +122,14 @@ def index():
             response = query.execute()
             records = response.data
         except Exception as e:
-            print(f"Error fetching from Supabase: {e}")
+            print(f"Error fetching preview data: {e}")
 
     return render_template(
-        "index.html",
+        "preview_data.html",
         records=records,
-        services=SERVICES_LIST,
-        employees=EMPLOYEES_LIST,
         start_date=start_date or "",
         end_date=end_date or ""
     )
-
 
 @app.route("/export_excel")
 def export_excel():
@@ -171,7 +185,6 @@ def export_excel():
     except Exception as e:
         print(f"Error exporting excel: {e}")
         return redirect(url_for("index"))
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
