@@ -13,7 +13,7 @@ import pandas as pd
 import io
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.secret_key = "hospital_secret_key"
 
 url: str = os.environ.get("SUPABASE_URL")
@@ -72,7 +72,7 @@ def index():
         record_date = request.form.get("record_date")
         record_time = request.form.get("record_time")
 
-        print(f"DEBUG DATA: {patient_name}, {national_id}, {service_name}") # هذا بيطبع البيانات في الـ Logs
+        print(f"DEBUG DATA: {patient_name}, {national_id}, {service_name}")
 
         if supabase:
             try:
@@ -91,6 +91,7 @@ def index():
                 print(f"Error saving to Supabase: {e}")
 
         return redirect(url_for("index"))
+    
     records = []
     if supabase:
         try:
@@ -111,13 +112,28 @@ def index():
 def export_excel():
     if not supabase:
         return redirect(url_for("index"))
+    
+    # استقبال التواريخ من رابط الطلب (Query Parameters)
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+    
     try:
-        response = supabase.table("records").select("*").execute()
-        data = response.data
-        if not data:
-            return redirect(url_for("index"))
+        # بناء استعلام قاعدة البيانات
+        query = supabase.table("records").select("*")
         
-        df = pd.DataFrame(data)
+        # تطبيق الفلترة حسب التاريخ المدخل
+        if start_date:
+            query = query.gte("record_date", start_date)
+        if end_date:
+            query = query.lte("record_date", end_date)
+            
+        response = query.execute()
+        data = response.data
+        
+        if not data:
+            df = pd.DataFrame(columns=["اسم المريض", "رقم الهوية", "رقم الملف", "الخدمة المقدمة", "اسم الموظف", "التاريخ", "الوقت"])
+        else:
+            df = pd.DataFrame(data)
         
         column_mapping = {
             "patient_name": "اسم المريض",
@@ -152,5 +168,5 @@ def export_excel():
         return redirect(url_for("index"))
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     app.run(host="0.0.0.0", port=5000)
