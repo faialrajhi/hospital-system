@@ -3,77 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معاينة السجلات</title>
-    <!-- استيراد Bootstrap لتنسيق الصفحة بشكل جميل -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>معاينة وتصفية السجلات</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 30px 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* الهيدر العلوي */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .header-section h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #bdc3c7;
+            color: #7f8c8d;
+        }
+
+        .btn-outline:hover {
+            background-color: #f1f2f6;
+        }
+
+        /* نموذج الفلترة */
+        .filter-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) 200px;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-actions button, .filter-actions a {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* زر الإكسل */
+        .actions-bar {
+            margin-bottom: 20px;
+        }
+
+        /* جدول النتائج */
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            color: #444;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        tr:hover {
+            background-color: #f1f4f8;
+        }
+
+        .empty-row {
+            padding: 30px;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        /* التجاوب مع الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .filter-card {
+                grid-template-columns: 1fr;
+            }
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+<body>
+    <div class="container">
+        
+        <!-- الهيدر -->
+        <div class="header-section">
             <h2>معاينة وتصفية السجلات</h2>
             <a href="/" class="btn btn-secondary">العودة للرئيسية</a>
         </div>
 
-        <!-- نموذج الفلترة بالتواريخ -->
-        <form method="GET" action="/preview" class="row g-3 mb-4 bg-white p-3 rounded shadow-sm">
-            <div class="col-md-4">
-                <label for="start_date" class="formل-label">من تاريخ:</label>
+        <!-- نموذج التصفية -->
+        <form method="GET" action="/preview" class="filter-card">
+            <div class="form-group">
+                <label for="start_date">من تاريخ:</label>
                 <input type="date" id="start_date" name="start_date" class="form-control" value="{{ start_date }}">
             </div>
-            <div class="col-md-4">
-                <label for="end_date" class="form-label">إلى تاريخ:</label>
+            
+            <div class="form-group">
+                <label for="end_date">إلى تاريخ:</label>
                 <input type="date" id="end_date" name="end_date" class="form-control" value="{{ end_date }}">
             </div>
-            <div class="col-md-4 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100 me-2">بحث وتصفية</button>
-                <a href="/preview" class="btn btn-outline-secondary">إعادة ضبط</a>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">بحث</button>
+                <a href="/preview" class="btn btn-outline" style="padding: 10px 15px; display: flex; align-items: center; justify-content: center;">إعادة ضبط</a>
             </div>
         </form>
 
-        <!-- زر تحميل Excel -->
-        <div class="mb-3">
-            <a href="/export_excel?start_date={{ start_date }}&end_date={{ end_date }}" class="btn btn-success">تحميل كملف Excel 📊</a>
+        <!-- زر تحميل الإكسل -->
+        <div class="actions-bar">
+            <a href="/export_excel?start_date={{ start_date }}&end_date={{ end_date }}" class="btn btn-success">تحميل التقرير كملف Excel 📊</a>
         </div>
 
-        <!-- جدول النتائج -->
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered text-center">
-                        <thead class="table-dark">
+        <!-- جدول المعاينة -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم المريض</th>
+                            <th>رقم الهوية</th>
+                            <th>رقم الملف</th>
+                            <th>الخدمة المقدمة</th>
+                            <th>اسم الموظف</th>
+                            <th>التاريخ</th>
+                            <th>الوقت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if records %}
+                            {% for row in records %}
                             <tr>
-                                <th>اسم المريض</th>
-                                <th>رقم الهوية</th>
-                                <th>رقم الملف</th>
-                                <th>الخدمة المقدمة</th>
-                                <th>اسم الموظف</th>
-                                <th>التاريخ</th>
-                                <th>الوقت</th>
+                                <td>{{ row.get('patient_name', '-') }}</td>
+                                <td>{{ row.get('national_id', '-') }}</td>
+                                <td>{{ row.get('file_number', '-') }}</td>
+                                <td>{{ row.get('service_name', '-') }}</td>
+                                <td>{{ row.get('employee_name', '-') }}</td>
+                                <td>{{ row.get('record_date', '-') }}</td>
+                                <td>{{ row.get('record_time', '-') }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% if records %}
-                                {% for row in records %}
-                                <tr>
-                                    <td>{{ row.get('patient_name', '') }}</td>
-                                    <td>{{ row.get('national_id', '') }}</td>
-                                    <td>{{ row.get('file_number', '') }}</td>
-                                    <td>{{ row.get('service_name', '') }}</td>
-                                    <td>{{ row.get('employee_name', '') }}</td>
-                                    <td>{{ row.get('record_date', '') }}</td>
-                                    <td>{{ row.get('record_time', '') }}</td>
-                                </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="7" class="text-muted">لا توجد سجلات مطابقة للبحث</td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="empty-row">لا توجد سجلات مطابقة للبحث</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
             </div>
         </div>
+
     </div>
 </body>
 </html>
