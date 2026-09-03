@@ -126,18 +126,14 @@
             color: white;
             text-decoration: none;
             display: inline-block;
-            padding: 6px 14px;
+            padding: 7px 15px;
             border-radius: 6px;
             font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
         }
         .btn-success:hover {
             background-color: #1b5e20;
-        }
-        .table-header-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
         }
         .table-responsive {
             overflow-x: auto;
@@ -193,7 +189,6 @@
                         <input type="text" name="national_id" class="form-control" placeholder="10XXXXXXXX" required>
                     </div>
 
-                    <!-- تم إزالة خاصية required لكي يكون حقل رقم الملف اختيارياً -->
                     <div class="mb-3">
                         <label>رقم الملف (اختياري):</label>
                         <input type="text" name="file_number" class="form-control" placeholder="20XXXXXX">
@@ -238,22 +233,24 @@
         <!-- جدول السجلات -->
         <div class="table-container">
             <div class="card">
-               <div class="table-header-flex" style="flex-wrap: wrap; gap: 15px;">
-    <h4 class="card-title" style="border:none; margin:0; padding:0;">آخر السجلات المسجلة</h4>
-    
-    <!-- نموذج فلترة وتصدير الإكسل بالتاريخ -->
-    <form action="{{ url_for('export_excel') }}" method="GET" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-        <div>
-            <label for="start_date" style="font-size: 0.8rem; margin-bottom: 2px;">من تاريخ:</label>
-            <input type="date" id="start_date" name="start_date" class="form-control" style="padding: 5px 8px; font-size: 0.85rem;" value="{{ request.args.get('start_date', '') }}">
-        </div>
-        <div>
-            <label for="end_date" style="font-size: 0.8rem; margin-bottom: 2px;">إلى تاريخ:</label>
-            <input type="date" id="end_date" name="end_date" class="form-control" style="padding: 5px 8px; font-size: 0.85rem;" value="{{ request.args.get('end_date', '') }}">
-        </div>
-        <button type="submit" class="btn-success" style="border: none; cursor: pointer; margin-top: 18px;">تحميل إلى Excel</button>
-    </form>
-</div>
+                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة</h4>
+                
+                <!-- صندوق الفلترة وأزرار التحكم -->
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                    <form method="GET" action="{{ url_for('index') }}" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                        <div>
+                            <label for="start_date" style="font-size: 0.85rem; margin-bottom: 4px;">من تاريخ:</label>
+                            <input type="date" id="start_date" name="start_date" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;" value="{{ request.args.get('start_date', '') }}">
+                        </div>
+                        <div>
+                            <label for="end_date" style="font-size: 0.85rem; margin-bottom: 4px;">إلى تاريخ:</label>
+                            <input type="date" id="end_date" name="end_date" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;" value="{{ request.args.get('end_date', '') }}">
+                        </div>
+                        <button type="submit" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 16px; font-size: 0.9rem; width: auto; border-radius: 6px; cursor: pointer;">عرض النتائج</button>
+                        <a href="{{ url_for('export_excel', start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}" class="btn-success" style="padding: 7px 16px; font-size: 0.9rem; border-radius: 6px;">تحميل إلى Excel</a>
+                    </form>
+                </div>
+                
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -280,7 +277,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="7" class="text-muted">لا توجد سجلات مضافة حتى الآن.</td>
+                                <td colspan="7" class="text-muted">لا توجد سجلات مطابقة للتواريخ المحددة.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
