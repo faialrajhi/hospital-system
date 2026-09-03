@@ -238,10 +238,22 @@
         <!-- جدول السجلات -->
         <div class="table-container">
             <div class="card">
-                <div class="table-header-flex">
-                    <h4 class="card-title" style="border:none; margin:0; padding:0;">آخر السجلات المسجلة</h4>
-                    <a href="{{ url_for('export_excel') }}" class="btn-success"> تحميل إلى Excel</a>
-                </div>
+               <div class="table-header-flex" style="flex-wrap: wrap; gap: 15px;">
+    <h4 class="card-title" style="border:none; margin:0; padding:0;">آخر السجلات المسجلة</h4>
+    
+    <!-- نموذج فلترة وتصدير الإكسل بالتاريخ -->
+    <form action="{{ url_for('export_excel') }}" method="GET" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <div>
+            <label for="start_date" style="font-size: 0.8rem; margin-bottom: 2px;">من تاريخ:</label>
+            <input type="date" id="start_date" name="start_date" class="form-control" style="padding: 5px 8px; font-size: 0.85rem;" value="{{ request.args.get('start_date', '') }}">
+        </div>
+        <div>
+            <label for="end_date" style="font-size: 0.8rem; margin-bottom: 2px;">إلى تاريخ:</label>
+            <input type="date" id="end_date" name="end_date" class="form-control" style="padding: 5px 8px; font-size: 0.85rem;" value="{{ request.args.get('end_date', '') }}">
+        </div>
+        <button type="submit" class="btn-success" style="border: none; cursor: pointer; margin-top: 18px;">تحميل إلى Excel</button>
+    </form>
+</div>
                 <div class="table-responsive">
                     <table>
                         <thead>
