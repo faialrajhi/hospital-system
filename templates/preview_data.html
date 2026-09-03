@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معاينة السجلات</title>
+    <!-- استيراد Bootstrap لتنسيق الصفحة بشكل جميل -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>معاينة وتصفية السجلات</h2>
+            <a href="/" class="btn btn-secondary">العودة للرئيسية</a>
+        </div>
+
+        <!-- نموذج الفلترة بالتواريخ -->
+        <form method="GET" action="/preview" class="row g-3 mb-4 bg-white p-3 rounded shadow-sm">
+            <div class="col-md-4">
+                <label for="start_date" class="formل-label">من تاريخ:</label>
+                <input type="date" id="start_date" name="start_date" class="form-control" value="{{ start_date }}">
+            </div>
+            <div class="col-md-4">
+                <label for="end_date" class="form-label">إلى تاريخ:</label>
+                <input type="date" id="end_date" name="end_date" class="form-control" value="{{ end_date }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100 me-2">بحث وتصفية</button>
+                <a href="/preview" class="btn btn-outline-secondary">إعادة ضبط</a>
+            </div>
+        </form>
+
+        <!-- زر تحميل Excel -->
+        <div class="mb-3">
+            <a href="/export_excel?start_date={{ start_date }}&end_date={{ end_date }}" class="btn btn-success">تحميل كملف Excel 📊</a>
+        </div>
+
+        <!-- جدول النتائج -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>اسم المريض</th>
+                                <th>رقم الهوية</th>
+                                <th>رقم الملف</th>
+                                <th>الخدمة المقدمة</th>
+                                <th>اسم الموظف</th>
+                                <th>التاريخ</th>
+                                <th>الوقت</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if records %}
+                                {% for row in records %}
+                                <tr>
+                                    <td>{{ row.get('patient_name', '') }}</td>
+                                    <td>{{ row.get('national_id', '') }}</td>
+                                    <td>{{ row.get('file_number', '') }}</td>
+                                    <td>{{ row.get('service_name', '') }}</td>
+                                    <td>{{ row.get('employee_name', '') }}</td>
+                                    <td>{{ row.get('record_date', '') }}</td>
+                                    <td>{{ row.get('record_time', '') }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-muted">لا توجد سجلات مطابقة للبحث</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
