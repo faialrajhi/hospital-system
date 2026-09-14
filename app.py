@@ -11,9 +11,9 @@ from flask import (
 from supabase import Client, create_client
 import pandas as pd
 import io
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.secret_key = "hospital_secret_key"
 
 url: str = os.environ.get("SUPABASE_URL")
@@ -69,10 +69,13 @@ def index():
         service_name = request.form.get("service_name")
         employee_name = request.form.get("employee_name")
         
-        # التقاط التاريخ والوقت المرسل، وإذا كان فارغاً يتم توليده تلقائياً من السيرفر كحماية إضافية
-        now = datetime.now()
-        record_date = request.form.get("record_date") or now.strftime('%Y-%m-%d')
-        record_time = request.form.get("record_time") or now.strftime('%H:%M')
+        # ضبط توقيت السعودية (UTC+3) برمجياً في السيرفر لضمان مطابقة الساعة 16:xx بدلاً من 13:xx
+ksa_tz = timezone(timedelta(hours=3))
+now_ksa = datetime.now(ksa_tz)
+
+# استخدام الوقت القادم من النموذج إذا وجد، وإلا توليده بتوقيت السعودية الصحيح
+record_date = request.form.get("record_date") or now_ksa.strftime('%Y-%m-%d')
+record_time = request.form.get("record_time") or now_ksa.strftime('%H:%M')
 
         if supabase:
             try:
@@ -112,7 +115,6 @@ def get_filtered_records(start_date, end_date):
     if not supabase:
         return []
     try:
-        # جلب البيانات وترتيبها مباشرة من قاعدة البيانات
         response = supabase.table("records").select("*").order("record_date", desc=True).order("record_time", desc=True).execute()
         all_data = response.data if response.data else []
         
@@ -197,5 +199,5 @@ def export_excel():
         print(f"Error exporting excel: {e}")
         return redirect(url_for("index"))
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     app.run(host="0.0.0.0", port=5000)
