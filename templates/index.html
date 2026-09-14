@@ -169,24 +169,37 @@
             padding: 20px;
             white-space: normal;
         }
+
         /* تصميم كرت الطباعة المصغر (مخفي بالشاشة العادية ويظهر فقط عند الطباعة) */
         #ticket-card {
             display: none;
         }
+
         @media print {
+            /* إخفاء كافة عناصر الصفحة تماماً */
             body * {
-                visibility: hidden;
+                visibility: hidden !important;
             }
+            /* إظهار كرت التذكرة وما بداخله فقط */
             #ticket-card, #ticket-card * {
-                visibility: visible;
+                visibility: visible !important;
             }
             #ticket-card {
                 display: block !important;
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 100%;
-                text-align: center;
+                position: fixed !important;
+                top: 0 !important;
+                right: 0 !important;
+                left: 0 !important;
+                margin: 0 auto !important;
+                width: 100% !important;
+                max-width: 80mm !important; /* قياس مناسب لتذاكر الطابعات */
+                background: white !important;
+                padding: 5px !important;
+            }
+            /* إلغاء أي هوامش إضافية لمنع توليد صفحات فارغة ثانية */
+            @page {
+                size: auto;
+                margin: 0mm;
             }
         }
     </style>
@@ -317,21 +330,21 @@
 </div>
 
 <!-- هيكل كرت التذكرة المخصص للطباعة -->
-<div id="ticket-card" style="direction: rtl; text-align: center; padding: 15px; font-family: 'Segoe UI', Tahoma, sans-serif; width: 260px; margin: 0 auto;">
-    <h3 style="margin: 0; font-size: 16px; color: #1F4E78;">إدارة تجربة المريض</h3>
-    <p style="font-size: 11px; color: #555; margin: 4px 0;">وحدة الدعم المساندة</p>
-    <hr style="border: 1px dashed #aaa; margin: 8px 0;">
-    <div style="margin: 10px 0;">
-        <span style="font-size: 13px; display: block; color: #333;">رقم الدور (السرا):</span>
-        <span id="t-number" style="font-size: 30px; font-weight: bold; color: #1F4E78;">Q-101</span>
+<div id="ticket-card" style="direction: rtl; text-align: center; padding: 10px; font-family: 'Segoe UI', Tahoma, sans-serif;">
+    <h3 style="margin: 0; font-size: 15px; color: #1F4E78;">إدارة تجربة المريض</h3>
+    <p style="font-size: 10px; color: #555; margin: 3px 0;">وحدة الدعم المساندة</p>
+    <hr style="border: 1px dashed #aaa; margin: 6px 0;">
+    <div style="margin: 8px 0;">
+        <span style="font-size: 12px; display: block; color: #333;">رقم الدور (السرا):</span>
+        <span id="t-number" style="font-size: 28px; font-weight: bold; color: #1F4E78;">Q-101</span>
     </div>
-    <div style="text-align: right; font-size: 12px; margin-top: 8px; line-height: 1.5;">
+    <div style="text-align: right; font-size: 11px; margin-top: 6px; line-height: 1.4;">
         <p><strong>المريض:</strong> <span id="t-patient">--</span></p>
         <p><strong>الخدمة:</strong> <span id="t-service">--</span></p>
         <p><strong>التاريخ:</strong> <span id="t-date">--</span> | <strong>الوقت:</strong> <span id="t-time">--</span></p>
     </div>
-    <hr style="border: 1px dashed #aaa; margin: 10px 0 5px 0;">
-    <p style="font-size: 10px; color: #777; margin: 0;">يرجى الانتظار لحين نداء الرقم</p>
+    <hr style="border: 1px dashed #aaa; margin: 8px 0 4px 0;">
+    <p style="font-size: 9px; color: #777; margin: 0;">يرجى الانتظار لحين نداء الرقم</p>
 </div>
 
 <!-- السكريبتات -->
@@ -365,7 +378,7 @@
         document.getElementById('t-date').innerText = recordDate || '-';
         document.getElementById('t-time').innerText = recordTime || '-';
         
-        // توليد رقم عشوائي تسلسلي سريع للتذكرة (مثلاً بين 100 و 999)
+        // توليد رقم عشوائي تسلسلي سريع للتذكرة
         const randomQueue = Math.floor(100 + Math.random() * 900);
         document.getElementById('t-number').innerText = "Q-" + randomQueue;
 
