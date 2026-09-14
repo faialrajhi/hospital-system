@@ -96,6 +96,12 @@
             border-color: #1F4E78;
             box-shadow: 0 0 5px rgba(31, 78, 120, 0.2);
         }
+        /* تصميم الحقول التلقائية لتكون بلون هادئ ومميزة بأنها تلقائية */
+        .auto-input {
+            background-color: #f1f5f9;
+            color: #475569;
+            cursor: not-allowed;
+        }
         .btn {
             width: 100%;
             padding: 11px;
@@ -201,7 +207,6 @@
                 padding: 2mm !important;
                 background: white !important;
             }
-            /* جعل العناصر الداخلية داخل التذكرة تظهر كـ inline/flex بشكل طبيعي */
             #ticket-card div {
                 display: block !important;
             }
@@ -268,20 +273,21 @@
                         </select>
                     </div>
 
+                    <!-- التاريخ والوقت أبحا تلقائية وغير قابلة للتعديل اليدوي -->
                     <div class="mb-3">
-                        <label for="record_date">التاريخ:</label>
-                        <input type="date" class="form-control" id="record_date" name="record_date" required>
+                        <label for="record_date">التاريخ (تلقائي):</label>
+                        <input type="date" class="form-control auto-input" id="record_date" name="record_date" readonly required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="record_time">الوقت:</label>
-                        <input type="time" class="form-control" id="record_time" name="record_time" required>
+                        <label for="record_time">الوقت (تلقائي):</label>
+                        <input type="time" class="form-control auto-input" id="record_time" name="record_time" readonly required>
                     </div>
 
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <!-- زر طباعة تذكرة الدور -->
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة الدور 🖨️</button>
-                    <button type="reset" class="btn btn-secondary">مسح الحقول</button>
+                    <button type="reset" class="btn btn-secondary" onclick="resetFormFields()">مسح الحقول</button>
                 </form>
             </div>
         </div>
@@ -363,17 +369,50 @@
 
 <!-- السكريبتات -->
 <script>
-    // تحديد التاريخ الأقصى لليوم
+    // دالة لتحديث التاريخ والوقت تلقائياً بحسب الوقت الحالي لجهاز المستخدم
+    function updateDateTime() {
+        const now = new Date();
+        
+        // ضبط التاريخ بصيغة YYYY-MM-DD
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const currentDate = ⁠ ${year}-${month}-${day} ⁠;
+        
+        // ضبط الوقت بصيغة HH:MM
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const currentTime = ⁠ ${hours}:${minutes} ⁠;
+
+        // تعبئة الحقول تلقائياً
+        const dateInput = document.getElementById('record_date');
+        const timeInput = document.getElementById('record_time');
+        
+        if (dateInput) dateInput.value = currentDate;
+        if (timeInput) timeInput.value = currentTime;
+    }
+
+    // تشغيل الدالة أول ما تفتح الصفحة
+    window.onload = function() {
+        updateDateTime();
+    };
+
+    // إعادة ضبط الحقول عند الضغط على زر مسح
+    function resetFormFields() {
+        setTimeout(updateDateTime, 50); // إعادة تعبئة التاريخ والوقت بعد المسح مباشرة
+    }
+
+    // تحديد التاريخ الأقصى لفلاتر الجدول
     const today = new Date().toISOString().split('T')[0];
-    const dateInput = document.getElementById('record_date');
-    if(dateInput) dateInput.setAttribute('max', today);
-    
     document.querySelectorAll('.max-today').forEach(input => {
         input.setAttribute('max', today);
     });
 
     // دالة طباعة تذكرة الدور
     function printTicket() {
+        // تحديث الوقت والتاريخ لحظة الطباعة لضمان دقتها المطلقة
+        updateDateTime();
+
         const patientName = document.getElementById('patient_name').value;
         const serviceSelect = document.getElementById('service_name');
         const serviceName = serviceSelect.options[serviceSelect.selectedIndex]?.text || '';
