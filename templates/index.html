@@ -34,7 +34,7 @@
             justify-content: center;
         }
         .header-banner img {
-            height: 190px; /* يمكنك تعديل حجم الشعار من هنا */
+            height: 190px;
             width: auto;
             position: absolute;
             right: 25px;
@@ -170,12 +170,10 @@
             white-space: normal;
         }
 
-        /* تنسيق كرت التذكرة الخفي في الوضع العادي */
         #ticket-card {
             display: none;
         }
 
-        /* إعدادات الطباعة الخاصة بالتذكرة فقط */
         @media print {
             html, body {
                 height: 100% !important;
@@ -226,7 +224,6 @@
     </div>
 
     <div class="main-layout">
-        <!-- نموذج الإدخال -->
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
@@ -238,7 +235,7 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                        <input type="text" name="national_id" class="form-control" placeholder="10 أرقام" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
                     </div>
 
                     <div class="mb-3">
@@ -314,11 +311,9 @@
                         </select>
                     </div>
 
-                    <!-- حقول مخفية للتاريخ والوقت -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
-                    <!-- الأزرار مرتبة بالترتيب المطلوب داخل الفورم -->
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
@@ -326,7 +321,6 @@
             </div>
         </div>
 
-        <!-- جدول السجلات -->
         <div class="table-container">
             <div class="card">
                 <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة</h4>
@@ -364,7 +358,7 @@
                         <tbody>
                             {% for record in records %}
                             <tr>
-<td><strong>{{ loop.index }}</strong></td>
+                                <td><strong>{{ loop.index }}</strong></td>
                                 <td>{{ record.get('patient_name', '-') }}</td>
                                 <td>{{ record.get('national_id', '-') }}</td>
                                 <td>{{ record.get('file_number', '-') }}</td>
@@ -387,7 +381,6 @@
     </div>
 </div>
 
-<!-- هيكل كرت التذكرة للطباعة -->
 <div id="ticket-card" style="direction: rtl; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif;">
     <h3 style="margin: 0; font-size: 14px; color: #1F4E78;">إدارة تجربة المريض</h3>
     <p style="font-size: 9px; color: #555; margin: 2px 0;">وحدة الدعم المساندة</p>
@@ -412,14 +405,17 @@
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
-        const currentDate = ⁠ ${year}-${month}-${day} ⁠;
+        const currentDate = year + '-' + month + '-' + day;
         
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
-        const currentTime = ⁠ ${hours}:${minutes} ⁠;
+        const currentTime = hours + ':' + minutes;
 
-        document.getElementById('record_date').value = currentDate;
-        document.getElementById('record_time').value = currentTime;
+        const dateInput = document.getElementById('record_date');
+        const timeInput = document.getElementById('record_time');
+        
+        if (dateInput) dateInput.value = currentDate;
+        if (timeInput) timeInput.value = currentTime;
     }
 
     window.onload = function() {
@@ -435,16 +431,16 @@
         setLiveDateTime();
 
         const patientNameInput = document.getElementById('patient_name');
-        const patientName = patientNameInput.value.trim() || 'مريض زائر';
+        const patientName = patientNameInput ? patientNameInput.value.trim() : 'مريض زائر';
         
         const reqServiceSelect = document.getElementById('requested_service');
-        const reqServiceName = reqServiceSelect.options[reqServiceSelect.selectedIndex]?.text || '-';
+        const reqServiceName = reqServiceSelect && reqServiceSelect.selectedIndex >= 0 ? reqServiceSelect.options[reqServiceSelect.selectedIndex].text : '-';
 
         const serviceSelect = document.getElementById('service_name');
-        const serviceName = serviceSelect.options[serviceSelect.selectedIndex]?.text || '-';
+        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
         
-        const recordDate = document.getElementById('record_date').value;
-        const recordTime = document.getElementById('record_time').value;
+        const recordDate = document.getElementById('record_date') ? document.getElementById('record_date').value : '';
+        const recordTime = document.getElementById('record_time') ? document.getElementById('record_time').value : '';
 
         document.getElementById('t-patient').innerText = patientName;
         document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
@@ -455,7 +451,6 @@
         const randomQueue = Math.floor(100 + Math.random() * 900);
         document.getElementById('t-number').innerText = "Q-" + randomQueue;
 
-        // تنفيذ الطباعة مباشرة بدون تعارض
         window.print();
     }
 </script>
