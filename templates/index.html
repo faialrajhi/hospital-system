@@ -230,8 +230,9 @@
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
+                
+                <!-- تم فصل الفورم عن زر الطباعة لضمان عدم حدوث تعارض -->
                 <form id="patientForm" action="/" method="POST" onsubmit="setLiveDateTime()">
-                    
                     <div class="mb-3">
                         <label>اسم المريض:</label>
                         <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المريض" required>
@@ -239,7 +240,7 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10xxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
                     </div>
 
                     <div class="mb-3">
@@ -319,11 +320,13 @@
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
-                    <!-- الأزرار -->
-                    <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة  </button>
+                    <!-- الأزرار الخاصة بالحفظ والمسح داخل الفورم -->
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
                 </form>
+
+                <!-- زر الطباعة خارج الفورم تماماً وبدون أي عائق -->
+                <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
             </div>
         </div>
 
@@ -413,11 +416,11 @@
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
-        const currentDate = ⁠ ${year}-${month}-${day} ⁠;
+        const currentDate = `${year}-${month}-${day}`;
         
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
-        const currentTime = ⁠ ${hours}:${minutes} ⁠;
+        const currentTime = `${hours}:${minutes}`;
 
         document.getElementById('record_date').value = currentDate;
         document.getElementById('record_time').value = currentTime;
@@ -435,21 +438,17 @@
     function printTicket() {
         setLiveDateTime();
 
-        const patientName = document.getElementById('patient_name').value.trim();
+        const patientNameInput = document.getElementById('patient_name');
+        const patientName = patientNameInput.value.trim() || 'مريض زائر';
+        
         const reqServiceSelect = document.getElementById('requested_service');
-        const reqServiceName = reqServiceSelect.options[reqServiceSelect.selectedIndex]?.text || '';
+        const reqServiceName = reqServiceSelect.options[reqServiceSelect.selectedIndex]?.text || '-';
 
         const serviceSelect = document.getElementById('service_name');
-        const serviceName = serviceSelect.options[serviceSelect.selectedIndex]?.text || '';
+        const serviceName = serviceSelect.options[serviceSelect.selectedIndex]?.text || '-';
         
         const recordDate = document.getElementById('record_date').value;
         const recordTime = document.getElementById('record_time').value;
-
-        if (!patientName) {
-            alert("الرجاء إدخال اسم المريض أولاً لطباعة التذكرة.");
-            document.getElementById('patient_name').focus();
-            return;
-        }
 
         document.getElementById('t-patient').innerText = patientName;
         document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
@@ -460,7 +459,7 @@
         const randomQueue = Math.floor(100 + Math.random() * 900);
         document.getElementById('t-number').innerText = "Q-" + randomQueue;
 
-        // تنفيذ أمر الطباعة مباشرة
+        // تنفيذ الطباعة مباشرة
         window.print();
     }
 </script>
