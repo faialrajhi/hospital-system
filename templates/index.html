@@ -34,7 +34,7 @@
             justify-content: center;
         }
         .header-banner img {
-            height: 180px;
+            height: 180px; /* يمكنك تعديل حجم الشعار من هنا */
             width: auto;
             position: absolute;
             right: 25px;
@@ -170,10 +170,12 @@
             white-space: normal;
         }
 
+        /* تنسيق كرت التذكرة الخفي في الوضع العادي */
         #ticket-card {
             display: none;
         }
 
+        /* إعدادات الطباعة الخاصة بالتذكرة فقط */
         @media print {
             html, body {
                 height: 100% !important;
@@ -237,7 +239,7 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                        <input type="text" name="national_id" class="form-control" placeholder="10xxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
                     </div>
 
                     <div class="mb-3">
@@ -433,7 +435,7 @@
     function printTicket() {
         setLiveDateTime();
 
-        const patientName = document.getElementById('patient_name').value;
+        const patientName = document.getElementById('patient_name').value.trim();
         const reqServiceSelect = document.getElementById('requested_service');
         const reqServiceName = reqServiceSelect.options[reqServiceSelect.selectedIndex]?.text || '';
 
@@ -458,6 +460,7 @@
         const randomQueue = Math.floor(100 + Math.random() * 900);
         document.getElementById('t-number').innerText = "Q-" + randomQueue;
 
+        // تنفيذ أمر الطباعة مباشرة
         window.print();
     }
 </script>
