@@ -114,13 +114,6 @@
         .btn-primary:hover {
             background-color: #163a5d;
         }
-        .btn-print {
-            background-color: #2b6cb0;
-            color: white;
-        }
-        .btn-print:hover {
-            background-color: #2c5282;
-        }
         .btn-secondary {
             background-color: #e2e8f0;
             color: #475569;
@@ -228,7 +221,7 @@
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
-                <form id="patientForm" action="/" method="POST" onsubmit="setLiveDateTime()">
+                <form id="patientForm" action="/" method="POST">
                     
                     <div class="mb-3">
                         <label>اسم المريض:</label>
@@ -237,7 +230,7 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
                     </div>
 
                     <div class="mb-3">
@@ -289,8 +282,8 @@
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
-                    <button type="submit" class="btn btn-primary">حفظ السجل</button>
-                    <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة الدور 🖨️</button>
+                    <!-- الزر الرئيسي صار لطباعة التذكرة أولاً، والذي سيقوم بالحفظ تلقائياً -->
+                    <button type="button" class="btn btn-primary" onclick="printTicketAndSave()">طباعة تذكرة الدور وحفظ السجل 🖨️</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
                 </form>
             </div>
@@ -399,11 +392,18 @@
         input.setAttribute('max', today);
     });
 
-    function printTicket() {
+    function printTicketAndSave() {
+        const form = document.getElementById('patientForm');
+        
+        // التحقق من تعبئة الحقول المطلوبة قبل الطباعة والحفظ
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
         setLiveDateTime();
 
         const patientName = document.getElementById('patient_name').value;
-        
         const reqServiceSelect = document.getElementById('requested_service');
         const reqServiceName = reqServiceSelect.options[reqServiceSelect.selectedIndex]?.text || '';
 
@@ -412,12 +412,6 @@
         
         const recordDate = document.getElementById('record_date').value;
         const recordTime = document.getElementById('record_time').value;
-
-        if (!patientName) {
-            alert("الرجاء إدخال اسم المريض أولاً لطباعة التذكرة.");
-            document.getElementById('patient_name').focus();
-            return;
-        }
 
         document.getElementById('t-patient').innerText = patientName;
         document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
@@ -428,7 +422,11 @@
         const randomQueue = Math.floor(100 + Math.random() * 900);
         document.getElementById('t-number').innerText = "Q-" + randomQueue;
 
+        // طباعة التذكرة أولاً
         window.print();
+
+        // إرسال البيانات وحفظها تلقائياً للسيرفر وقاعدة البيانات بعد الطباعة
+        form.submit();
     }
 </script>
 
