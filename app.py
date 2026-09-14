@@ -1,64 +1,20 @@
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
+from datetime import datetime, timezone, timedelta
 import os
-from flask import (
-    Flask,
-    flash,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    url_for,
-)
-from supabase import Client, create_client
+from supabase import create_client, Client
 import pandas as pd
 import io
-from datetime import datetime, timedelta, timezone
 
 app = Flask(__name__)
-app.secret_key = "hospital_secret_key"
+app.secret_key = "your_secret_key_here"  # استبدليها بمفتاح سري خاص بك
 
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key) if url and key else None
+# إعدادات اتصال Supabase
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "YOUR_SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "YOUR_SUPABASE_KEY")
 
-SERVICES_LIST = [
-    {"name": "أطباء الباطنة"},
-    {"name": "تمريض الباطنة"},
-    {"name": "أطباء الجراحة"},
-    {"name": "تمريض الجراحة"},
-    {"name": "أطباء العظام"},
-    {"name": "تمريض العظام"},
-    {"name": "أطباء المخ والأعصاب"},
-    {"name": "تمريض المخ والأعصاب"},
-    {"name": "صيدلية"},
-    {"name": "الأشعة"},
-    {"name": "المعلومات الصحية"},
-    {"name": "مكتب الدخول"},
-    {"name": "الصحة الرقمية"},
-    {"name": "إدارة المرافق"},
-    {"name": "الطب المنزلي"},
-    {"name": "الوفيات"},
-    {"name": "الخدمة الاجتماعية"},
-    {"name": "العلاج الطبيعي"},
-    {"name": "أطباء النفسية"},
-    {"name": "تمريض النفسية"},
-    {"name": "الإمداد"},
-    {"name": "المختبر"},
-    {"name": "إدارة القبول"},
-]
-
-EMPLOYEES_LIST = [
-    {"name": "صالح حنيف"},
-    {"name": "ابراهيم بخاري"},
-    {"name": "احلام هوساوي"},
-    {"name": "معتوق سيف"},
-    {"name": "تركي عبدالعزيز"},
-    {"name": "سليم الشريف"},
-    {"name": "فوزي بليلة"},
-    {"name": "رامي اللقماني"},
-    {"name": "متدرب"},
-    {"name": "تمهير"},
-    {"name": "تطوع"}
-]
+supabase: Client = None
+if SUPABASE_URL and SUPABASE_KEY and SUPABASE_URL != "YOUR_SUPABASE_URL":
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -66,14 +22,13 @@ def index():
         patient_name = request.form.get("patient_name")
         national_id = request.form.get("national_id")
         file_number = request.form.get("file_number")
+        requested_service = request.form.get("requested_service")  # استقبال الخدمة المطلوبة الجديدة
         service_name = request.form.get("service_name")
         employee_name = request.form.get("employee_name")
         
-        # فرض توقيت مكة المكرمة (UTC+3) برمجياً في السيرفر
         ksa_tz = timezone(timedelta(hours=3))
         now_ksa = datetime.now(ksa_tz)
         
-        # استخدام الوقت القادم من المتصفح أو اعتمال وقت مكة للسيرفر كبديل دقيق
         record_date = request.form.get("record_date") or now_ksa.strftime('%Y-%m-%d')
         record_time = request.form.get("record_time") or now_ksa.strftime('%H:%M')
 
@@ -83,6 +38,7 @@ def index():
                     "patient_name": patient_name,
                     "national_id": national_id,
                     "file_number": file_number,
+                    "requested_service": requested_service,  # حفظ الحقل في قاعدة البيانات
                     "service_name": service_name,
                     "employee_name": employee_name,
                     "record_date": record_date,
@@ -93,112 +49,100 @@ def index():
                 print(f"Error saving to Supabase: {e}")
 
         return redirect(url_for("index"))
-    
-    # جلب السجلات للرئيسية مرتبة تنازلياً حسب التاريخ والوقت
+
+    # جلب البيانات للعرض في القوائم والجدول
+    services = []
+    employees = []
     records = []
+    
     if supabase:
         try:
-            response = supabase.table("records").select("*").order("record_date", desc=True).order("record_time", desc=True).limit(50).execute()
-            records = response.data
+            services_res = supabase.table("services").select("*").execute()
+            services = services_res.data if services_res.data else []
+            
+            employees_res = supabase.table("employees").select("*").execute()
+            employees = employees_res.data if employees_res.data else []
+            
+            records_res = supabase.table("records").select("*").order("id", desc=True).limit(50).execute()
+            records = records_res.data if records_res.data else []
         except Exception as e:
-            print(f"Error fetching from Supabase: {e}")
+            print(f"Error fetching data: {e}")
 
-    return render_template(
-        "index.html",
-        records=records,
-        services=SERVICES_LIST,
-        employees=EMPLOYEES_LIST
-    )
-
-# دالة لتصفية وجلب السجلات مع ترتيبها تنازلياً حسب التاريخ والوقت
-def get_filtered_records(start_date, end_date):
-    if not supabase:
-        return []
-    try:
-        response = supabase.table("records").select("*").order("record_date", desc=True).order("record_time", desc=True).execute()
-        all_data = response.data if response.data else []
-        
-        if not start_date and not end_date:
-            return all_data
-            
-        filtered = []
-        for row in all_data:
-            r_date = row.get("record_date")
-            if not r_date:
-                continue
-            
-            match = True
-            if start_date and r_date < start_date:
-                match = False
-            if end_date and r_date > end_date:
-                match = False
-                
-            if match:
-                filtered.append(row)
-        return filtered
-    except Exception as e:
-        print(f"Error filtering records: {e}")
-        return []
+    return render_template("index.html", services=services, employees=employees, records=records)
 
 @app.route("/preview")
 def preview_data():
-    start_date = request.args.get("start_date", "").strip()
-    end_date = request.args.get("end_date", "").strip()
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
     
-    records = get_filtered_records(start_date, end_date)
+    records = []
+    services = []
+    employees = []
+    
+    if supabase:
+        try:
+            query = supabase.table("records").select("*")
+            if start_date:
+                query = query.gte("record_date", start_date)
+            if end_date:
+                query = query.lte("record_date", end_date)
+            res = query.order("id", desc=True).execute()
+            records = res.data if res.data else []
+            
+            services = supabase.table("services").select("*").execute().data or []
+            employees = supabase.table("employees").select("*").execute().data or []
+        except Exception as e:
+            print(f"Error previewing data: {e}")
+            
+    return render_template("index.html", services=services, employees=employees, records=records)
 
-    return render_template(
-        "preview_data.html",
-        records=records,
-        start_date=start_date,
-        end_date=end_date
-    )
-
-@app.route("/export_excel")
+@app.route("/export")
 def export_excel():
-    start_date = request.args.get("start_date", "").strip()
-    end_date = request.args.get("end_date", "").strip()
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
     
-    try:
-        data = get_filtered_records(start_date, end_date)
-        
-        if not data:
-            df = pd.DataFrame(columns=["اسم المريض", "رقم الهوية", "رقم الملف", "الخدمة المقدمة", "اسم الموظف", "التاريخ", "الوقت"])
-        else:
-            df = pd.DataFrame(data)
-        
+    records = []
+    if supabase:
+        try:
+            query = supabase.table("records").select("*")
+            if start_date:
+                query = query.gte("record_date", start_date)
+            if end_date:
+                query = query.lte("record_date", end_date)
+            res = query.order("id", desc=True).execute()
+            records = res.data if res.data else []
+        except Exception as e:
+            print(f"Error exporting data: {e}")
+            
+    if not records:
+        df = pd.DataFrame(columns=["الاسم", "الهوية", "رقم الملف", "الخدمة المطلوبة", "القسم", "الموظف", "التاريخ", "الوقت"])
+    else:
+        df = pd.DataFrame(records)
         column_mapping = {
-            "patient_name": "اسم المريض",
-            "national_id": "رقم الهوية",
+            "patient_name": "الاسم",
+            "national_id": "الهوية",
             "file_number": "رقم الملف",
-            "service_name": "الخدمة المقدمة",
-            "service": "الخدمة المقدمة",
-            "employee_name": "اسم الموظف",
+            "requested_service": "الخدمة المطلوبة",
+            "service_name": "القسم",
+            "employee_name": "الموظف",
             "record_date": "التاريخ",
             "record_time": "الوقت"
         }
         df = df.rename(columns=column_mapping)
-        
-        available_cols = [c for c in ["اسم المريض", "رقم الهوية", "رقم الملف", "الخدمة المقدمة", "اسم الموظف", "التاريخ", "الوقت"] if c in df.columns]
-        if available_cols:
-            df = df[available_cols]
+        available_cols = [col for col in ["الاسم", "الهوية", "رقم الملف", "الخدمة المطلوبة", "القسم", "الموظف", "التاريخ", "الوقت"] if col in df.columns]
+        df = df[available_cols]
 
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='السجلات')
-        output.seek(0)
-
-        ksa_tz = timezone(timedelta(hours=3))
-        filename = f"hospital_records_{datetime.now(ksa_tz).strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
-        return send_file(
-            output,
-            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            as_attachment=True,
-            download_name=filename
-        )
-    except Exception as e:
-        print(f"Error exporting excel: {e}")
-        return redirect(url_for("index"))
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='السجلات')
+    output.seek(0)
+    
+    return send_file(
+        output,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='patient_records.xlsx'
+    )
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(debug=True)
