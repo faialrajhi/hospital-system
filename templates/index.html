@@ -34,7 +34,7 @@
             justify-content: center;
         }
         .header-banner img {
-            height: 180px; /* يمكنك تعديل حجم الشعار من هنا */
+            height: 190px; /* يمكنك تعديل حجم الشعار من هنا */
             width: auto;
             position: absolute;
             right: 25px;
@@ -230,8 +230,6 @@
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
-                
-                <!-- تم فصل الفورم عن زر الطباعة لضمان عدم حدوث تعارض -->
                 <form id="patientForm" action="/" method="POST" onsubmit="setLiveDateTime()">
                     <div class="mb-3">
                         <label>اسم المريض:</label>
@@ -240,7 +238,7 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
                     </div>
 
                     <div class="mb-3">
@@ -320,13 +318,11 @@
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
-                    <!-- الأزرار الخاصة بالحفظ والمسح داخل الفورم -->
+                    <!-- الأزرار مرتبة بالترتيب المطلوب داخل الفورم -->
+                    <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
                 </form>
-
-                <!-- زر الطباعة خارج الفورم تماماً وبدون أي عائق -->
-                <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
             </div>
         </div>
 
@@ -368,7 +364,7 @@
                         <tbody>
                             {% for record in records %}
                             <tr>
-                                <td><strong>{{ record.get('serial_number', '-') }}</strong></td>
+<td><strong>{{ loop.index }}</strong></td>
                                 <td>{{ record.get('patient_name', '-') }}</td>
                                 <td>{{ record.get('national_id', '-') }}</td>
                                 <td>{{ record.get('file_number', '-') }}</td>
@@ -397,7 +393,7 @@
     <p style="font-size: 9px; color: #555; margin: 2px 0;">وحدة الدعم المساندة</p>
     <hr style="border: 0.5px dashed #aaa; margin: 4px 0;">
     <div style="margin: 4px 0;">
-        <span style="font-size: 11px; display: block; color: #333;">رقم الدور (السرا):</span>
+        <span style="font-size: 11px; display: block; color: #333;">رقم الدور :</span>
         <span id="t-number" style="font-size: 24px; font-weight: bold; color: #1F4E78;">Q-101</span>
     </div>
     <div style="text-align: right; font-size: 10px; margin-top: 4px; line-height: 1.3;">
@@ -416,11 +412,11 @@
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
-        const currentDate = `${year}-${month}-${day}`;
+        const currentDate = ⁠ ${year}-${month}-${day} ⁠;
         
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
-        const currentTime = `${hours}:${minutes}`;
+        const currentTime = ⁠ ${hours}:${minutes} ⁠;
 
         document.getElementById('record_date').value = currentDate;
         document.getElementById('record_time').value = currentTime;
@@ -459,7 +455,7 @@
         const randomQueue = Math.floor(100 + Math.random() * 900);
         document.getElementById('t-number').innerText = "Q-" + randomQueue;
 
-        // تنفيذ الطباعة مباشرة
+        // تنفيذ الطباعة مباشرة بدون تعارض
         window.print();
     }
 </script>
