@@ -237,7 +237,7 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10 أرقام" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
                     </div>
 
                     <div class="mb-3">
@@ -289,9 +289,9 @@
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
-                    <!-- الأزرار منفصلة -->
-                    <button type="submit" class="btn btn-primary">حفظ السجل</button>
+                    <!-- الأزرار (طباعة التذكرة أولاً، ثم حفظ السجل) -->
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة الدور 🖨️</button>
+                    <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
                 </form>
             </div>
