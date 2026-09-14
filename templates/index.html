@@ -448,8 +448,24 @@
         document.getElementById('t-date').innerText = recordDate || '-';
         document.getElementById('t-time').innerText = recordTime || '-';
         
-        const randomQueue = Math.floor(100 + Math.random() * 900);
-        document.getElementById('t-number').innerText = "Q-" + randomQueue;
+           // تحديد ما إذا كان الوقت صباحاً أو مسائياً لتغيير الحرف (A أو P)
+    const now = new Date();
+    const hours = now.getHours();
+    const prefix = hours >= 12 ? 'P' : 'A'; // P للمساء، A للصباح
+
+    // استخدام رقم تسلسلي يعتمد على التخزين المحلي (LocalStorage) ليتصاعد تدريجياً
+    let dailyKey = 'queue_num_' + now.toISOString().split('T')[0];
+    let currentNum = localStorage.getItem(dailyKey);
+    
+    if (!currentNum) {
+        currentNum = 1;
+    } else {
+        currentNum = parseInt(currentNum) + 1;
+    }
+    localStorage.setItem(dailyKey, currentNum);
+
+    // عرض الرقم بالتنسيق الجديد (مثال: A1 أو P1)
+    document.getElementById('t-number').innerText = prefix + "-" + currentNum;
 
         window.print();
     }
