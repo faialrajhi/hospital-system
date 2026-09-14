@@ -16,25 +16,31 @@
             color: #333;
             padding: 20px;
         }
+     .container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 15px;
+}
         .container {
     width: 100%;
     max-width: 100%;
-    padding: 0 20px;
+    padding: 0 15px;
     margin: 0 auto;
 }
-        .header-banner {
-            background-color: #1F4E78;
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+
+.header-banner {
+    background-color: #1F4E78;
+    color: white;
+    padding: 25px;
+    border-radius: 0 0 12px 12px; /* جعل الزوايا السفلية دائرية فقط */
+    text-align: center;
+    margin: -20px -15px 25px -15px; /* هذه الهوامش السالبة هي التي ستدفع الشريط ليلتصق بأطراف الشاشة كاملة */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
         .header-banner img {
             height: 190px;
             width: auto;
