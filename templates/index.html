@@ -260,7 +260,7 @@
                             <option value="عدم ظهور الادوية في النظام">عدم ظهور الادوية في النظام</option>
                             <option value="طلب مرافقة جديد">طلب مرافقة جديد</option>
                             <option value="اعادة طلب مرافقة">اعادة طلب مرافقة</option>
-                            <option value="شكوي ضد موظف">شكوي ضد موظف</option>
+                            <option value="شكوى ضد موظف">شكوى ضد موظف</option>
                             <option value="شكوى من خدمة">شكوى من خدمة</option>
                         </select>
                     </div>
@@ -269,9 +269,29 @@
                         <label>القسم:</label>
                         <select id="service_name" name="service_name" class="form-select" required>
                             <option value="" disabled selected>اختر القسم...</option>
-                            {% for service in services %}
-                                <option value="{{ service['name'] }}">{{ service['name'] }}</option>
-                            {% endfor %}
+                            <option value="اطباء الباطنة">اطباء الباطنة</option>
+                            <option value="تمريض الباطنة">تمريض الباطنة</option>
+                            <option value="اطباء الجراحة">اطباء الجراحة</option>
+                            <option value="تمريض الجراحة">تمريض الجراحة</option>
+                            <option value="اطباء العظام">اطباء العظام</option>
+                            <option value="تمريض العظام">تمريض العظام</option>
+                            <option value="اطباء المخ والاعصاب">اطباء المخ والاعصاب</option>
+                            <option value="تمريض المخ والاعصاب">تمريض المخ والاعصاب</option>
+                            <option value="صيدلية">صيدلية</option>
+                            <option value="الاشعة">الاشعة</option>
+                            <option value="المعلومات الصحية">المعلومات الصحية</option>
+                            <option value="مكتب الدخول">مكتب الدخول</option>
+                            <option value="الصحة الرقمية">الصحة الرقمية</option>
+                            <option value="إدارة المرافق">إدارة المرافق</option>
+                            <option value="الطب المنزلي">الطب المنزلي</option>
+                            <option value="الوفيات">الوفيات</option>
+                            <option value="الخدمة الاجتماعية">الخدمة الاجتماعية</option>
+                            <option value="العلاج الطبيعي">العلاج الطبيعي</option>
+                            <option value="اطباء النفسية">اطباء النفسية</option>
+                            <option value="تمريض النفسية">تمريض النفسية</option>
+                            <option value="الإمداد">الإمداد</option>
+                            <option value="المختبر">المختبر</option>
+                            <option value="إدارة القبول">إدارة القبول</option>
                         </select>
                     </div>
 
@@ -279,9 +299,17 @@
                         <label>اسم الموظف:</label>
                         <select name="employee_name" class="form-select" required>
                             <option value="" disabled selected>اختر اسم الموظف...</option>
-                            {% for employee in employees %}
-                                <option value="{{ employee['name'] }}">{{ employee['name'] }}</option>
-                            {% endfor %}
+                            <option value="ابراهيم بخاري">ابراهيم بخاري</option>
+                            <option value="صالح حنيف">صالح حنيف</option>
+                            <option value="احلام هوساوي">احلام هوساوي</option>
+                            <option value="معتوق سيف">معتوق سيف</option>
+                            <option value="تركي عبدالعزيز">تركي عبدالعزيز</option>
+                            <option value="سليم الشريف">سليم الشريف</option>
+                            <option value="فوزي بليلة">فوزي بليلة</option>
+                            <option value="رامي اللقماني">رامي اللقماني</option>
+                            <option value="تمهير">تمهير</option>
+                            <option value="تطوع">تطوع</option>
+                            <option value="تدريب">تدريب</option>
                         </select>
                     </div>
 
@@ -289,7 +317,7 @@
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
-                    <!-- الأزرار (طباعة التذكرة أولاً، ثم حفظ السجل) -->
+                    <!-- الأزرار -->
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة الدور 🖨️</button>
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
