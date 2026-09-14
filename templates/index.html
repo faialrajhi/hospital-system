@@ -14,28 +14,22 @@
             background-color: #f4f7f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
-            padding: 0;
-            margin: 0;
+            padding: 20px;
         }
         .container {
             width: 100%;
-            max-width: 100%;
-            padding: 20px;
+            max-width: 1350px;
             margin: 0 auto;
         }
         .header-banner {
             background-color: #1F4E78;
             color: white;
             padding: 25px;
-            border-radius: 0;
+            border-radius: 12px;
             text-align: center;
-            margin: 0 0 25px 0;
-            width: 100vw;
-            position: relative;
-            left: 50%;
-            right: 50%;
-            transform: translateX(-50%);
+            margin-bottom: 25px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -44,7 +38,7 @@
             height: 190px;
             width: auto;
             position: absolute;
-            right: 35px;
+            right: 25px;
             border-radius: 8px;
         }
         .header-banner h2 {
@@ -55,8 +49,6 @@
             display: flex;
             gap: 20px;
             flex-wrap: wrap;
-            max-width: 1350px;
-            margin: 0 auto;
         }
         .card {
             background: white;
@@ -226,12 +218,12 @@
 </head>
 <body>
 
-<div class="header-banner">
-    <img src="{{ url_for('static', filename='logo.png') }}" alt="شعار المستشفى">
-    <h2>إدارة تجربة المريض — وحدة الدعم المساندة</h2>
-</div>
-
 <div class="container">
+    <div class="header-banner">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="شعار المستشفى">
+        <h2>إدارة تجربة المريض — وحدة الدعم المساندة</h2>
+    </div>
+
     <div class="main-layout">
         <div class="form-container">
             <div class="card">
@@ -457,7 +449,7 @@
         document.getElementById('t-date').innerText = recordDate || '-';
         document.getElementById('t-time').innerText = recordTime || '-';
         
-        // نظام الترقيم التسلسلي الصباحي والمسائي (A للصباح من 12 الليل، P للمساء من 12 الظهر)
+        // نظام الترقيم التسلسلي الصباحي والمسائي
         const now = new Date();
         const hours = now.getHours();
         const prefix = hours >= 12 ? 'P' : 'A'; 
