@@ -114,6 +114,13 @@
         .btn-primary:hover {
             background-color: #163a5d;
         }
+        .btn-print {
+            background-color: #2b6cb0;
+            color: white;
+        }
+        .btn-print:hover {
+            background-color: #2c5282;
+        }
         .btn-secondary {
             background-color: #e2e8f0;
             color: #475569;
@@ -162,6 +169,26 @@
             padding: 20px;
             white-space: normal;
         }
+        /* تصميم كرت الطباعة المصغر (مخفي بالشاشة العادية ويظهر فقط عند الطباعة) */
+        #ticket-card {
+            display: none;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #ticket-card, #ticket-card * {
+                visibility: visible;
+            }
+            #ticket-card {
+                display: block !important;
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -177,11 +204,11 @@
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
-                <form action="/" method="POST">
+                <form id="patientForm" action="/" method="POST">
                     
                     <div class="mb-3">
                         <label>اسم المريض:</label>
-                        <input type="text" name="patient_name" class="form-control" placeholder="اسم المريض" required>
+                        <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المريض" required>
                     </div>
 
                     <div class="mb-3">
@@ -196,7 +223,7 @@
 
                     <div class="mb-3">
                         <label>القسم:</label>
-                        <select name="service_name" class="form-select" required>
+                        <select id="service_name" name="service_name" class="form-select" required>
                             <option value="" disabled selected>اختر الخدمة...</option>
                             {% for service in services %}
                                 <option value="{{ service['name'] }}">{{ service['name'] }}</option>
@@ -216,7 +243,6 @@
 
                     <div class="mb-3">
                         <label for="record_date">التاريخ:</label>
-                        <!-- تقييد بحيث لا يمكن اختيار تاريخ مستقبلّي -->
                         <input type="date" class="form-control" id="record_date" name="record_date" required>
                     </div>
 
@@ -226,6 +252,8 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
+                    <!-- زر طباعة تذكرة الدور -->
+                    <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة الدور 🖨️</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
                 </form>
             </div>
@@ -236,7 +264,6 @@
             <div class="card">
                 <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة</h4>
                 
-                <!-- صندوق الفلترة وأزرار التحكم موجه إلى صفحة المعاينة -->
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <form method="GET" action="{{ url_for('preview_data') }}" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
                         <div>
@@ -289,13 +316,62 @@
     </div>
 </div>
 
-<!-- سكريبت لمنع اختيار أي تاريخ بعد تاريخ اليوم الحالي تلقائياً -->
+<!-- هيكل كرت التذكرة المخصص للطباعة -->
+<div id="ticket-card" style="direction: rtl; text-align: center; padding: 15px; font-family: 'Segoe UI', Tahoma, sans-serif; width: 260px; margin: 0 auto;">
+    <h3 style="margin: 0; font-size: 16px; color: #1F4E78;">إدارة تجربة المريض</h3>
+    <p style="font-size: 11px; color: #555; margin: 4px 0;">وحدة الدعم المساندة</p>
+    <hr style="border: 1px dashed #aaa; margin: 8px 0;">
+    <div style="margin: 10px 0;">
+        <span style="font-size: 13px; display: block; color: #333;">رقم الدور (السرا):</span>
+        <span id="t-number" style="font-size: 30px; font-weight: bold; color: #1F4E78;">Q-101</span>
+    </div>
+    <div style="text-align: right; font-size: 12px; margin-top: 8px; line-height: 1.5;">
+        <p><strong>المريض:</strong> <span id="t-patient">--</span></p>
+        <p><strong>الخدمة:</strong> <span id="t-service">--</span></p>
+        <p><strong>التاريخ:</strong> <span id="t-date">--</span> | <strong>الوقت:</strong> <span id="t-time">--</span></p>
+    </div>
+    <hr style="border: 1px dashed #aaa; margin: 10px 0 5px 0;">
+    <p style="font-size: 10px; color: #777; margin: 0;">يرجى الانتظار لحين نداء الرقم</p>
+</div>
+
+<!-- السكريبتات -->
 <script>
+    // تحديد التاريخ الأقصى لليوم
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('record_date').setAttribute('max', today);
+    const dateInput = document.getElementById('record_date');
+    if(dateInput) dateInput.setAttribute('max', today);
+    
     document.querySelectorAll('.max-today').forEach(input => {
         input.setAttribute('max', today);
     });
+
+    // دالة طباعة تذكرة الدور
+    function printTicket() {
+        const patientName = document.getElementById('patient_name').value;
+        const serviceSelect = document.getElementById('service_name');
+        const serviceName = serviceSelect.options[serviceSelect.selectedIndex]?.text || '';
+        const recordDate = document.getElementById('record_date').value;
+        const recordTime = document.getElementById('record_time').value;
+
+        if (!patientName) {
+            alert("الرجاء إدخال اسم المريض أولاً لطباعة التذكرة.");
+            document.getElementById('patient_name').focus();
+            return;
+        }
+
+        // تعبئة البيانات في قالب التذكرة
+        document.getElementById('t-patient').innerText = patientName;
+        document.getElementById('t-service').innerText = serviceName !== 'اختر الخدمة...' ? serviceName : '-';
+        document.getElementById('t-date').innerText = recordDate || '-';
+        document.getElementById('t-time').innerText = recordTime || '-';
+        
+        // توليد رقم عشوائي تسلسلي سريع للتذكرة (مثلاً بين 100 و 999)
+        const randomQueue = Math.floor(100 + Math.random() * 900);
+        document.getElementById('t-number').innerText = "Q-" + randomQueue;
+
+        // فتح نافذة الطباعة
+        window.print();
+    }
 </script>
 
 </body>
