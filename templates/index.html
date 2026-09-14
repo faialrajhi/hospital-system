@@ -96,12 +96,6 @@
             border-color: #1F4E78;
             box-shadow: 0 0 5px rgba(31, 78, 120, 0.2);
         }
-        /* تصميم الحقول التلقائية لتكون بلون هادئ ومميزة بأنها تلقائية */
-        .auto-input {
-            background-color: #f1f5f9;
-            color: #475569;
-            cursor: not-allowed;
-        }
         .btn {
             width: 100%;
             padding: 11px;
@@ -273,21 +267,14 @@
                         </select>
                     </div>
 
-                    <!-- التاريخ والوقت أبحا تلقائية وغير قابلة للتعديل اليدوي -->
-                    <div class="mb-3">
-                        <label for="record_date">التاريخ (تلقائي):</label>
-                        <input type="date" class="form-control auto-input" id="record_date" name="record_date" readonly required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="record_time">الوقت (تلقائي):</label>
-                        <input type="time" class="form-control auto-input" id="record_time" name="record_time" readonly required>
-                    </div>
+                    <!-- التاريخ والوقت أصبحا مخفيين وتلقائيين بالكامل في الخلفية -->
+                    <input type="hidden" id="record_date" name="record_date">
+                    <input type="hidden" id="record_time" name="record_time">
 
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <!-- زر طباعة تذكرة الدور -->
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة الدور 🖨️</button>
-                    <button type="reset" class="btn btn-secondary" onclick="resetFormFields()">مسح الحقول</button>
+                    <button type="reset" class="btn btn-secondary">مسح الحقول</button>
                 </form>
             </div>
         </div>
@@ -369,38 +356,30 @@
 
 <!-- السكريبتات -->
 <script>
-    // دالة لتحديث التاريخ والوقت تلقائياً بحسب الوقت الحالي لجهاز المستخدم
-    function updateDateTime() {
+    // دالة لتوليد وضبط التاريخ والوقت الحاليين تلقائياً في الحقول المخفية
+    function setLiveDateTime() {
         const now = new Date();
         
-        // ضبط التاريخ بصيغة YYYY-MM-DD
+        // صيغة التاريخ YYYY-MM-DD
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         const currentDate = ⁠ ${year}-${month}-${day} ⁠;
         
-        // ضبط الوقت بصيغة HH:MM
+        // صيغة الوقت HH:MM
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const currentTime = ⁠ ${hours}:${minutes} ⁠;
 
-        // تعبئة الحقول تلقائياً
-        const dateInput = document.getElementById('record_date');
-        const timeInput = document.getElementById('record_time');
-        
-        if (dateInput) dateInput.value = currentDate;
-        if (timeInput) timeInput.value = currentTime;
+        // وضعها في الحقول المخفية لترسل تلقائياً عند الحفظ أو الطباعة
+        document.getElementById('record_date').value = currentDate;
+        document.getElementById('record_time').value = currentTime;
     }
 
-    // تشغيل الدالة أول ما تفتح الصفحة
+    // تحديث التاريخ والوقت فور تحميل الصفحة
     window.onload = function() {
-        updateDateTime();
+        setLiveDateTime();
     };
-
-    // إعادة ضبط الحقول عند الضغط على زر مسح
-    function resetFormFields() {
-        setTimeout(updateDateTime, 50); // إعادة تعبئة التاريخ والوقت بعد المسح مباشرة
-    }
 
     // تحديد التاريخ الأقصى لفلاتر الجدول
     const today = new Date().toISOString().split('T')[0];
@@ -408,14 +387,16 @@
         input.setAttribute('max', today);
     });
 
-    // دالة طباعة تذكرة الدور
+    // دالة طباعة تذكرة الدور وحفظ السجل الفوري
     function printTicket() {
-        // تحديث الوقت والتاريخ لحظة الطباعة لضمان دقتها المطلقة
-        updateDateTime();
+        // تحديث التاريخ والوقت للحظة الحالية تماماً قبل الطباعة
+        setLiveDateTime();
 
         const patientName = document.getElementById('patient_name').value;
         const serviceSelect = document.getElementById('service_name');
         const serviceName = serviceSelect.options[serviceSelect.selectedIndex]?.text || '';
+        
+        // جلب القيم المحدثة تلقائياً
         const recordDate = document.getElementById('record_date').value;
         const recordTime = document.getElementById('record_time').value;
 
@@ -425,7 +406,7 @@
             return;
         }
 
-        // تعبئة البيانات في قالب التذكرة
+        // تعبئة البيانات في قالب التذكرة المخصص للطباعة
         document.getElementById('t-patient').innerText = patientName;
         document.getElementById('t-service').innerText = serviceName !== 'اختر الخدمة...' ? serviceName : '-';
         document.getElementById('t-date').innerText = recordDate || '-';
