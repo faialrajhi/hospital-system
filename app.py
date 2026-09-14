@@ -13,7 +13,7 @@ import pandas as pd
 import io
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.secret_key = "hospital_secret_key"
 
 url: str = os.environ.get("SUPABASE_URL")
@@ -68,8 +68,11 @@ def index():
         file_number = request.form.get("file_number")
         service_name = request.form.get("service_name")
         employee_name = request.form.get("employee_name")
-        record_date = request.form.get("record_date")
-        record_time = request.form.get("record_time")
+        
+        # التقاط التاريخ والوقت المرسل، وإذا كان فارغاً يتم توليده تلقائياً من السيرفر كحماية إضافية
+        now = datetime.now()
+        record_date = request.form.get("record_date") or now.strftime('%Y-%m-%d')
+        record_time = request.form.get("record_time") or now.strftime('%H:%M')
 
         if supabase:
             try:
@@ -174,7 +177,7 @@ def export_excel():
         }
         df = df.rename(columns=column_mapping)
         
-        available_cols = [c for c in ["اسم المريض", "رقم الهوية", "رقم الملف", "القسم", "اسم الموظف", "التاريخ", "الوقت"] if c in df.columns]
+        available_cols = [c for c in ["اسم المريض", "رقم الهوية", "رقم الملف", "الخدمة المقدمة", "اسم الموظف", "التاريخ", "الوقت"] if c in df.columns]
         if available_cols:
             df = df[available_cols]
 
@@ -194,5 +197,5 @@ def export_excel():
         print(f"Error exporting excel: {e}")
         return redirect(url_for("index"))
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     app.run(host="0.0.0.0", port=5000)
