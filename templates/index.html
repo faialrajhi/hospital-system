@@ -170,12 +170,10 @@
             white-space: normal;
         }
 
-        /* تصميم كرت الطباعة المصغر (مخفي بالشاشة العادية) */
         #ticket-card {
             display: none;
         }
 
-        /* قواعد الطباعة الصارمة لمنع الصفحات المتعددة */
         @media print {
             html, body {
                 height: 100% !important;
@@ -230,7 +228,7 @@
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
-                <form id="patientForm" action="/" method="POST">
+                <form id="patientForm" action="/" method="POST" onsubmit="setLiveDateTime()">
                     
                     <div class="mb-3">
                         <label>اسم المريض:</label>
@@ -267,12 +265,11 @@
                         </select>
                     </div>
 
-                    <!-- التاريخ والوقت أصبحا مخفيين وتلقائيين بالكامل في الخلفية -->
+                    <!-- حقول مخفية للتاريخ والوقت -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
-                    <!-- زر طباعة تذكرة الدور -->
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة الدور 🖨️</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
                 </form>
@@ -336,7 +333,7 @@
     </div>
 </div>
 
-<!-- هيكل كرت التذكرة المخصص للطباعة -->
+<!-- هيكل كرت التذكرة للطباعة -->
 <div id="ticket-card" style="direction: rtl; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif;">
     <h3 style="margin: 0; font-size: 14px; color: #1F4E78;">إدارة تجربة المريض</h3>
     <p style="font-size: 9px; color: #555; margin: 2px 0;">وحدة الدعم المساندة</p>
@@ -354,49 +351,43 @@
     <p style="font-size: 8px; color: #777; margin: 0;">يرجى الانتظار لحين نداء الرقم</p>
 </div>
 
-<!-- السكريبتات -->
 <script>
-    // دالة لتوليد وضبط التاريخ والوقت الحاليين تلقائياً في الحقول المخفية
+    // دالة لتوليد الوقت والتاريخ المحلي بدقة بناءً على جهاز الموظف
     function setLiveDateTime() {
         const now = new Date();
         
-        // صيغة التاريخ YYYY-MM-DD
+        // استخدام التاريخ المحلي لجهاز المستخدم (YYYY-MM-DD)
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         const currentDate = ⁠ ${year}-${month}-${day} ⁠;
         
-        // صيغة الوقت HH:MM
+        // استخدام الوقت المحلي لجهاز المستخدم بصيغة 24 ساعة (HH:mm)
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const currentTime = ⁠ ${hours}:${minutes} ⁠;
 
-        // وضعها في الحقول المخفية لترسل تلقائياً عند الحفظ أو الطباعة
         document.getElementById('record_date').value = currentDate;
         document.getElementById('record_time').value = currentTime;
     }
 
-    // تحديث التاريخ والوقت فور تحميل الصفحة
+    // تحديث القيم فور تحميل الصفحة
     window.onload = function() {
         setLiveDateTime();
     };
 
-    // تحديد التاريخ الأقصى لفلاتر الجدول
     const today = new Date().toISOString().split('T')[0];
     document.querySelectorAll('.max-today').forEach(input => {
         input.setAttribute('max', today);
     });
 
-    // دالة طباعة تذكرة الدور وحفظ السجل الفوري
     function printTicket() {
-        // تحديث التاريخ والوقت للحظة الحالية تماماً قبل الطباعة
         setLiveDateTime();
 
         const patientName = document.getElementById('patient_name').value;
         const serviceSelect = document.getElementById('service_name');
         const serviceName = serviceSelect.options[serviceSelect.selectedIndex]?.text || '';
         
-        // جلب القيم المحدثة تلقائياً
         const recordDate = document.getElementById('record_date').value;
         const recordTime = document.getElementById('record_time').value;
 
@@ -406,17 +397,14 @@
             return;
         }
 
-        // تعبئة البيانات في قالب التذكرة المخصص للطباعة
         document.getElementById('t-patient').innerText = patientName;
         document.getElementById('t-service').innerText = serviceName !== 'اختر الخدمة...' ? serviceName : '-';
         document.getElementById('t-date').innerText = recordDate || '-';
         document.getElementById('t-time').innerText = recordTime || '-';
         
-        // توليد رقم عشوائي تسلسلي سريع للتذكرة
         const randomQueue = Math.floor(100 + Math.random() * 900);
         document.getElementById('t-number').innerText = "Q-" + randomQueue;
 
-        // فتح نافذة الطباعة
         window.print();
     }
 </script>
