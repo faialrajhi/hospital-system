@@ -237,7 +237,7 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10XXXXXXXX" required>
+                        <input type="text" name="national_id" class="form-control" placeholder="10 أرقام" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
                     </div>
 
                     <div class="mb-3">
@@ -352,17 +352,13 @@
 </div>
 
 <script>
-    // دالة لتوليد الوقت والتاريخ المحلي بدقة بناءً على جهاز الموظف
     function setLiveDateTime() {
         const now = new Date();
-        
-        // استخدام التاريخ المحلي لجهاز المستخدم (YYYY-MM-DD)
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         const currentDate = ⁠ ${year}-${month}-${day} ⁠;
         
-        // استخدام الوقت المحلي لجهاز المستخدم بصيغة 24 ساعة (HH:mm)
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const currentTime = ⁠ ${hours}:${minutes} ⁠;
@@ -371,7 +367,6 @@
         document.getElementById('record_time').value = currentTime;
     }
 
-    // تحديث القيم فور تحميل الصفحة
     window.onload = function() {
         setLiveDateTime();
     };
