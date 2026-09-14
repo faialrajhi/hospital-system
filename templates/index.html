@@ -318,7 +318,7 @@
                     <input type="hidden" id="record_time" name="record_time">
 
                     <!-- الأزرار -->
-                    <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
+                    <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة الدور 🖨️</button>
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
                 </form>
@@ -349,6 +349,7 @@
                     <table>
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>الاسم</th>
                                 <th>الهوية</th>
                                 <th>رقم الملف</th>
@@ -362,6 +363,7 @@
                         <tbody>
                             {% for record in records %}
                             <tr>
+                                <td><strong>{{ record.get('serial_number', '-') }}</strong></td>
                                 <td>{{ record.get('patient_name', '-') }}</td>
                                 <td>{{ record.get('national_id', '-') }}</td>
                                 <td>{{ record.get('file_number', '-') }}</td>
@@ -373,7 +375,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="8" class="text-muted">لا توجد سجلات مسجلة حديثاً.</td>
+                                <td colspan="9" class="text-muted">لا توجد سجلات مسجلة حديثاً.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
