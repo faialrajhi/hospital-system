@@ -13,7 +13,7 @@ import pandas as pd
 import io
 from datetime import datetime, timedelta, timezone
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = "hospital_secret_key"
 
 url: str = os.environ.get("SUPABASE_URL")
@@ -69,13 +69,13 @@ def index():
         service_name = request.form.get("service_name")
         employee_name = request.form.get("employee_name")
         
-        # ضبط توقيت السعودية (UTC+3) برمجياً في السيرفر لضمان مطابقة الساعة 16:xx بدلاً من 13:xx
-ksa_tz = timezone(timedelta(hours=3))
-now_ksa = datetime.now(ksa_tz)
-
-# استخدام الوقت القادم من النموذج إذا وجد، وإلا توليده بتوقيت السعودية الصحيح
-record_date = request.form.get("record_date") or now_ksa.strftime('%Y-%m-%d')
-record_time = request.form.get("record_time") or now_ksa.strftime('%H:%M')
+        # فرض توقيت مكة المكرمة (UTC+3) برمجياً في السيرفر
+        ksa_tz = timezone(timedelta(hours=3))
+        now_ksa = datetime.now(ksa_tz)
+        
+        # استخدام الوقت القادم من المتصفح أو اعتمال وقت مكة للسيرفر كبديل دقيق
+        record_date = request.form.get("record_date") or now_ksa.strftime('%Y-%m-%d')
+        record_time = request.form.get("record_time") or now_ksa.strftime('%H:%M')
 
         if supabase:
             try:
@@ -188,7 +188,8 @@ def export_excel():
             df.to_excel(writer, index=False, sheet_name='السجلات')
         output.seek(0)
 
-        filename = f"hospital_records_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+        ksa_tz = timezone(timedelta(hours=3))
+        filename = f"hospital_records_{datetime.now(ksa_tz).strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
         return send_file(
             output,
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -199,5 +200,5 @@ def export_excel():
         print(f"Error exporting excel: {e}")
         return redirect(url_for("index"))
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
