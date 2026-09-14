@@ -237,7 +237,7 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                        <input type="text" name="national_id" class="form-control" placeholder="10 أرقام" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
                     </div>
 
                     <div class="mb-3">
@@ -246,9 +246,29 @@
                     </div>
 
                     <div class="mb-3">
+                        <label>الخدمة المطلوبة:</label>
+                        <select id="requested_service" name="requested_service" class="form-select" required>
+                            <option value="" disabled selected>اختر الخدمة المطلوبة...</option>
+                            <option value="طلب مقابلة طبيب">طلب مقابلة طبيب</option>
+                            <option value="طلب صرف دواء">طلب صرف دواء</option>
+                            <option value="موعد جديد عيادات">موعد جديد عيادات</option>
+                            <option value="اعادة موعد عيادات">اعادة موعد عيادات</option>
+                            <option value="موعد عيادة الصحة النفسية">موعد عيادة الصحة النفسية</option>
+                            <option value="اعادة موعد عيادة الصحة النفسية">اعادة موعد عيادة الصحة النفسية</option>
+                            <option value="عدم ظهور طلب تحليل في النظام">عدم ظهور طلب تحليل في النظام</option>
+                            <option value="عدم ظهور طلب الاشعة في النظام">عدم ظهور طلب الاشعة في النظام</option>
+                            <option value="عدم ظهور الادوية في النظام">عدم ظهور الادوية في النظام</option>
+                            <option value="طلب مرافقة جديد">طلب مرافقة جديد</option>
+                            <option value="اعادة طلب مرافقة">اعادة طلب مرافقة</option>
+                            <option value="شكوي ضد موظف">شكوي ضد موظف</option>
+                            <option value="شكوى من خدمة">شكوى من خدمة</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
                         <label>القسم:</label>
                         <select id="service_name" name="service_name" class="form-select" required>
-                            <option value="" disabled selected>اختر الخدمة...</option>
+                            <option value="" disabled selected>اختر القسم...</option>
                             {% for service in services %}
                                 <option value="{{ service['name'] }}">{{ service['name'] }}</option>
                             {% endfor %}
@@ -303,7 +323,8 @@
                                 <th>الاسم</th>
                                 <th>الهوية</th>
                                 <th>رقم الملف</th>
-                                <th>الخدمة</th>
+                                <th>الخدمة المطلوبة</th>
+                                <th>القسم</th>
                                 <th>الموظف</th>
                                 <th>التاريخ</th>
                                 <th>الوقت</th>
@@ -315,6 +336,7 @@
                                 <td>{{ record.get('patient_name', '-') }}</td>
                                 <td>{{ record.get('national_id', '-') }}</td>
                                 <td>{{ record.get('file_number', '-') }}</td>
+                                <td>{{ record.get('requested_service', '-') }}</td>
                                 <td>{{ record.get('service_name', record.get('service', '-')) }}</td>
                                 <td>{{ record.get('employee_name', '-') }}</td>
                                 <td>{{ record.get('record_date', '-') }}</td>
@@ -322,7 +344,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="7" class="text-muted">لا توجد سجلات مسجلة حديثاً.</td>
+                                <td colspan="8" class="text-muted">لا توجد سجلات مسجلة حديثاً.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -344,7 +366,8 @@
     </div>
     <div style="text-align: right; font-size: 10px; margin-top: 4px; line-height: 1.3;">
         <p style="margin: 2px 0;"><strong>المريض:</strong> <span id="t-patient">--</span></p>
-        <p style="margin: 2px 0;"><strong>الخدمة:</strong> <span id="t-service">--</span></p>
+        <p style="margin: 2px 0;"><strong>الخدمة المطلوبة:</strong> <span id="t-req-service">--</span></p>
+        <p style="margin: 2px 0;"><strong>القسم:</strong> <span id="t-service">--</span></p>
         <p style="margin: 2px 0;"><strong>التاريخ:</strong> <span id="t-date">--</span> | <strong>الوقت:</strong> <span id="t-time">--</span></p>
     </div>
     <hr style="border: 0.5px dashed #aaa; margin: 4px 0 2px 0;">
@@ -380,6 +403,10 @@
         setLiveDateTime();
 
         const patientName = document.getElementById('patient_name').value;
+        
+        const reqServiceSelect = document.getElementById('requested_service');
+        const reqServiceName = reqServiceSelect.options[reqServiceSelect.selectedIndex]?.text || '';
+
         const serviceSelect = document.getElementById('service_name');
         const serviceName = serviceSelect.options[serviceSelect.selectedIndex]?.text || '';
         
@@ -393,7 +420,8 @@
         }
 
         document.getElementById('t-patient').innerText = patientName;
-        document.getElementById('t-service').innerText = serviceName !== 'اختر الخدمة...' ? serviceName : '-';
+        document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
+        document.getElementById('t-service').innerText = serviceName !== 'اختر القسم...' ? serviceName : '-';
         document.getElementById('t-date').innerText = recordDate || '-';
         document.getElementById('t-time').innerText = recordTime || '-';
         
