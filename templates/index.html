@@ -134,7 +134,7 @@
             color: white;
             text-decoration: none;
             display: inline-block;
-            padding: 7px 16px;
+            padding: 7px 12px;
             border-radius: 6px;
             font-size: 0.9rem;
             font-weight: 600;
@@ -229,13 +229,11 @@
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
                 <form id="patientForm" action="/" method="POST" onsubmit="setLiveDateTime()">
-                    <!-- اسم المريض أولاً -->
                     <div class="mb-3">
                         <label>اسم المريض:</label>
                         <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المريض" required>
                     </div>
 
-                    <!-- ثم رقم الهوية مع التحقق الخطأ إذا كانت مسجلة مسبقاً -->
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
                         <input type="text" id="national_id" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
@@ -327,13 +325,12 @@
 
         <div class="table-container">
             <div class="card">
-                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة</h4>
+                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة (الشفت الحالي)</h4>
                 
-                <!-- قسم البحث والفلترة مع زر "معاينة النتائج" وزر "مسح البحث" الجديد -->
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
                         <div style="flex: 1; min-width: 140px;">
-                            <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية (اختياري):</label>
+                            <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية (بحث شامل):</label>
                             <input type="text" id="filter_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 6px 10px; font-size: 0.9rem;">
                         </div>
                         <div style="flex: 1; min-width: 130px;">
@@ -346,7 +343,7 @@
                         </div>
                         <div style="display: flex; gap: 6px; margin-top: 0;">
                             <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">معاينة النتائج</button>
-                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح البحث</button>
+                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">إعادة للشفت الحالي</button>
                         </div>
                         <div>
                             <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 12px; font-size: 0.85rem; border-radius: 6px; margin-top: 0; display: inline-block;">تحميل إلى Excel</a>
@@ -430,7 +427,49 @@
                 }
             }
         });
+
+        // تطبيق فلتر الشفت الحالي تلقائياً عند فتح الصفحة
+        filterCurrentShiftByDefault();
     });
+
+    // دالة لتحديد شفت الوقت الحالي وعرض سجله فقط افتراضياً
+    function filterCurrentShiftByDefault() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayStr = year + '-' + month + '-' + day;
+        
+        const currentHour = now.getHours();
+        // الشفت الصباحي من 00:00 إلى 11:59، والشفت المسائي من 12:00 إلى 23:59
+        const isMorningShift = (currentHour >= 0 && currentHour < 12);
+
+        const rows = document.querySelectorAll("#recordsTable tbody tr");
+        let visibleCount = 1;
+
+        rows.forEach(row => {
+            const cols = row.querySelectorAll("td");
+            if (cols.length >= 9) {
+                const dateText = cols[7].innerText.trim();
+                const timeText = cols[8].innerText.trim(); // بصيغة HH:MM
+
+                if (dateText === todayStr && timeText) {
+                    const hour = parseInt(timeText.split(':')[0]);
+                    const recordIsMorning = (hour >= 0 && hour < 12);
+
+                    if (recordIsMorning === isMorningShift) {
+                        row.style.display = "";
+                        const numCell = row.querySelector('.row-num');
+                        if (numCell) numCell.innerText = visibleCount++;
+                    } else {
+                        row.style.display = "none";
+                    }
+                } else {
+                    row.style.display = "none";
+                }
+            }
+        });
+    }
 
     function checkPatientIdentity(idValue) {
         idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
@@ -474,6 +513,7 @@
         }
     });
 
+    // دالة البحث الشامل (بالهوية أو التواريخ القديمة لأشهر مضت)
     function applyFilters() {
         const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
         const startFilter = document.getElementById('filter_start').value;
@@ -511,25 +551,12 @@
         });
     }
 
-    // دالة مسح البحث وإعادة عرض كل السجلات
+    // زر العودة للشفت الحالي ومسح خانات البحث
     function clearFilters() {
         document.getElementById('filter_id').value = '';
         document.getElementById('filter_start').value = '';
         document.getElementById('filter_end').value = '';
-
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        let visibleCount = 1;
-
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length >= 8) {
-                row.style.display = "";
-                const numCell = row.querySelector('.row-num');
-                if (numCell) {
-                    numCell.innerText = visibleCount++;
-                }
-            }
-        });
+        filterCurrentShiftByDefault();
     }
 
     function setLiveDateTime() {
@@ -567,30 +594,4 @@
 
         document.getElementById('t-patient').innerText = patientName;
         document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
-        document.getElementById('t-service').innerText = serviceName !== 'اختر القسم...' ? serviceName : '-';
-        document.getElementById('t-date').innerText = recordDate || '-';
-        document.getElementById('t-time').innerText = recordTime || '-';
-        
-        const now = new Date();
-        const hours = now.getHours();
-        const prefix = hours >= 12 ? 'P' : 'A'; 
-
-        let dateStr = now.toISOString().split('T')[0];
-        let dailyKey = 'queue_num_' + dateStr + '_' + prefix;
-        let currentNum = localStorage.getItem(dailyKey);
-        
-        if (!currentNum) {
-            currentNum = 1;
-        } else {
-            currentNum = parseInt(currentNum) + 1;
-        }
-        localStorage.setItem(dailyKey, currentNum);
-
-        document.getElementById('t-number').innerText = prefix + "-" + currentNum;
-
-        window.print();
-    }
-</script>
-
-</body>
-</html>
+        document.getElementById('t-service').innerText = serviceName !== 'اختر القسم...' ? serviceName : '-
