@@ -313,7 +313,7 @@
                         </select>
                     </div>
 
-                    <!-- الحقول المخفية للتاريخ والوقت التلقائي -->
+                    <!-- الحقول المخفية للتاريخ والوقت التلقائي (تتعبى تلقائياً عند الإرسال أو الطباعة) -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
@@ -344,7 +344,7 @@
                         </div>
                         <div style="display: flex; gap: 6px; margin-top: 0;">
                             <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">بحث</button>
-                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح وحفظ الشفت</button>
+                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح البحث</button>
                         </div>
                         <div>
                             <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 12px; font-size: 0.85rem; border-radius: 6px; margin-top: 0; display: inline-block;">تحميل إلى Excel</a>
@@ -429,11 +429,11 @@
             }
         });
 
-        // فلترة الشفت الحالي تلقائياً عند فتح الصفحة
+        // فلترة الشفت الحالي تلقائياً بالخلفية عند فتح الصفحة
         filterCurrentShiftByDefault();
     });
 
-    // دالة لتحديد شفت الوقت الحالي وعرض سجله فقط افتراضياً
+    // دالة لتحديد شفت الوقت الحالي وعرض سجله فقط تلقائياً
     function filterCurrentShiftByDefault() {
         const now = new Date();
         const year = now.getFullYear();
@@ -442,7 +442,6 @@
         const todayStr = year + '-' + month + '-' + day;
         
         const currentHour = now.getHours();
-        // الشفت الصباحي من 00:00 إلى 11:59، والشفت المسائي من 12:00 إلى 23:59
         const isMorningShift = (currentHour >= 0 && currentHour < 12);
 
         const rows = document.querySelectorAll("#recordsTable tbody tr");
@@ -552,7 +551,7 @@
         });
     }
 
-    // زر مسح حقول البحث وإعادة عرض الشفت الحالي
+    // زر مسح حقول البحث وإعادة عرض الشفت الحالي تلقائياً
     function clearFilters() {
         document.getElementById('filter_id').value = '';
         document.getElementById('filter_start').value = '';
@@ -596,4 +595,4 @@
 
         document.getElementById('t-patient').innerText = patientName;
         document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
-        document.getElementById('t-service')
+        document.getElementById('t-service').innerText = serviceName !== 'اختر
