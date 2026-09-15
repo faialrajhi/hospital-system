@@ -329,26 +329,27 @@
             <div class="card">
                 <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة</h4>
                 
-                <!-- قسم البحث والفلترة مع زر "معاينة النتائج" -->
+                <!-- قسم البحث والفلترة مع زر "معاينة النتائج" وزر "مسح البحث" الجديد -->
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
-                    <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 150px;">
+                    <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 140px;">
                             <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية (اختياري):</label>
                             <input type="text" id="filter_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 6px 10px; font-size: 0.9rem;">
                         </div>
-                        <div style="flex: 1; min-width: 140px;">
+                        <div style="flex: 1; min-width: 130px;">
                             <label for="filter_start" style="font-size: 0.85rem; margin-bottom: 4px;">من تاريخ (اختياري):</label>
                             <input type="date" id="filter_start" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
                         </div>
-                        <div style="flex: 1; min-width: 140px;">
+                        <div style="flex: 1; min-width: 130px;">
                             <label for="filter_end" style="font-size: 0.85rem; margin-bottom: 4px;">إلى تاريخ (اختياري):</label>
                             <input type="date" id="filter_end" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
                         </div>
-                        <div>
-                            <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 16px; font-size: 0.9rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">معاينة النتائج</button>
+                        <div style="display: flex; gap: 6px; margin-top: 0;">
+                            <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">معاينة النتائج</button>
+                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح البحث</button>
                         </div>
                         <div>
-                            <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 16px; font-size: 0.9rem; border-radius: 6px;">تحميل إلى Excel</a>
+                            <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 12px; font-size: 0.85rem; border-radius: 6px; margin-top: 0; display: inline-block;">تحميل إلى Excel</a>
                         </div>
                     </div>
                 </div>
@@ -369,7 +370,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {# تم عكس الترتيب هنا عبر استخدام reverse في جينجا ليكون الأحدث في الأعلى #}
                             {% for record in records | reverse %}
                             <tr data-index="{{ loop.revindex }}">
                                 <td><strong class="row-num">{{ loop.index }}</strong></td>
@@ -419,7 +419,6 @@
     document.addEventListener("DOMContentLoaded", function() {
         setLiveDateTime();
         
-        // قراءة السجلات الحالية لتخزين ربط رقم الهوية باسم المريض (للتحقق فقط)
         const rows = document.querySelectorAll("#recordsTable tbody tr");
         rows.forEach(row => {
             const cols = row.querySelectorAll("td");
@@ -433,7 +432,6 @@
         });
     });
 
-    // دالة التحقق من الهوية وإعطاء خطأ إذا كانت مسجلة باسم مريض آخر
     function checkPatientIdentity(idValue) {
         idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
         document.getElementById('national_id').value = idValue;
@@ -462,7 +460,6 @@
         }
     }
 
-    // التحقق أيضاً عند كتابة الاسم إذا كان رقم الهوية مسجل لشخص مختلف
     document.getElementById('patient_name').addEventListener('input', function() {
         const idVal = document.getElementById('national_id').value.trim();
         const warningEl = document.getElementById('id-warning');
@@ -477,7 +474,6 @@
         }
     });
 
-    // دالة معاينة النتائج للفلترة في الجدول مع إعادة ترقيم الصفوف المرئية تصاعدياً
     function applyFilters() {
         const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
         const startFilter = document.getElementById('filter_start').value;
@@ -510,6 +506,27 @@
                     }
                 } else {
                     row.style.display = "none";
+                }
+            }
+        });
+    }
+
+    // دالة مسح البحث وإعادة عرض كل السجلات
+    function clearFilters() {
+        document.getElementById('filter_id').value = '';
+        document.getElementById('filter_start').value = '';
+        document.getElementById('filter_end').value = '';
+
+        const rows = document.querySelectorAll("#recordsTable tbody tr");
+        let visibleCount = 1;
+
+        rows.forEach(row => {
+            const cols = row.querySelectorAll("td");
+            if (cols.length >= 8) {
+                row.style.display = "";
+                const numCell = row.querySelector('.row-num');
+                if (numCell) {
+                    numCell.innerText = visibleCount++;
                 }
             }
         });
