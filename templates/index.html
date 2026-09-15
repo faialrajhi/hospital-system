@@ -237,7 +237,7 @@
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
                         <input type="text" id="national_id" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
-                        <small id="id-warning" style="color: #e53e3e; font-size: 0.75rem; display: none; margin-top: 3px;"></small>
+                        <small id="id-warning" style="color: #e53e3e; font-size: 0.75rem; display: none; margin-top: 3px; font-weight: bold;"></small>
                     </div>
 
                     <div class="mb-3">
@@ -329,20 +329,20 @@
                 
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 160px;">
+                        <div style="flex: 1; min-width: 150px;">
                             <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية (اختياري):</label>
-                            <input type="text" id="filter_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 6px 10px; font-size: 0.9rem;" oninput="applyFilters()">
+                            <input type="text" id="filter_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 6px 10px; font-size: 0.9rem;">
                         </div>
                         <div style="flex: 1; min-width: 140px;">
                             <label for="filter_start" style="font-size: 0.85rem; margin-bottom: 4px;">من تاريخ (اختياري):</label>
-                            <input type="date" id="filter_start" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;" onchange="applyFilters()">
+                            <input type="date" id="filter_start" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
                         </div>
                         <div style="flex: 1; min-width: 140px;">
                             <label for="filter_end" style="font-size: 0.85rem; margin-bottom: 4px;">إلى تاريخ (اختياري):</label>
-                            <input type="date" id="filter_end" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;" onchange="applyFilters()">
+                            <input type="date" id="filter_end" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
                         </div>
                         <div>
-                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #333; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="resetFilters()">إعادة ضبط</button>
+                            <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 16px; font-size: 0.9rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">معاينة النتائج</button>
                         </div>
                         <div>
                             <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 16px; font-size: 0.9rem; border-radius: 6px;">تحميل إلى Excel</a>
@@ -415,61 +415,65 @@
     document.addEventListener("DOMContentLoaded", function() {
         setLiveDateTime();
         
+        // قراءة السجلات الحالية لتخزين ربط رقم الهوية باسم المريض (للتحقق فقط)
         const rows = document.querySelectorAll("#recordsTable tbody tr");
         rows.forEach(row => {
             const cols = row.querySelectorAll("td");
             if (cols.length >= 4) {
                 const name = cols[1].innerText.trim();
                 const id = cols[2].innerText.trim();
-                const fileNo = cols[3].innerText.trim();
                 if (id && id !== '-') {
-                    registeredPatients[id] = { name: name, fileNumber: fileNo !== '-' ? fileNo : '' };
-                }
-            }
-        });
-
-        // التحقق عند إدخال رقم الهوية لجلب بيانات المريض القديم تلقائياً
-        document.getElementById('national_id').addEventListener('input', function() {
-            const idVal = this.value.trim();
-            const nameInput = document.getElementById('patient_name');
-            const fileInput = document.getElementById('file_number');
-            const warningEl = document.getElementById('id-warning');
-
-            if (idVal.length === 10) {
-                if (registeredPatients[idVal]) {
-                    nameInput.value = registeredPatients[idVal].name;
-                    fileInput.value = registeredPatients[idVal].fileNumber;
-                    nameInput.readOnly = true; // منع تغيير الاسم لنفس رقم الهوية لحمايته من التكرار الخطأ
-                    warningEl.style.display = 'block';
-                    warningEl.style.color = '#2b6cb0';
-                    warningEl.innerText = "تم جلب اسم المريض ورقم ملفه المسجل مسبقاً بهذا الرقم.";
-                } else {
-                    nameInput.readOnly = false;
-                    warningEl.style.display = 'none';
-                }
-            } else {
-                nameInput.readOnly = false;
-                warningEl.style.display = 'none';
-            }
-        });
-
-        // منع إدخال اسم مختلف لنفس الهوية يدوياً
-        document.getElementById('patient_name').addEventListener('input', function() {
-            const idVal = document.getElementById('national_id').value.trim();
-            const warningEl = document.getElementById('id-warning');
-            if (registeredPatients[idVal]) {
-                if (registeredPatients[idVal].name !== this.value.trim() && this.value.trim() !== '') {
-                    warningEl.style.display = 'block';
-                    warningEl.style.color = '#e53e3e';
-                    warningEl.innerText = "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " + registeredPatients[idVal].name;
-                } else {
-                    warningEl.style.display = 'none';
+                    registeredPatients[id] = name;
                 }
             }
         });
     });
 
-    // دالة الفلترة والبحث المتقدم الفوري (برقم الهوية أو التاريخ أو كليْهما اختياريين)
+    // دالة التحقق من الهوية وإعطاء خطأ إذا كانت مسجلة باسم مريض آخر
+    function checkPatientIdentity(idValue) {
+        idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
+        document.getElementById('national_id').value = idValue;
+        
+        const nameInput = document.getElementById('patient_name');
+        const warningEl = document.getElementById('id-warning');
+
+        if (idValue.length === 10) {
+            if (registeredPatients[idValue]) {
+                const existingName = registeredPatients[idValue];
+                const currentTypeName = nameInput.value.trim();
+                
+                if (currentTypeName !== '' && currentTypeName !== existingName) {
+                    warningEl.style.display = 'block';
+                    warningEl.innerText = "خطأ: رقم الهوية هذا مسجل مسبقاً باسم مريض آخر (" + existingName + ")!";
+                } else {
+                    warningEl.style.display = 'block';
+                    warningEl.style.color = '#e53e3e';
+                    warningEl.innerText = "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " + existingName;
+                }
+            } else {
+                warningEl.style.display = 'none';
+            }
+        } else {
+            warningEl.style.display = 'none';
+        }
+    }
+
+    // التحقق أيضاً عند كتابة الاسم إذا كان رقم الهوية مسجل لشخص مختلف
+    document.getElementById('patient_name').addEventListener('input', function() {
+        const idVal = document.getElementById('national_id').value.trim();
+        const warningEl = document.getElementById('id-warning');
+        if (idVal.length === 10 && registeredPatients[idVal]) {
+            const existingName = registeredPatients[idVal];
+            if (this.value.trim() !== '' && this.value.trim() !== existingName) {
+                warningEl.style.display = 'block';
+                warningEl.innerText = "خطأ: رقم الهوية هذا مسجل مسبقاً باسم مريض آخر (" + existingName + ")!";
+            } else {
+                warningEl.style.display = 'none';
+            }
+        }
+    });
+
+    // دالة معاينة النتائج للفلترة في الجدول
     function applyFilters() {
         const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
         const startFilter = document.getElementById('filter_start').value;
@@ -481,7 +485,7 @@
             const cols = row.querySelectorAll("td");
             if (cols.length >= 8) {
                 const idText = cols[2].innerText.trim().toLowerCase();
-                const dateText = cols[7].innerText.trim(); // تاريخ السجل في الجدول
+                const dateText = cols[7].innerText.trim();
                 
                 let matchesId = (idFilter === '' || idText.includes(idFilter));
                 let matchesDate = true;
@@ -500,18 +504,6 @@
                 }
             }
         });
-    }
-
-    function resetFilters() {
-        document.getElementById('filter_id').value = '';
-        document.getElementById('filter_start').value = '';
-        document.getElementById('filter_end').value = '';
-        applyFilters();
-    }
-
-    function checkPatientIdentity(idValue) {
-        idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
-        document.getElementById('national_id').value = idValue;
     }
 
     function setLiveDateTime() {
