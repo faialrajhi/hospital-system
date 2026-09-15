@@ -229,11 +229,13 @@
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
                 <form id="patientForm" action="/" method="POST" onsubmit="setLiveDateTime()">
+                    <!-- اسم المريض أولاً -->
                     <div class="mb-3">
                         <label>اسم المريض:</label>
                         <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المريض" required>
                     </div>
 
+                    <!-- ثم رقم الهوية مع التحقق الخطأ إذا كانت مسجلة مسبقاً -->
                     <div class="mb-3">
                         <label>رقم الهوية:</label>
                         <input type="text" id="national_id" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
@@ -327,6 +329,7 @@
             <div class="card">
                 <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة</h4>
                 
+                <!-- قسم البحث والفلترة مع زر "معاينة النتائج" -->
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
                         <div style="flex: 1; min-width: 150px;">
@@ -366,9 +369,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for record in records %}
-                            <tr>
-                                <td><strong>{{ loop.index }}</strong></td>
+                            {# تم عكس الترتيب هنا عبر استخدام reverse في جينجا ليكون الأحدث في الأعلى #}
+                            {% for record in records | reverse %}
+                            <tr data-index="{{ loop.revindex }}">
+                                <td><strong class="row-num">{{ loop.index }}</strong></td>
                                 <td>{{ record.get('patient_name', '-') }}</td>
                                 <td>{{ record.get('national_id', '-') }}</td>
                                 <td>{{ record.get('file_number', '-') }}</td>
@@ -473,13 +477,14 @@
         }
     });
 
-    // دالة معاينة النتائج للفلترة في الجدول
+    // دالة معاينة النتائج للفلترة في الجدول مع إعادة ترقيم الصفوف المرئية تصاعدياً
     function applyFilters() {
         const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
         const startFilter = document.getElementById('filter_start').value;
         const endFilter = document.getElementById('filter_end').value;
         
         const rows = document.querySelectorAll("#recordsTable tbody tr");
+        let visibleCount = 1;
         
         rows.forEach(row => {
             const cols = row.querySelectorAll("td");
@@ -499,6 +504,10 @@
 
                 if (matchesId && matchesDate) {
                     row.style.display = "";
+                    const numCell = row.querySelector('.row-num');
+                    if (numCell) {
+                        numCell.innerText = visibleCount++;
+                    }
                 } else {
                     row.style.display = "none";
                 }
