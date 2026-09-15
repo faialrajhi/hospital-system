@@ -230,18 +230,19 @@
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
                 <form id="patientForm" action="/" method="POST" onsubmit="setLiveDateTime()">
                     <div class="mb-3">
+                        <label>رقم الهوية:</label>
+                        <input type="text" id="national_id" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
+                        <small id="id-warning" style="color: #e53e3e; font-size: 0.75rem; display: none; margin-top: 3px;"></small>
+                    </div>
+
+                    <div class="mb-3">
                         <label>اسم المريض:</label>
                         <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المريض" required>
                     </div>
 
                     <div class="mb-3">
-                        <label>رقم الهوية:</label>
-                        <input type="text" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
-                    </div>
-
-                    <div class="mb-3">
                         <label>رقم الملف (اختياري):</label>
-                        <input type="text" name="file_number" class="form-control" placeholder="20XXXXXX">
+                        <input type="text" id="file_number" name="file_number" class="form-control" placeholder="20XXXXXX">
                     </div>
 
                     <div class="mb-3">
@@ -329,6 +330,10 @@
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <form method="GET" action="{{ url_for('preview_data') }}" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
                         <div>
+                            <label for="search_id" style="font-size: 0.85rem; margin-bottom: 4px;">بحث برقم الهوية:</label>
+                            <input type="text" id="search_id" name="search_id" class="form-control" placeholder="أدخل رقم الهوية..." style="padding: 6px 10px; font-size: 0.9rem;" value="{{ request.args.get('search_id', '') }}">
+                        </div>
+                        <div>
                             <label for="start_date" style="font-size: 0.85rem; margin-bottom: 4px;">من تاريخ:</label>
                             <input type="date" id="start_date" name="start_date" class="form-control max-today" style="padding: 6px 10px; font-size: 0.9rem;" value="{{ request.args.get('start_date', '') }}">
                         </div>
@@ -336,8 +341,8 @@
                             <label for="end_date" style="font-size: 0.85rem; margin-bottom: 4px;">إلى تاريخ:</label>
                             <input type="date" id="end_date" name="end_date" class="form-control max-today" style="padding: 6px 10px; font-size: 0.9rem;" value="{{ request.args.get('end_date', '') }}">
                         </div>
-                        <button type="submit" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 16px; font-size: 0.9rem; width: auto; border-radius: 6px; cursor: pointer;">معاينة النتائج</button>
-                        <a href="{{ url_for('export_excel', start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}" class="btn-success" style="padding: 7px 16px; font-size: 0.9rem; border-radius: 6px;">تحميل إلى Excel</a>
+                        <button type="submit" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 16px; font-size: 0.9rem; width: auto; border-radius: 6px; cursor: pointer;">بحث ومعاينة</button>
+                        <a href="{{ url_for('export_excel', start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', ''), search_id=request.args.get('search_id', '')) }}" class="btn-success" style="padding: 7px 16px; font-size: 0.9rem; border-radius: 6px;">تحميل إلى Excel</a>
                     </form>
                 </div>
                 
@@ -401,6 +406,68 @@
 </div>
 
 <script>
+    // قاعدة بيانات مؤقتة أو مرتبطة بالسجلات الموجودة في الصفحة للربط التلقائي
+    const registeredPatients = {};
+    
+    // استخراج السجلات الحالية من الجدول لربط الهوية بالاسم ورقم الملف فوراً
+    document.addEventListener("DOMContentLoaded", function() {
+        setLiveDateTime();
+        
+        const rows = document.querySelectorAll("tbody tr");
+        rows.forEach(row => {
+            const cols = row.querySelectorAll("td");
+            if (cols.length >= 4) {
+                const name = cols[1].innerText.trim();
+                const id = cols[2].innerText.trim();
+                const fileNo = cols[3].innerText.trim();
+                if (id && id !== '-') {
+                    registeredPatients[id] = { name: name, fileNumber: fileNo !== '-' ? fileNo : '' };
+                }
+            }
+        });
+
+        // مراقبة كتابة الاسم للتأكد من عدم تناقضه مع رقم الهوية المسجل مسبقاً
+        document.getElementById('patient_name').addEventListener('input', function() {
+            const idVal = document.getElementById('national_id').value.trim();
+            const warningEl = document.getElementById('id-warning');
+            if (registeredPatients[idVal]) {
+                if (registeredPatients[idVal].name !== this.value.trim() && this.value.trim() !== '') {
+                    warningEl.style.display = 'block';
+                    warningEl.innerText = "تنبيه: رقم الهوية هذا مرتبط بالمريض: " + registeredPatients[idVal].name;
+                } else {
+                    warningEl.style.display = 'none';
+                }
+            }
+        });
+    });
+
+    // دالة للتحقق من الهوية عند إدخالها (جلب الاسم ورقم الملف تلقائياً إذا وُجدا)
+    function checkPatientIdentity(idValue) {
+        idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
+        document.getElementById('national_id').value = idValue;
+        
+        const nameInput = document.getElementById('patient_name');
+        const fileInput = document.getElementById('file_number');
+        const warningEl = document.getElementById('id-warning');
+
+        if (idValue.length === 10) {
+            if (registeredPatients[idValue]) {
+                nameInput.value = registeredPatients[idValue].name;
+                fileInput.value = registeredPatients[idValue].fileNumber;
+                nameInput.readOnly = true; // قفل الاسم لعدم تغييره بالخطأ
+                warningEl.style.display = 'block';
+                warningEl.style.color = '#2b6cb0';
+                warningEl.innerText = "تم العثور على مريض مسجل بهذا الرقم وتم تعبئة بياناته تلقائياً.";
+            } else {
+                nameInput.readOnly = false;
+                warningEl.style.display = 'none';
+            }
+        } else {
+            nameInput.readOnly = false;
+            warningEl.style.display = 'none';
+        }
+    }
+
     function setLiveDateTime() {
         const now = new Date();
         const year = now.getFullYear();
@@ -418,10 +485,6 @@
         if (dateInput) dateInput.value = currentDate;
         if (timeInput) timeInput.value = currentTime;
     }
-
-    window.onload = function() {
-        setLiveDateTime();
-    };
 
     const today = new Date().toISOString().split('T')[0];
     document.querySelectorAll('.max-today').forEach(input => {
