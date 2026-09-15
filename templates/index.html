@@ -313,6 +313,7 @@
                         </select>
                     </div>
 
+                    <!-- الحقول المخفية للتاريخ والوقت التلقائي -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
@@ -342,8 +343,8 @@
                             <input type="date" id="filter_end" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
                         </div>
                         <div style="display: flex; gap: 6px; margin-top: 0;">
-                            <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">معاينة النتائج</button>
-                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">إعادة للشفت الحالي</button>
+                            <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">بحث</button>
+                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح وحفظ الشفت</button>
                         </div>
                         <div>
                             <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 12px; font-size: 0.85rem; border-radius: 6px; margin-top: 0; display: inline-block;">تحميل إلى Excel</a>
@@ -428,7 +429,7 @@
             }
         });
 
-        // تطبيق فلتر الشفت الحالي تلقائياً عند فتح الصفحة
+        // فلترة الشفت الحالي تلقائياً عند فتح الصفحة
         filterCurrentShiftByDefault();
     });
 
@@ -451,7 +452,7 @@
             const cols = row.querySelectorAll("td");
             if (cols.length >= 9) {
                 const dateText = cols[7].innerText.trim();
-                const timeText = cols[8].innerText.trim(); // بصيغة HH:MM
+                const timeText = cols[8].innerText.trim();
 
                 if (dateText === todayStr && timeText) {
                     const hour = parseInt(timeText.split(':')[0]);
@@ -513,7 +514,7 @@
         }
     });
 
-    // دالة البحث الشامل (بالهوية أو التواريخ القديمة لأشهر مضت)
+    // دالة البحث الشامل (بالهوية أو التواريخ)
     function applyFilters() {
         const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
         const startFilter = document.getElementById('filter_start').value;
@@ -551,7 +552,7 @@
         });
     }
 
-    // زر العودة للشفت الحالي ومسح خانات البحث
+    // زر مسح حقول البحث وإعادة عرض الشفت الحالي
     function clearFilters() {
         document.getElementById('filter_id').value = '';
         document.getElementById('filter_start').value = '';
@@ -559,6 +560,7 @@
         filterCurrentShiftByDefault();
     }
 
+    // ضبط التاريخ والوقت تلقائياً للنظام
     function setLiveDateTime() {
         const now = new Date();
         const year = now.getFullYear();
@@ -594,4 +596,4 @@
 
         document.getElementById('t-patient').innerText = patientName;
         document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
-        document.getElementById('t-service').innerText = serviceName !== 'اختر القسم...' ? serviceName : '-
+        document.getElementById('t-service')
