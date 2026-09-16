@@ -1,27 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file
-import json
+from flask import Flask, render_template, request, redirect, url_for
+from supabase import create_client, Client
 import os
 
 app = Flask(__name__)
-DATA_FILE = 'records.json'
 
-def load_records():
-    if os.path.exists(DATA_FILE):
-        try:
-            with open(DATA_FILE, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except:
-            return []
-    return []
-
-def save_records(records):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(records, f, ensure_ascii=False, indent=4)
+# بيانات الاتصال بـ Supabase (يفضل استخدام Environment Variables في الاستضافة)
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "ضعي_رابط_مشروعك_هنا")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "ضعي_مفتاح_api_هنا")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    records = load_records()
-    
     if request.method == 'POST':
         new_record = {
             'patient_name': request.form.get('patient_name'),
@@ -33,16 +22,18 @@ def index():
             'record_date': request.form.get('record_date'),
             'record_time': request.form.get('record_time')
         }
-        # إضافة السجل الجديد في البداية ليكون الأحدث في أعلى القائمة
-        records.insert(0, new_record)
-        save_records(records)
+        # إدخال السجل مباشرة في جدول Supabase
+        supabase.table("patient_records").insert(new_record).execute()
         return redirect(url_for('index'))
+
+    # جلب السجلات مرتبة من الأحدث للأقدم
+    response = supabase.table("patient_records").select("*").order("id", desc=True).execute()
+    records = response.data if response.data else []
 
     return render_template('index.html', records=records)
 
 @app.route('/export_excel')
 def export_excel():
-    # دالة تصدير بسيطة لتجنب أي أخطاء
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
