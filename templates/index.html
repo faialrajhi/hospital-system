@@ -171,43 +171,28 @@
             white-space: normal;
         }
 
+        /* تنسيق بطاقة التذكرة المخفية بالشاشة وعرضها عند الطباعة */
         #ticket-card {
             display: none;
         }
 
         @media print {
-            html, body {
-                height: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: white !important;
-            }
             body * {
                 visibility: hidden !important;
-                display: none !important;
             }
             #ticket-card, #ticket-card * {
                 visibility: visible !important;
-                display: block !important;
             }
             #ticket-card {
+                display: block !important;
                 position: absolute !important;
                 top: 0 !important;
                 right: 0 !important;
                 left: 0 !important;
                 width: 72mm !important;
                 margin: 0 auto !important;
-                padding: 2mm !important;
+                padding: 5px !important;
                 background: white !important;
-            }
-            #ticket-card div {
-                display: block !important;
-            }
-            #ticket-card span {
-                display: inline !important;
-            }
-            #ticket-card #t-number {
-                display: block !important;
             }
             @page {
                 size: 80mm auto;
@@ -241,7 +226,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label> رقم الملف:</label>
+                        <label>رقم الملف (اختياري):</label>
                         <input type="text" id="file_number" name="file_number" class="form-control" placeholder="20XXXXXX">
                     </div>
 
@@ -313,7 +298,7 @@
                         </select>
                     </div>
 
-                    <!-- الحقول المخفية للتاريخ والوقت التلقائي (تتعبى تلقائياً عند الإرسال أو الطباعة) -->
+                    <!-- الحقول المخفية للتاريخ والوقت التلقائي -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
 
@@ -344,7 +329,7 @@
                         </div>
                         <div style="display: flex; gap: 6px; margin-top: 0;">
                             <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">بحث</button>
-                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()"> مسح البحث </button>
+                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح البحث</button>
                         </div>
                         <div>
                             <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 12px; font-size: 0.85rem; border-radius: 6px; margin-top: 0; display: inline-block;">تحميل إلى Excel</a>
@@ -393,6 +378,7 @@
     </div>
 </div>
 
+<!-- بطاقة التذكرة المخصصة للطباعة الحرارية -->
 <div id="ticket-card" style="direction: rtl; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif;">
     <h3 style="margin: 0; font-size: 14px; color: #1F4E78;">إدارة تجربة المريض</h3>
     <p style="font-size: 9px; color: #555; margin: 2px 0;">وحدة الدعم المساندة</p>
@@ -429,11 +415,9 @@
             }
         });
 
-        // فلترة الشفت الحالي تلقائياً بالخلفية عند فتح الصفحة
         filterCurrentShiftByDefault();
     });
 
-    // دالة لتحديد شفت الوقت الحالي وعرض سجله فقط تلقائياً
     function filterCurrentShiftByDefault() {
         const now = new Date();
         const year = now.getFullYear();
@@ -513,7 +497,6 @@
         }
     });
 
-    // دالة البحث الشامل (بالهوية أو التواريخ)
     function applyFilters() {
         const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
         const startFilter = document.getElementById('filter_start').value;
@@ -551,7 +534,6 @@
         });
     }
 
-    // زر مسح حقول البحث وإعادة عرض الشفت الحالي تلقائياً
     function clearFilters() {
         document.getElementById('filter_id').value = '';
         document.getElementById('filter_start').value = '';
@@ -559,7 +541,6 @@
         filterCurrentShiftByDefault();
     }
 
-    // ضبط التاريخ والوقت تلقائياً للنظام
     function setLiveDateTime() {
         const now = new Date();
         const year = now.getFullYear();
@@ -582,8 +563,14 @@
         setLiveDateTime();
 
         const patientNameInput = document.getElementById('patient_name');
-        const patientName = patientNameInput ? patientNameInput.value.trim() : 'مريض زائر';
+        const patientName = patientNameInput ? patientNameInput.value.trim() : '';
         
+        if (!patientName) {
+            alert('يرجى إدخال اسم المريض على الأقل قبل طباعة التذكرة.');
+            if (patientNameInput) patientNameInput.focus();
+            return;
+        }
+
         const reqServiceSelect = document.getElementById('requested_service');
         const reqServiceName = reqServiceSelect && reqServiceSelect.selectedIndex >= 0 ? reqServiceSelect.options[reqServiceSelect.selectedIndex].text : '-';
 
@@ -595,4 +582,30 @@
 
         document.getElementById('t-patient').innerText = patientName;
         document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
-        document.getElementById('t-service').innerText = serviceName !== 'اختر
+        document.getElementById('t-service').innerText = serviceName !== 'اختر القسم...' ? serviceName : '-';
+        document.getElementById('t-date').innerText = recordDate || '-';
+        document.getElementById('t-time').innerText = recordTime || '-';
+        
+        const now = new Date();
+        const hours = now.getHours();
+        const prefix = hours >= 12 ? 'P' : 'A'; 
+
+        let dateStr = now.toISOString().split('T')[0];
+        let dailyKey = 'queue_num_' + dateStr + '_' + prefix;
+        let currentNum = localStorage.getItem(dailyKey);
+        
+        if (!currentNum) {
+            currentNum = 1;
+        } else {
+            currentNum = parseInt(currentNum) + 1;
+        }
+        localStorage.setItem(dailyKey, currentNum);
+
+        document.getElementById('t-number').innerText = prefix + "-" + currentNum;
+
+        window.print();
+    }
+</script>
+
+</body>
+</html>
