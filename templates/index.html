@@ -282,9 +282,10 @@
                         </select>
                     </div>
 
+                    <!-- قائمة الموظفين الثابتين الأساسية -->
                     <div class="mb-3">
                         <label>اسم الموظف:</label>
-                        <select id="employee_select" name="employee_name" class="form-select" required onchange="handleEmployeeChange(this.value)">
+                        <select id="employee_select" name="employee_name" class="form-select" required onchange="handleMainEmployeeChange(this)">
                             <option value="" disabled selected>اختر اسم الموظف...</option>
                             <option value="ابراهيم بخاري">ابراهيم بخاري</option>
                             <option value="صالح حنيف">صالح حنيف</option>
@@ -294,27 +295,25 @@
                             <option value="سليم الشريف">سليم الشريف</option>
                             <option value="فوزي بليلة">فوزي بليلة</option>
                             <option value="رامي اللقماني">رامي اللقماني</option>
-                            <option value="تمهير">تمهير</option>
-                            <option value="تطوع">تطوع</option>
-                            <option value="تدريب">تدريب</option>
+                            <option value="أخرى (متطوع / تمهير / تدريب)">أخرى (متطوع / تمهير / تدريب)</option>
                         </select>
                     </div>
 
-                    <!-- خانة إضافية تظهر عند اختيار (تمهير، تطوع، تدريب) -->
-                    <div class="mb-3" id="temp_category_container" style="display: none;">
-                        <label>نوع الفئة المؤقتة واكتب الاسم:</label>
-                        <div style="display: flex; gap: 8px;">
-                            <select id="temp_type_select" class="form-select" style="flex: 1;" onchange="updateCombinedEmployeeName()">
+                    <!-- الخانتين الجديدتين المستقلتين تحت اسم الموظف (قائمة منسدلة + خانة كتابة الاسم) -->
+                    <div class="mb-3" id="temp_category_container" style="display: none; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                        <label style="color: #1F4E78; margin-bottom: 8px;">حدد الفئة واكتب الاسم:</label>
+                        <div style="display: flex; gap: 8px; flex-direction: column;">
+                            <select id="temp_type_select" class="form-select" onchange="updateCombinedEmployeeName()">
                                 <option value="" disabled selected>اختر الفئة...</option>
+                                <option value="متطوع">متطوع</option>
                                 <option value="تمهير">تمهير</option>
-                                <option value="تطوع">تطوع</option>
                                 <option value="تدريب">تدريب</option>
                             </select>
-                            <input type="text" id="temp_name_input" class="form-control" style="flex: 1.5;" placeholder="اكتب الاسم هنا..." oninput="updateCombinedEmployeeName()">
+                            <input type="text" id="temp_name_input" class="form-control" placeholder="اكتب اسم المتطوع أو المتدرب هنا..." oninput="updateCombinedEmployeeName()">
                         </div>
                     </div>
 
-                    <!-- الحقول المخفية للتاريخ والوقت والتنسيق النهائي للموظف -->
+                    <!-- الحقول المخفية للتاريخ والوقت والنظام -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
                     <input type="hidden" id="final_employee_name" name="final_employee_name">
@@ -435,17 +434,17 @@
         filterCurrentShiftByDefault();
     });
 
-    function handleEmployeeChange(val) {
+    function handleMainEmployeeChange(selectEl) {
         const container = document.getElementById('temp_category_container');
         const tempTypeSelect = document.getElementById('temp_type_select');
         const tempNameInput = document.getElementById('temp_name_input');
         const employeeSelect = document.getElementById('employee_select');
 
-        if (val === 'تمهير' || val === 'تطوع' || val === 'تدريب') {
+        if (selectEl.value === 'أخرى (متطوع / تمهير / تدريب)') {
             container.style.display = 'block';
-            tempTypeSelect.value = val;
             tempTypeSelect.required = true;
             tempNameInput.required = true;
+            employeeSelect.removeAttribute('name'); // إزالة name من القائمة الرئيسية لكي لا ترسل القيمة النصية
             updateCombinedEmployeeName();
         } else {
             container.style.display = 'none';
@@ -453,9 +452,10 @@
             tempTypeSelect.required = false;
             tempNameInput.value = '';
             tempNameInput.required = false;
-            document.getElementById('final_employee_name').value = val;
-            // إعطاء الاسم الحقيقي للقائمة لكي يتم إرساله للسيرفر
-            employeeSelect.name = "employee_name";
+            employeeSelect.name = "employee_name"; // إعادة name للقائمة الرئيسية
+            
+            let hid = document.getElementById('dynamic_hidden_emp');
+            if(hid) hid.remove();
         }
     }
 
@@ -463,23 +463,20 @@
         const tempType = document.getElementById('temp_type_select').value;
         const tempName = document.getElementById('temp_name_input').value.trim();
         const employeeSelect = document.getElementById('employee_select');
-        const finalInput = document.getElementById('final_employee_name');
 
         if (tempType && tempName) {
             const combined = tempType + " - " + tempName;
-            finalInput.value = combined;
-            // جعل قائمة الموظفين الأساسية بلا name لكي لا ترسل القيمة القديمة وتعتمد القيمة المركبة
             employeeSelect.removeAttribute('name');
-            if(!document.getElementById('dynamic_hidden_emp')) {
-                let hid = document.createElement('input');
+            
+            let hid = document.getElementById('dynamic_hidden_emp');
+            if(!hid) {
+                hid = document.createElement('input');
                 hid.type = 'hidden';
                 hid.id = 'dynamic_hidden_emp';
                 hid.name = 'employee_name';
                 document.getElementById('patientForm').appendChild(hid);
             }
-            document.getElementById('dynamic_hidden_emp').value = combined;
-        } else {
-            finalInput.value = tempType ? tempType : '';
+            hid.value = combined;
         }
     }
 
