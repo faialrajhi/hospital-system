@@ -222,7 +222,7 @@
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
-                <form id="patientForm" action="/" method="POST" onsubmit="setLiveDateTime()">
+                <form id="patientForm" action="/" method="POST" onsubmit="return validateAndSubmitForm()">
                     <div class="mb-3">
                         <label>اسم المريض</label>
                         <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المريض" required>
@@ -317,8 +317,8 @@
                             </select>
                         </div>
                         <div class="col" style="flex: 1.4;">
-                            <label style="font-size: 0.8rem;">اسم المتطوع/المتدرب</label>
-                            <input type="text" id="temp_name_input" class="form-control" placeholder="الاسم" style="font-size: 0.9rem; padding: 9px 8px;" oninput="handleStaffSelectionType()">
+                            <label style="font-size: 0.8rem;">الاسم</label>
+                            <input type="text" id="temp_name_input" class="form-control" placeholder="ادخل الاسم" style="font-size: 0.9rem; padding: 9px 8px;" oninput="handleStaffSelectionType()">
                         </div>
                     </div>
 
@@ -443,7 +443,7 @@
         filterCurrentShiftByDefault();
     });
 
-    // إدارة تفعيل وإلغاء حقول الموظف الأساسي أو المؤقت بحيث يرسل الحقل الصحيح لقاعدة البيانات
+    // إدارة تفعيل وإلغاء خصائص الإلزام (required) وحقول الإرسال للموظف الأساسي أو المؤقت
     function handleStaffSelectionType() {
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
@@ -459,18 +459,48 @@
         }
 
         if (tempTypeSelect.value !== "" && tempNameInput.value.trim() !== "") {
+            // إذا تم اختيار كادر مؤقت واسمه، نلغي إلزامية القائمة الأساسية
             employeeSelect.removeAttribute('name');
+            employeeSelect.removeAttribute('required');
             tempTypeSelect.removeAttribute('name');
             tempNameInput.removeAttribute('name');
             hid.value = tempTypeSelect.value + " - " + tempNameInput.value.trim();
         } else {
+            // إذا لم يتم استخدام الكادر المؤقت، تعود القائمة الأساسية إلزامية
             employeeSelect.setAttribute('name', 'employee_name');
+            employeeSelect.setAttribute('required', 'required');
             if(hid) hid.remove();
         }
     }
 
+    // التحقق عند الإرسال للتأكد من اختيار إما موظف أساسي أو كادر مؤقت صحيح
+    function validateAndSubmitForm() {
+        setLiveDateTime();
+        const employeeSelect = document.getElementById('employee_select');
+        const tempTypeSelect = document.getElementById('temp_type_select');
+        const tempNameInput = document.getElementById('temp_name_input');
+
+        const isTempFilled = (tempTypeSelect.value !== "" && tempNameInput.value.trim() !== "");
+        const isEmployeeSelected = (employeeSelect.value !== "");
+
+        if (!isTempFilled && !isEmployeeSelected) {
+            alert("يرجى اختيار اسم الموظف الأساسي أو تعبئة حقول الكادر المؤقت (نوع الكادر والاسم).");
+            return false;
+        }
+
+        // إذا تم تعبئة أحدهما جزئياً (مثلاً نوع الكادر بدون اسم أو العكس)
+        if ((tempTypeSelect.value !== "" && tempNameInput.value.trim() === "") || 
+            (tempTypeSelect.value === "" && tempNameInput.value.trim() !== "")) {
+            alert("يرجى إكمال حقول الكادر المؤقت (اختر نوع الكادر وأدخل الاسم معاً) أو تركها فارغة واختيار موظف أساسي.");
+            return false;
+        }
+
+        return true;
+    }
+
     function resetFormCustom() {
         document.getElementById('employee_select').setAttribute('name', 'employee_name');
+        document.getElementById('employee_select').setAttribute('required', 'required');
         const hid = document.getElementById('dynamic_hidden_emp');
         if(hid) hid.remove();
         document.getElementById('id-warning').style.display = 'none';
