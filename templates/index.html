@@ -189,7 +189,7 @@
             display: none;
         }
 
-        /* تعديلات الطباعة لضمان صفحة واحدة فقط بدون صفحات فارغة */
+        /* تعديلات الطباعة لضمان ظهورها في صفحة واحدة وبحجم مدمج */
         @media print {
             * {
                 -webkit-print-color-adjust: exact;
@@ -359,7 +359,7 @@
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
                         <div style="flex: 1; min-width: 140px;">
-                            <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية:</label>
+                            <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية (بحث شامل):</label>
                             <input type="text" id="filter_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 6px 10px; font-size: 0.9rem;">
                         </div>
                         <div style="flex: 1; min-width: 130px;">
@@ -445,15 +445,15 @@
     
     document.addEventListener("DOMContentLoaded", function() {
         setLiveDateTime();
-        loadSavedFormData(); // استعادة البيانات المحفوظة عند فتح أو تحديث الصفحة
-        
-        // حفظ البيانات تلقائياً عند أي تغيير في الحقول
-        const saveInputs = document.querySelectorAll('.save-input');
-        saveInputs.forEach(input => {
+        loadSavedFormData();
+        loadSavedRecordsToTable();
+
+        // تفعيل الحفظ التلقائي عند الكتابة أو التغيير في الحقول
+        document.querySelectorAll('.save-input').forEach(input => {
             input.addEventListener('input', saveFormDataToLocal);
             input.addEventListener('change', saveFormDataToLocal);
         });
-
+        
         const rows = document.querySelectorAll("#recordsTable tbody tr");
         rows.forEach(row => {
             const cols = row.querySelectorAll("td");
@@ -469,7 +469,7 @@
         filterCurrentShiftByDefault();
     });
 
-    // دالة لحفظ بيانات النموذج في الذاكرة المحلية
+    // دوام حفظ واسترجاع بيانات النموذج
     function saveFormDataToLocal() {
         const formData = {};
         document.querySelectorAll('.save-input').forEach(input => {
@@ -478,7 +478,6 @@
         localStorage.setItem('hospital_patient_form_data', JSON.stringify(formData));
     }
 
-    // دالة لاسترجاع البيانات المحفوظة عند تحديث الصفحة
     function loadSavedFormData() {
         const savedData = localStorage.getItem('hospital_patient_form_data');
         if (savedData) {
@@ -490,11 +489,46 @@
                         input.value = formData[id];
                     }
                 }
-                handleStaffSelectionType(); // تحديث حالة الموظف بناءً على البيانات المسترجعة
+                handleStaffSelectionType();
             } catch (e) {
                 console.error("Error loading saved form data", e);
             }
         }
+    }
+
+    // دوام حفظ واسترجاع السجلات المحلية لعدم ضياعها عند التحديث
+    function saveRecordLocally(recordObj) {
+        let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
+        localRecords.push(recordObj);
+        localStorage.setItem('hospital_local_records', JSON.stringify(localRecords));
+    }
+
+    function loadSavedRecordsToTable() {
+        let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
+        const tbody = document.querySelector("#recordsTable tbody");
+        
+        if (localRecords.length > 0) {
+            const emptyRow = tbody.querySelector('.text-muted');
+            if (emptyRow) {
+                emptyRow.closest('tr').remove();
+            }
+        }
+
+        localRecords.forEach((rec) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong class="row-num"></strong></td>
+                <td>${rec.patient_name || '-'}</td>
+                <td>${rec.national_id || '-'}</td>
+                <td>${rec.file_number || '-'}</td>
+                <td>${rec.requested_service || '-'}</td>
+                <td>${rec.service_name || '-'}</td>
+                <td>${rec.employee_name || '-'}</td>
+                <td>${rec.record_date || '-'}</td>
+                <td>${rec.record_time || '-'}</td>
+            `;
+            tbody.prepend(tr);
+        });
     }
 
     function handleStaffSelectionType() {
@@ -544,7 +578,24 @@
             return false;
         }
 
-        // مسح الذاكرة المحلية فور نجاح الإرسال وحفظ السجل
+        let finalEmpName = employeeSelect.value;
+        const hid = document.getElementById('dynamic_hidden_emp');
+        if (hid && hid.value) {
+            finalEmpName = hid.value;
+        }
+
+        const newRecordObj = {
+            patient_name: document.getElementById('patient_name').value,
+            national_id: document.getElementById('national_id').value,
+            file_number: document.getElementById('file_number').value,
+            requested_service: document.getElementById('requested_service').options[document.getElementById('requested_service').selectedIndex].text,
+            service_name: document.getElementById('service_name').options[document.getElementById('service_name').selectedIndex].text,
+            employee_name: finalEmpName,
+            record_date: document.getElementById('record_date').value,
+            record_time: document.getElementById('record_time').value
+        };
+
+        saveRecordLocally(newRecordObj);
         localStorage.removeItem('hospital_patient_form_data');
         return true;
     }
@@ -555,7 +606,7 @@
         const hid = document.getElementById('dynamic_hidden_emp');
         if(hid) hid.remove();
         document.getElementById('id-warning').style.display = 'none';
-        localStorage.removeItem('hospital_patient_form_data'); // مسح الحفظ التلقائي عند مسح الحقول
+        localStorage.removeItem('hospital_patient_form_data');
     }
 
     function filterCurrentShiftByDefault() {
@@ -598,9 +649,8 @@
     function checkPatientIdentity(idValue) {
         idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
         document.getElementById('national_id').value = idValue;
-        saveFormDataToLocal(); // تحديث الحفظ التلقائي
+        saveFormDataToLocal();
         
-        const nameInput = document.getElementById('patient_name');
         const warningEl = document.getElementById('id-warning');
 
         if (idValue.length === 10) {
