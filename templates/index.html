@@ -495,8 +495,7 @@
             }
         }
     }
-
-    // دوام حفظ واسترجاع السجلات المحلية لعدم ضياعها عند التحديث
+// دوام حفظ واسترجاع السجلات المحلية لعدم ضياعها عند التحديث (مع منع التكرار)
     function saveRecordLocally(recordObj) {
         let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
         localRecords.push(recordObj);
@@ -507,30 +506,38 @@
         let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
         const tbody = document.querySelector("#recordsTable tbody");
         
-        if (localRecords.length > 0) {
-            const emptyRow = tbody.querySelector('.text-muted');
-            if (emptyRow) {
-                emptyRow.closest('tr').remove();
-            }
-        }
+        // جلب الهويات والوقت الموجودة أصلاً في الجدول القادم من السيرفر لمنع التكرار
+        const existingRows = Array.from(tbody.querySelectorAll("tr")).map(row => {
+            const cols = row.querySelectorAll("td");
+            return cols.length >= 9 ? cols[2].innerText.trim() + "_" + cols[8].innerText.trim() : "";
+        });
 
         localRecords.forEach((rec) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong class="row-num"></strong></td>
-                <td>${rec.patient_name || '-'}</td>
-                <td>${rec.national_id || '-'}</td>
-                <td>${rec.file_number || '-'}</td>
-                <td>${rec.requested_service || '-'}</td>
-                <td>${rec.service_name || '-'}</td>
-                <td>${rec.employee_name || '-'}</td>
-                <td>${rec.record_date || '-'}</td>
-                <td>${rec.record_time || '-'}</td>
-            `;
-            tbody.prepend(tr);
+            const uniqueKey = (rec.national_id || '') + "_" + (rec.record_time || '');
+            
+            // إذا لم يكن السجل موجوداً مسبقاً، قم بإضافته للجدول
+            if (!existingRows.includes(uniqueKey)) {
+                const emptyRow = tbody.querySelector('.text-muted');
+                if (emptyRow) {
+                    emptyRow.closest('tr').remove();
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong class="row-num"></strong></td>
+                    <td>${rec.patient_name || '-'}</td>
+                    <td>${rec.national_id || '-'}</td>
+                    <td>${rec.file_number || '-'}</td>
+                    <td>${rec.requested_service || '-'}</td>
+                    <td>${rec.service_name || '-'}</td>
+                    <td>${rec.employee_name || '-'}</td>
+                    <td>${rec.record_date || '-'}</td>
+                    <td>${rec.record_time || '-'}</td>
+                `;
+                tbody.prepend(tr);
+            }
         });
     }
-
     function handleStaffSelectionType() {
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
@@ -553,13 +560,13 @@
             hid.value = tempTypeSelect.value + " - " + tempNameInput.value.trim();
         } else {
             employeeSelect.setAttribute('name', 'employee_name');
-            employeeSelect.setAttribute('required', 'required');
+            employeeSelect.setAttribute('required', 'requir
+    function validateAndSubmitForm() {
+        setLiveDateTime();ed');
             if(hid) hid.remove();
         }
     }
 
-    function validateAndSubmitForm() {
-        setLiveDateTime();
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
         const tempNameInput = document.getElementById('temp_name_input');
