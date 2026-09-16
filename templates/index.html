@@ -284,7 +284,7 @@
                     <div class="mb-3">
                         <label>اسم الموظف:</label>
                         <select id="employee_select" name="employee_name" class="form-select" required onchange="handleStaffSelectionType()">
-                            <option value="" disabled selected>اختر اسم الموظف...</option>
+                            <option value="" disabled selected>اختر اسم الموظف</option>
                             <option value="ابراهيم بخاري">ابراهيم بخاري</option>
                             <option value="صالح حنيف">صالح حنيف</option>
                             <option value="احلام هوساوي">احلام هوساوي</option>
@@ -298,9 +298,9 @@
 
                     <!-- قائمة منسدلة جديدة مستقلة تماماً لاختيار نوع الفئة (متطوع / تمهير / تدريب) -->
                     <div class="mb-3">
-                        <label>نوع الكادر المؤقت:</label>
+                        <label>نوع الكادر المؤقت </label>
                         <select id="temp_type_select" class="form-select" onchange="handleStaffSelectionType()">
-                            <option value="" selected>-- اختيار اختياري (متطوع/تمهير/تدريب) --</option>
+                            <option value="" selected>اختر.. </option>
                             <option value="متطوع">متطوع</option>
                             <option value="تمهير">تمهير</option>
                             <option value="تدريب">تدريب</option>
@@ -310,7 +310,7 @@
                     <!-- خانة كتابة الاسم مباشرة للمتطوع أو المتدرب -->
                     <div class="mb-3">
                         <label>اسم المتطوع / المتدرب:</label>
-                        <input type="text" id="temp_name_input" class="form-control" placeholder="اكتب اسم المتطوع أو المتدرب هنا..." oninput="handleStaffSelectionType()">
+                        <input type="text" id="temp_name_input" class="form-control" placeholder="الاسم" oninput="handleStaffSelectionType()">
                     </div>
 
                     <!-- الحقول المخفية للتاريخ والوقت -->
