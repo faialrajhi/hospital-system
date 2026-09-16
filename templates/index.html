@@ -171,12 +171,10 @@
             white-space: normal;
         }
 
-        /* إخفاء التذكرة في الشاشة العادية */
         #ticket-card {
             display: none;
         }
 
-        /* إعدادات الطباعة لضمان خروجها على ورقة واحدة فقط */
         @media print {
             body * {
                 visibility: hidden !important;
@@ -285,7 +283,7 @@
                     <!-- قائمة الموظفين الثابتين الأساسية -->
                     <div class="mb-3">
                         <label>اسم الموظف:</label>
-                        <select id="employee_select" name="employee_name" class="form-select" required onchange="handleMainEmployeeChange(this)">
+                        <select id="employee_select" name="employee_name" class="form-select" required onchange="handleStaffSelectionType()">
                             <option value="" disabled selected>اختر اسم الموظف...</option>
                             <option value="ابراهيم بخاري">ابراهيم بخاري</option>
                             <option value="صالح حنيف">صالح حنيف</option>
@@ -295,25 +293,27 @@
                             <option value="سليم الشريف">سليم الشريف</option>
                             <option value="فوزي بليلة">فوزي بليلة</option>
                             <option value="رامي اللقماني">رامي اللقماني</option>
-                            <option value="أخرى (متطوع / تمهير / تدريب)">أخرى (متطوع / تمهير / تدريب)</option>
                         </select>
                     </div>
 
-                    <!-- الخانتين الجديدتين المستقلتين تحت اسم الموظف (قائمة منسدلة + خانة كتابة الاسم) -->
-                    <div class="mb-3" id="temp_category_container" style="display: none; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1;">
-                        <label style="color: #1F4E78; margin-bottom: 8px;">حدد الفئة واكتب الاسم:</label>
-                        <div style="display: flex; gap: 8px; flex-direction: column;">
-                            <select id="temp_type_select" class="form-select" onchange="updateCombinedEmployeeName()">
-                                <option value="" disabled selected>اختر الفئة...</option>
-                                <option value="متطوع">متطوع</option>
-                                <option value="تمهير">تمهير</option>
-                                <option value="تدريب">تدريب</option>
-                            </select>
-                            <input type="text" id="temp_name_input" class="form-control" placeholder="اكتب اسم المتطوع أو المتدرب هنا..." oninput="updateCombinedEmployeeName()">
-                        </div>
+                    <!-- قائمة منسدلة جديدة مستقلة تماماً لاختيار نوع الفئة (متطوع / تمهير / تدريب) -->
+                    <div class="mb-3">
+                        <label>نوع الكادر المؤقت:</label>
+                        <select id="temp_type_select" class="form-select" onchange="handleStaffSelectionType()">
+                            <option value="" selected>-- اختيار اختياري (متطوع/تمهير/تدريب) --</option>
+                            <option value="متطوع">متطوع</option>
+                            <option value="تمهير">تمهير</option>
+                            <option value="تدريب">تدريب</option>
+                        </select>
                     </div>
 
-                    <!-- الحقول المخفية للتاريخ والوقت والنظام -->
+                    <!-- خانة كتابة الاسم مباشرة للمتطوع أو المتدرب -->
+                    <div class="mb-3">
+                        <label>اسم المتطوع / المتدرب:</label>
+                        <input type="text" id="temp_name_input" class="form-control" placeholder="اكتب اسم المتطوع أو المتدرب هنا..." oninput="handleStaffSelectionType()">
+                    </div>
+
+                    <!-- الحقول المخفية للتاريخ والوقت -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
                     <input type="hidden" id="final_employee_name" name="final_employee_name">
@@ -363,7 +363,7 @@
                                 <th>رقم الملف</th>
                                 <th>الخدمة المطلوبة</th>
                                 <th>القسم</th>
-                                <th>الموظف</th>
+                                <th>الموظف / القائم بالخدمة</th>
                                 <th>التاريخ</th>
                                 <th>الوقت</th>
                             </tr>
@@ -394,7 +394,7 @@
     </div>
 </div>
 
-<!-- بطاقة التذكرة المضغوطة خصيصاً للطباعة الحرارية على ورقة واحدة -->
+<!-- بطاقة التذكرة الحرارية -->
 <div id="ticket-card" style="direction: rtl; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif;">
     <h3 style="margin: 0; font-size: 13px; color: #1F4E78;">إدارة تجربة المريض</h3>
     <p style="font-size: 8px; color: #555; margin: 1px 0;">وحدة الدعم المساندة</p>
@@ -423,8 +423,8 @@
         rows.forEach(row => {
             const cols = row.querySelectorAll("td");
             if (cols.length >= 4) {
-                const name = cols[1].innerText.trim();
                 const id = cols[2].innerText.trim();
+                const name = cols[1].innerText.trim();
                 if (id && id !== '-') {
                     registeredPatients[id] = name;
                 }
@@ -434,56 +434,36 @@
         filterCurrentShiftByDefault();
     });
 
-    function handleMainEmployeeChange(selectEl) {
-        const container = document.getElementById('temp_category_container');
+    // إدارة تفعيل وإلغاء حقول الموظف الأساسي أو المؤقت بحيث يرسل الحقل الصحيح لقاعدة البيانات
+    function handleStaffSelectionType() {
+        const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
         const tempNameInput = document.getElementById('temp_name_input');
-        const employeeSelect = document.getElementById('employee_select');
 
-        if (selectEl.value === 'أخرى (متطوع / تمهير / تدريب)') {
-            container.style.display = 'block';
-            tempTypeSelect.required = true;
-            tempNameInput.required = true;
-            employeeSelect.removeAttribute('name'); // إزالة name من القائمة الرئيسية لكي لا ترسل القيمة النصية
-            updateCombinedEmployeeName();
+        let hid = document.getElementById('dynamic_hidden_emp');
+        if(!hid) {
+            hid = document.createElement('input');
+            hid.type = 'hidden';
+            hid.id = 'dynamic_hidden_emp';
+            hid.name = 'employee_name';
+            document.getElementById('patientForm').appendChild(hid);
+        }
+
+        if (tempTypeSelect.value !== "" && tempNameInput.value.trim() !== "") {
+            // إذا تم اختيار فئة مؤقتة وكتابة الاسم، نلغي تفعيل القائمة الأساسية ونعتمد القيمة المركبة
+            employeeSelect.removeAttribute('name');
+            tempTypeSelect.removeAttribute('name');
+            tempNameInput.removeAttribute('name');
+            hid.value = tempTypeSelect.value + " - " + tempNameInput.value.trim();
         } else {
-            container.style.display = 'none';
-            tempTypeSelect.value = '';
-            tempTypeSelect.required = false;
-            tempNameInput.value = '';
-            tempNameInput.required = false;
-            employeeSelect.name = "employee_name"; // إعادة name للقائمة الرئيسية
-            
-            let hid = document.getElementById('dynamic_hidden_emp');
+            // إذا لم يتم استخدام الكادر المؤقت، نرجع name للقائمة الأساسية ونحذف الحقل المخفي
+            employeeSelect.setAttribute('name', 'employee_name');
             if(hid) hid.remove();
         }
     }
 
-    function updateCombinedEmployeeName() {
-        const tempType = document.getElementById('temp_type_select').value;
-        const tempName = document.getElementById('temp_name_input').value.trim();
-        const employeeSelect = document.getElementById('employee_select');
-
-        if (tempType && tempName) {
-            const combined = tempType + " - " + tempName;
-            employeeSelect.removeAttribute('name');
-            
-            let hid = document.getElementById('dynamic_hidden_emp');
-            if(!hid) {
-                hid = document.createElement('input');
-                hid.type = 'hidden';
-                hid.id = 'dynamic_hidden_emp';
-                hid.name = 'employee_name';
-                document.getElementById('patientForm').appendChild(hid);
-            }
-            hid.value = combined;
-        }
-    }
-
     function resetFormCustom() {
-        document.getElementById('temp_category_container').style.display = 'none';
-        const employeeSelect = document.getElementById('employee_select');
-        employeeSelect.name = "employee_name";
+        document.getElementById('employee_select').setAttribute('name', 'employee_name');
         const hid = document.getElementById('dynamic_hidden_emp');
         if(hid) hid.remove();
         document.getElementById('id-warning').style.display = 'none';
@@ -536,16 +516,8 @@
         if (idValue.length === 10) {
             if (registeredPatients[idValue]) {
                 const existingName = registeredPatients[idValue];
-                const currentTypeName = nameInput.value.trim();
-                
-                if (currentTypeName !== '' && currentTypeName !== existingName) {
-                    warningEl.style.display = 'block';
-                    warningEl.innerText = "خطأ: رقم الهوية هذا مسجل مسبقاً باسم مريض آخر (" + existingName + ")!";
-                } else {
-                    warningEl.style.display = 'block';
-                    warningEl.style.color = '#e53e3e';
-                    warningEl.innerText = "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " + existingName;
-                }
+                warningEl.style.display = 'block';
+                warningEl.innerText = "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " + existingName;
             } else {
                 warningEl.style.display = 'none';
             }
@@ -553,20 +525,6 @@
             warningEl.style.display = 'none';
         }
     }
-
-    document.getElementById('patient_name').addEventListener('input', function() {
-        const idVal = document.getElementById('national_id').value.trim();
-        const warningEl = document.getElementById('id-warning');
-        if (idVal.length === 10 && registeredPatients[idVal]) {
-            const existingName = registeredPatients[idVal];
-            if (this.value.trim() !== '' && this.value.trim() !== existingName) {
-                warningEl.style.display = 'block';
-                warningEl.innerText = "خطأ: رقم الهوية هذا مسجل مسبقاً باسم مريض آخر (" + existingName + ")!";
-            } else {
-                warningEl.style.display = 'none';
-            }
-        }
-    });
 
     function applyFilters() {
         const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
@@ -585,19 +543,13 @@
                 let matchesId = (idFilter === '' || idText.includes(idFilter));
                 let matchesDate = true;
 
-                if (startFilter && dateText < startFilter) {
-                    matchesDate = false;
-                }
-                if (endFilter && dateText > endFilter) {
-                    matchesDate = false;
-                }
+                if (startFilter && dateText < startFilter) matchesDate = false;
+                if (endFilter && dateText > endFilter) matchesDate = false;
 
                 if (matchesId && matchesDate) {
                     row.style.display = "";
                     const numCell = row.querySelector('.row-num');
-                    if (numCell) {
-                        numCell.innerText = visibleCount++;
-                    }
+                    if (numCell) numCell.innerText = visibleCount++;
                 } else {
                     row.style.display = "none";
                 }
