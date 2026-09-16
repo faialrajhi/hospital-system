@@ -189,7 +189,13 @@
             display: none;
         }
 
+        /* تعديلات الطباعة لضمان ظهورها في صفحة واحدة وبحجم مدمج */
         @media print {
+            html, body {
+                height: auto !important;
+                overflow: hidden !important;
+                background: white !important;
+            }
             body * {
                 visibility: hidden !important;
             }
@@ -198,15 +204,15 @@
             }
             #ticket-card {
                 display: block !important;
-                position: absolute !important;
+                position: fixed !important;
                 top: 0 !important;
                 right: 0 !important;
+                left: 0 !important;
                 width: 72mm !important;
-                max-height: 120mm !important;
-                margin: 0 !important;
+                margin: 0 auto !important;
                 padding: 2mm !important;
                 background: white !important;
-                overflow: hidden !important;
+                box-sizing: border-box !important;
             }
             @page {
                 size: 80mm auto;
