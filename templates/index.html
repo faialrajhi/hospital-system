@@ -189,20 +189,7 @@
             display: none;
         }
 
-        /* تعديلات الطباعة لضمان ظهورها في صفحة واحدة وبحجم مدمج */
         @media print {
-            * {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            html, body {
-                width: 80mm !important;
-                height: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: white !important;
-                overflow: hidden !important;
-            }
             body * {
                 visibility: hidden !important;
             }
@@ -214,12 +201,12 @@
                 position: absolute !important;
                 top: 0 !important;
                 right: 0 !important;
-                left: 0 !important;
-                width: 76mm !important;
-                max-height: 100mm !important;
-                margin: 0 auto !important;
+                width: 72mm !important;
+                max-height: 120mm !important;
+                margin: 0 !important;
                 padding: 2mm !important;
                 background: white !important;
+                overflow: hidden !important;
             }
             @page {
                 size: 80mm auto;
@@ -243,23 +230,23 @@
                 <form id="patientForm" action="/" method="POST" onsubmit="return validateAndSubmitForm()">
                     <div class="mb-3">
                         <label>اسم المريض</label>
-                        <input type="text" id="patient_name" name="patient_name" class="form-control save-input" placeholder="اسم المريض" required>
+                        <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المريض" required>
                     </div>
 
                     <div class="mb-3">
                         <label>رقم الهوية</label>
-                        <input type="text" id="national_id" name="national_id" class="form-control save-input" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
+                        <input type="text" id="national_id" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
                         <small id="id-warning" style="color: #e53e3e; font-size: 0.75rem; display: none; margin-top: 3px; font-weight: bold;"></small>
                     </div>
 
                     <div class="mb-3">
                         <label>رقم الملف </label>
-                        <input type="text" id="file_number" name="file_number" class="form-control save-input" placeholder="20XXXXXX">
+                        <input type="text" id="file_number" name="file_number" class="form-control" placeholder="20XXXXXX">
                     </div>
 
                     <div class="mb-3">
                         <label>الخدمة المطلوبة</label>
-                        <select id="requested_service" name="requested_service" class="form-select save-input" required>
+                        <select id="requested_service" name="requested_service" class="form-select" required>
                             <option value="" disabled selected>اختر الخدمة المطلوبة</option>
                             <option value="طلب مقابلة طبيب">طلب مقابلة طبيب</option>
                             <option value="طلب صرف دواء">طلب صرف دواء</option>
@@ -279,7 +266,7 @@
 
                     <div class="mb-3">
                         <label>القسم</label>
-                        <select id="service_name" name="service_name" class="form-select save-input" required>
+                        <select id="service_name" name="service_name" class="form-select" required>
                             <option value="" disabled selected>اختر القسم</option>
                             <option value="اطباء الباطنة">اطباء الباطنة</option>
                             <option value="تمريض الباطنة">تمريض الباطنة</option>
@@ -310,7 +297,7 @@
                     <!-- قائمة الموظفين الثابتين الأساسية -->
                     <div class="mb-3">
                         <label>اسم الموظف</label>
-                        <select id="employee_select" name="employee_name" class="form-select save-input" required onchange="handleStaffSelectionType()">
+                        <select id="employee_select" name="employee_name" class="form-select" required onchange="handleStaffSelectionType()">
                             <option value="" disabled selected>اختر اسم الموظف</option>
                             <option value="ابراهيم بخاري">ابراهيم بخاري</option>
                             <option value="صالح حنيف">صالح حنيف</option>
@@ -327,7 +314,7 @@
                     <div class="temp-row">
                         <div class="col">
                             <label style="font-size: 0.8rem;">نوع الكادر:</label>
-                            <select id="temp_type_select" class="form-select save-input" style="font-size: 0.9rem; padding: 9px 8px;" onchange="handleStaffSelectionType()">
+                            <select id="temp_type_select" class="form-select" style="font-size: 0.9rem; padding: 9px 8px;" onchange="handleStaffSelectionType()">
                                 <option value="" selected>اختر</option>
                                 <option value="متطوع">متطوع</option>
                                 <option value="تمهير">تمهير</option>
@@ -336,13 +323,14 @@
                         </div>
                         <div class="col" style="flex: 1.4;">
                             <label style="font-size: 0.8rem;">الاسم</label>
-                            <input type="text" id="temp_name_input" class="form-control save-input" placeholder="ادخل الاسم" style="font-size: 0.9rem; padding: 9px 8px;" oninput="handleStaffSelectionType()">
+                            <input type="text" id="temp_name_input" class="form-control" placeholder="ادخل الاسم" style="font-size: 0.9rem; padding: 9px 8px;" oninput="handleStaffSelectionType()">
                         </div>
                     </div>
 
                     <!-- الحقول المخفية للتاريخ والوقت -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
+                    <input type="hidden" id="final_employee_name" name="final_employee_name">
 
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
@@ -444,14 +432,6 @@
     
     document.addEventListener("DOMContentLoaded", function() {
         setLiveDateTime();
-        loadSavedFormData();
-        loadSavedRecordsToTable();
-
-        // تفعيل الحفظ التلقائي عند الكتابة أو التغيير في الحقول
-        document.querySelectorAll('.save-input').forEach(input => {
-            input.addEventListener('input', saveFormDataToLocal);
-            input.addEventListener('change', saveFormDataToLocal);
-        });
         
         const rows = document.querySelectorAll("#recordsTable tbody tr");
         rows.forEach(row => {
@@ -467,75 +447,6 @@
 
         filterCurrentShiftByDefault();
     });
-
-    // دوام حفظ واسترجاع بيانات النموذج
-    function saveFormDataToLocal() {
-        const formData = {};
-        document.querySelectorAll('.save-input').forEach(input => {
-            formData[input.id] = input.value;
-        });
-        localStorage.setItem('hospital_patient_form_data', JSON.stringify(formData));
-    }
-
-    function loadSavedFormData() {
-        const savedData = localStorage.getItem('hospital_patient_form_data');
-        if (savedData) {
-            try {
-                const formData = JSON.parse(savedData);
-                for (const id in formData) {
-                    const input = document.getElementById(id);
-                    if (input) {
-                        input.value = formData[id];
-                    }
-                }
-                handleStaffSelectionType();
-            } catch (e) {
-                console.error("Error loading saved form data", e);
-            }
-        }
-    }
-
-    // دوام حفظ واسترجاع السجلات المحلية (مع منع التكرار مع السيرفر)
-    function saveRecordLocally(recordObj) {
-        let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
-        localRecords.push(recordObj);
-        localStorage.setItem('hospital_local_records', JSON.stringify(localRecords));
-    }
-
-    function loadSavedRecordsToTable() {
-        let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
-        const tbody = document.querySelector("#recordsTable tbody");
-        
-        const existingRows = Array.from(tbody.querySelectorAll("tr")).map(row => {
-            const cols = row.querySelectorAll("td");
-            return cols.length >= 9 ? cols[2].innerText.trim() + "_" + cols[8].innerText.trim() : "";
-        });
-
-        localRecords.forEach((rec) => {
-            const uniqueKey = (rec.national_id || '') + "_" + (rec.record_time || '');
-            
-            if (!existingRows.includes(uniqueKey)) {
-                const emptyRow = tbody.querySelector('.text-muted');
-                if (emptyRow) {
-                    emptyRow.closest('tr').remove();
-                }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong class="row-num"></strong></td>
-                    <td>${rec.patient_name || '-'}</td>
-                    <td>${rec.national_id || '-'}</td>
-                    <td>${rec.file_number || '-'}</td>
-                    <td>${rec.requested_service || '-'}</td>
-                    <td>${rec.service_name || '-'}</td>
-                    <td>${rec.employee_name || '-'}</td>
-                    <td>${rec.record_date || '-'}</td>
-                    <td>${rec.record_time || '-'}</td>
-                `;
-                tbody.prepend(tr);
-            }
-        });
-    }
 
     function handleStaffSelectionType() {
         const employeeSelect = document.getElementById('employee_select');
@@ -580,4 +491,181 @@
 
         if ((tempTypeSelect.value !== "" && tempNameInput.value.trim() === "") || 
             (tempTypeSelect.value === "" && tempNameInput.value.trim() !== "")) {
-            alert("يرجى إكمال حقول الكادر المؤقت (اختر نوع 
+            alert("يرجى إكمال حقول الكادر المؤقت (اختر نوع الكادر وأدخل الاسم معاً) أو تركها فارغة واختيار موظف أساسي.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function resetFormCustom() {
+        document.getElementById('employee_select').setAttribute('name', 'employee_name');
+        document.getElementById('employee_select').setAttribute('required', 'required');
+        const hid = document.getElementById('dynamic_hidden_emp');
+        if(hid) hid.remove();
+        document.getElementById('id-warning').style.display = 'none';
+    }
+
+    function filterCurrentShiftByDefault() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayStr = year + '-' + month + '-' + day;
+        
+        const currentHour = now.getHours();
+        const isMorningShift = (currentHour >= 0 && currentHour < 12);
+
+        const rows = document.querySelectorAll("#recordsTable tbody tr");
+        let visibleCount = 1;
+
+        rows.forEach(row => {
+            const cols = row.querySelectorAll("td");
+            if (cols.length >= 9) {
+                const dateText = cols[7].innerText.trim();
+                const timeText = cols[8].innerText.trim();
+
+                if (dateText === todayStr && timeText) {
+                    const hour = parseInt(timeText.split(':')[0]);
+                    const recordIsMorning = (hour >= 0 && hour < 12);
+
+                    if (recordIsMorning === isMorningShift) {
+                        row.style.display = "";
+                        const numCell = row.querySelector('.row-num');
+                        if (numCell) numCell.innerText = visibleCount++;
+                    } else {
+                        row.style.display = "none";
+                    }
+                } else {
+                    row.style.display = "none";
+                }
+            }
+        });
+    }
+
+    function checkPatientIdentity(idValue) {
+        idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
+        document.getElementById('national_id').value = idValue;
+        
+        const nameInput = document.getElementById('patient_name');
+        const warningEl = document.getElementById('id-warning');
+
+        if (idValue.length === 10) {
+            if (registeredPatients[idValue]) {
+                const existingName = registeredPatients[idValue];
+                warningEl.style.display = 'block';
+                warningEl.innerText = "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " + existingName;
+            } else {
+                warningEl.style.display = 'none';
+            }
+        } else {
+            warningEl.style.display = 'none';
+        }
+    }
+
+    function applyFilters() {
+        const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
+        const startFilter = document.getElementById('filter_start').value;
+        const endFilter = document.getElementById('filter_end').value;
+        
+        const rows = document.querySelectorAll("#recordsTable tbody tr");
+        let visibleCount = 1;
+        
+        rows.forEach(row => {
+            const cols = row.querySelectorAll("td");
+            if (cols.length >= 8) {
+                const idText = cols[2].innerText.trim().toLowerCase();
+                const dateText = cols[7].innerText.trim();
+                
+                let matchesId = (idFilter === '' || idText.includes(idFilter));
+                let matchesDate = true;
+
+                if (startFilter && dateText < startFilter) matchesDate = false;
+                if (endFilter && dateText > endFilter) matchesDate = false;
+
+                if (matchesId && matchesDate) {
+                    row.style.display = "";
+                    const numCell = row.querySelector('.row-num');
+                    if (numCell) numCell.innerText = visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            }
+        });
+    }
+
+    function clearFilters() {
+        document.getElementById('filter_id').value = '';
+        document.getElementById('filter_start').value = '';
+        document.getElementById('filter_end').value = '';
+        filterCurrentShiftByDefault();
+    }
+
+    function setLiveDateTime() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const currentDate = year + '-' + month + '-' + day;
+        
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const currentTime = hours + ':' + minutes;
+
+        const dateInput = document.getElementById('record_date');
+        const timeInput = document.getElementById('record_time');
+        
+        if (dateInput) dateInput.value = currentDate;
+        if (timeInput) timeInput.value = currentTime;
+    }
+
+    function printTicket() {
+        setLiveDateTime();
+
+        const patientNameInput = document.getElementById('patient_name');
+        const patientName = patientNameInput ? patientNameInput.value.trim() : '';
+        
+        if (!patientName) {
+            alert('يرجى إدخال اسم المريض على الأقل قبل طباعة التذكرة.');
+            if (patientNameInput) patientNameInput.focus();
+            return;
+        }
+
+        const reqServiceSelect = document.getElementById('requested_service');
+        const reqServiceName = reqServiceSelect && reqServiceSelect.selectedIndex >= 0 ? reqServiceSelect.options[reqServiceSelect.selectedIndex].text : '-';
+
+        const serviceSelect = document.getElementById('service_name');
+        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
+        
+        const recordDate = document.getElementById('record_date') ? document.getElementById('record_date').value : '';
+        const recordTime = document.getElementById('record_time') ? document.getElementById('record_time').value : '';
+
+        document.getElementById('t-patient').innerText = patientName;
+        document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
+        document.getElementById('t-service').innerText = serviceName !== 'اختر القسم...' ? serviceName : '-';
+        document.getElementById('t-date').innerText = recordDate || '-';
+        document.getElementById('t-time').innerText = recordTime || '-';
+        
+        const now = new Date();
+        const hours = now.getHours();
+        const prefix = hours >= 12 ? 'P' : 'A'; 
+
+        let dateStr = now.toISOString().split('T')[0];
+        let dailyKey = 'queue_num_' + dateStr + '_' + prefix;
+        let currentNum = localStorage.getItem(dailyKey);
+        
+        if (!currentNum) {
+            currentNum = 1;
+        } else {
+            currentNum = parseInt(currentNum) + 1;
+        }
+        localStorage.setItem(dailyKey, currentNum);
+
+        document.getElementById('t-number').innerText = prefix + "-" + currentNum;
+
+        window.print();
+    }
+</script>
+
+</body>
+</html>
