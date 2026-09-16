@@ -343,7 +343,6 @@
                     <!-- الحقول المخفية للتاريخ والوقت -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
-                    <input type="hidden" id="final_employee_name" name="final_employee_name">
 
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
@@ -495,7 +494,8 @@
             }
         }
     }
-// دوام حفظ واسترجاع السجلات المحلية لعدم ضياعها عند التحديث (مع منع التكرار)
+
+    // دوام حفظ واسترجاع السجلات المحلية (مع منع التكرار مع السيرفر)
     function saveRecordLocally(recordObj) {
         let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
         localRecords.push(recordObj);
@@ -506,7 +506,6 @@
         let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
         const tbody = document.querySelector("#recordsTable tbody");
         
-        // جلب الهويات والوقت الموجودة أصلاً في الجدول القادم من السيرفر لمنع التكرار
         const existingRows = Array.from(tbody.querySelectorAll("tr")).map(row => {
             const cols = row.querySelectorAll("td");
             return cols.length >= 9 ? cols[2].innerText.trim() + "_" + cols[8].innerText.trim() : "";
@@ -515,7 +514,6 @@
         localRecords.forEach((rec) => {
             const uniqueKey = (rec.national_id || '') + "_" + (rec.record_time || '');
             
-            // إذا لم يكن السجل موجوداً مسبقاً، قم بإضافته للجدول
             if (!existingRows.includes(uniqueKey)) {
                 const emptyRow = tbody.querySelector('.text-muted');
                 if (emptyRow) {
@@ -538,6 +536,7 @@
             }
         });
     }
+
     function handleStaffSelectionType() {
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
@@ -560,8 +559,12 @@
             hid.value = tempTypeSelect.value + " - " + tempNameInput.value.trim();
         } else {
             employeeSelect.setAttribute('name', 'employee_name');
-            employeeSelect.setAttribute('required', 'requir
-function validateAndSubmitForm() {
+            employeeSelect.setAttribute('required', 'required');
+            if(hid) hid.remove();
+        }
+    }
+
+    function validateAndSubmitForm() {
         setLiveDateTime();
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
@@ -577,205 +580,4 @@ function validateAndSubmitForm() {
 
         if ((tempTypeSelect.value !== "" && tempNameInput.value.trim() === "") || 
             (tempTypeSelect.value === "" && tempNameInput.value.trim() !== "")) {
-            alert("يرجى إكمال حقول الكادر المؤقت (اختر نوع الكادر وأدخل الاسم معاً) أو تركها فارغة واختيار موظف أساسي.");
-            return false;
-        }
-
-        let finalEmpName = employeeSelect.value;
-        const hid = document.getElementById('dynamic_hidden_emp');
-        if (hid && hid.value) {
-            finalEmpName = hid.value;
-        }
-
-        const newRecordObj = {
-            patient_name: document.getElementById('patient_name').value,
-            national_id: document.getElementById('national_id').value,
-            file_number: document.getElementById('file_number').value,
-            requested_service: document.getElementById('requested_service').options[document.getElementById('requested_service').selectedIndex].text,
-            service_name: document.getElementById('service_name').options[document.getElementById('service_name').selectedIndex].text,
-            employee_name: finalEmpName,
-            record_date: document.getElementById('record_date').value,
-            record_time: document.getElementById('record_time').value
-        };
-
-        saveRecordLocally(newRecordObj);
-        
-        // مسح السجلات المؤقتة لمنع التكرار
-        localStorage.removeItem('hospital_local_records');
-        
-        localStorage.removeItem('hospital_patient_form_data');
-        return true;
-    }
-
-    function resetFormCustom() {
-        document.getElementById('employee_select').setAttribute('name', 'employee_name');
-        document.getElementById('employee_select').setAttribute('required', 'required');
-        const hid = document.getElementById('dynamic_hidden_emp');
-        if(hid) hid.remove();
-        document.getElementById('id-warning').style.display = 'none';
-        localStorage.removeItem('hospital_patient_form_data');
-    }
-
-    function filterCurrentShiftByDefault() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const todayStr = year + '-' + month + '-' + day;
-        
-        const currentHour = now.getHours();
-        const isMorningShift = (currentHour >= 0 && currentHour < 12);
-
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        let visibleCount = 1;
-
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length >= 9) {
-                const dateText = cols[7].innerText.trim();
-                const timeText = cols[8].innerText.trim();
-
-                if (dateText === todayStr && timeText) {
-                    const hour = parseInt(timeText.split(':')[0]);
-                    const recordIsMorning = (hour >= 0 && hour < 12);
-
-                    if (recordIsMorning === isMorningShift) {
-                        row.style.display = "";
-                        const numCell = row.querySelector('.row-num');
-                        if (numCell) numCell.innerText = visibleCount++;
-                    } else {
-                        row.style.display = "none";
-                    }
-                } else {
-                    row.style.display = "none";
-                }
-            }
-        });
-    }
-
-    function checkPatientIdentity(idValue) {
-        idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
-        document.getElementById('national_id').value = idValue;
-        saveFormDataToLocal();
-        
-        const warningEl = document.getElementById('id-warning');
-
-        if (idValue.length === 10) {
-            if (registeredPatients[idValue]) {
-                const existingName = registeredPatients[idValue];
-                warningEl.style.display = 'block';
-                warningEl.innerText = "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " + existingName;
-            } else {
-                warningEl.style.display = 'none';
-            }
-        } else {
-            warningEl.style.display = 'none';
-        }
-    }
-
-    function applyFilters() {
-        const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
-        const startFilter = document.getElementById('filter_start').value;
-        const endFilter = document.getElementById('filter_end').value;
-        
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        let visibleCount = 1;
-        
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length >= 8) {
-                const idText = cols[2].innerText.trim().toLowerCase();
-                const dateText = cols[7].innerText.trim();
-                
-                let matchesId = (idFilter === '' || idText.includes(idFilter));
-                let matchesDate = true;
-
-                if (startFilter && dateText < startFilter) matchesDate = false;
-                if (endFilter && dateText > endFilter) matchesDate = false;
-
-                if (matchesId && matchesDate) {
-                    row.style.display = "";
-                    const numCell = row.querySelector('.row-num');
-                    if (numCell) numCell.innerText = visibleCount++;
-                } else {
-                    row.style.display = "none";
-                }
-            }
-        });
-    }
-
-    function clearFilters() {
-        document.getElementById('filter_id').value = '';
-        document.getElementById('filter_start').value = '';
-        document.getElementById('filter_end').value = '';
-        filterCurrentShiftByDefault();
-    }
-
-    function setLiveDateTime() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const currentDate = year + '-' + month + '-' + day;
-        
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const currentTime = hours + ':' + minutes;
-
-        const dateInput = document.getElementById('record_date');
-        const timeInput = document.getElementById('record_time');
-        
-        if (dateInput) dateInput.value = currentDate;
-        if (timeInput) timeInput.value = currentTime;
-    }
-
-    function printTicket() {
-        setLiveDateTime();
-
-        const patientNameInput = document.getElementById('patient_name');
-        const patientName = patientNameInput ? patientNameInput.value.trim() : '';
-        
-        if (!patientName) {
-            alert('يرجى إدخال اسم المريض على الأقل قبل طباعة التذكرة.');
-            if (patientNameInput) patientNameInput.focus();
-            return;
-        }
-
-        const reqServiceSelect = document.getElementById('requested_service');
-        const reqServiceName = reqServiceSelect && reqServiceSelect.selectedIndex >= 0 ? reqServiceSelect.options[reqServiceSelect.selectedIndex].text : '-';
-
-        const serviceSelect = document.getElementById('service_name');
-        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
-        
-        const recordDate = document.getElementById('record_date') ? document.getElementById('record_date').value : '';
-        const recordTime = document.getElementById('record_time') ? document.getElementById('record_time').value : '';
-
-        document.getElementById('t-patient').innerText = patientName;
-        document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
-        document.getElementById('t-service').innerText = serviceName !== 'اختر القسم...' ? serviceName : '-';
-        document.getElementById('t-date').innerText = recordDate || '-';
-        document.getElementById('t-time').innerText = recordTime || '-';
-        
-        const now = new Date();
-        const hours = now.getHours();
-        const prefix = hours >= 12 ? 'P' : 'A'; 
-
-        let dateStr = now.toISOString().split('T')[0];
-        let dailyKey = 'queue_num_' + dateStr + '_' + prefix;
-        let currentNum = localStorage.getItem(dailyKey);
-        
-        if (!currentNum) {
-            currentNum = 1;
-        } else {
-            currentNum = parseInt(currentNum) + 1;
-        }
-        localStorage.setItem(dailyKey, currentNum);
-
-        document.getElementById('t-number').innerText = prefix + "-" + currentNum;
-
-        window.print();
-    }
-</script>
-
-</body>
-</html>
+            alert("يرجى إكمال حقول الكادر المؤقت (اختر نوع 
