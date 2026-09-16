@@ -561,12 +561,8 @@
         } else {
             employeeSelect.setAttribute('name', 'employee_name');
             employeeSelect.setAttribute('required', 'requir
-    function validateAndSubmitForm() {
-        setLiveDateTime();ed');
-            if(hid) hid.remove();
-        }
-    }
-
+function validateAndSubmitForm() {
+        setLiveDateTime();
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
         const tempNameInput = document.getElementById('temp_name_input');
@@ -603,6 +599,10 @@
         };
 
         saveRecordLocally(newRecordObj);
+        
+        // مسح السجلات المؤقتة لمنع التكرار
+        localStorage.removeItem('hospital_local_records');
+        
         localStorage.removeItem('hospital_patient_form_data');
         return true;
     }
