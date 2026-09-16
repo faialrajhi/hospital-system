@@ -284,7 +284,7 @@
 
                     <div class="mb-3">
                         <label>اسم الموظف:</label>
-                        <select name="employee_name" class="form-select" required>
+                        <select id="employee_select" name="employee_name" class="form-select" required onchange="handleEmployeeChange(this.value)">
                             <option value="" disabled selected>اختر اسم الموظف...</option>
                             <option value="ابراهيم بخاري">ابراهيم بخاري</option>
                             <option value="صالح حنيف">صالح حنيف</option>
@@ -300,13 +300,28 @@
                         </select>
                     </div>
 
-                    <!-- الحقول المخفية للتاريخ والوقت التلقائي -->
+                    <!-- خانة إضافية تظهر عند اختيار (تمهير، تطوع، تدريب) -->
+                    <div class="mb-3" id="temp_category_container" style="display: none;">
+                        <label>نوع الفئة المؤقتة واكتب الاسم:</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="temp_type_select" class="form-select" style="flex: 1;" onchange="updateCombinedEmployeeName()">
+                                <option value="" disabled selected>اختر الفئة...</option>
+                                <option value="تمهير">تمهير</option>
+                                <option value="تطوع">تطوع</option>
+                                <option value="تدريب">تدريب</option>
+                            </select>
+                            <input type="text" id="temp_name_input" class="form-control" style="flex: 1.5;" placeholder="اكتب الاسم هنا..." oninput="updateCombinedEmployeeName()">
+                        </div>
+                    </div>
+
+                    <!-- الحقول المخفية للتاريخ والوقت والتنسيق النهائي للموظف -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
+                    <input type="hidden" id="final_employee_name" name="final_employee_name">
 
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
-                    <button type="reset" class="btn btn-secondary">مسح الحقول</button>
+                    <button type="reset" class="btn btn-secondary" onclick="resetFormCustom()">مسح الحقول</button>
                 </form>
             </div>
         </div>
@@ -419,6 +434,63 @@
 
         filterCurrentShiftByDefault();
     });
+
+    function handleEmployeeChange(val) {
+        const container = document.getElementById('temp_category_container');
+        const tempTypeSelect = document.getElementById('temp_type_select');
+        const tempNameInput = document.getElementById('temp_name_input');
+        const employeeSelect = document.getElementById('employee_select');
+
+        if (val === 'تمهير' || val === 'تطوع' || val === 'تدريب') {
+            container.style.display = 'block';
+            tempTypeSelect.value = val;
+            tempTypeSelect.required = true;
+            tempNameInput.required = true;
+            updateCombinedEmployeeName();
+        } else {
+            container.style.display = 'none';
+            tempTypeSelect.value = '';
+            tempTypeSelect.required = false;
+            tempNameInput.value = '';
+            tempNameInput.required = false;
+            document.getElementById('final_employee_name').value = val;
+            // إعطاء الاسم الحقيقي للقائمة لكي يتم إرساله للسيرفر
+            employeeSelect.name = "employee_name";
+        }
+    }
+
+    function updateCombinedEmployeeName() {
+        const tempType = document.getElementById('temp_type_select').value;
+        const tempName = document.getElementById('temp_name_input').value.trim();
+        const employeeSelect = document.getElementById('employee_select');
+        const finalInput = document.getElementById('final_employee_name');
+
+        if (tempType && tempName) {
+            const combined = tempType + " - " + tempName;
+            finalInput.value = combined;
+            // جعل قائمة الموظفين الأساسية بلا name لكي لا ترسل القيمة القديمة وتعتمد القيمة المركبة
+            employeeSelect.removeAttribute('name');
+            if(!document.getElementById('dynamic_hidden_emp')) {
+                let hid = document.createElement('input');
+                hid.type = 'hidden';
+                hid.id = 'dynamic_hidden_emp';
+                hid.name = 'employee_name';
+                document.getElementById('patientForm').appendChild(hid);
+            }
+            document.getElementById('dynamic_hidden_emp').value = combined;
+        } else {
+            finalInput.value = tempType ? tempType : '';
+        }
+    }
+
+    function resetFormCustom() {
+        document.getElementById('temp_category_container').style.display = 'none';
+        const employeeSelect = document.getElementById('employee_select');
+        employeeSelect.name = "employee_name";
+        const hid = document.getElementById('dynamic_hidden_emp');
+        if(hid) hid.remove();
+        document.getElementById('id-warning').style.display = 'none';
+    }
 
     function filterCurrentShiftByDefault() {
         const now = new Date();
