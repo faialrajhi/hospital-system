@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة تجربة المريض - وحدة الدعم المساندة</title>
+    <!-- استيراد خط Tajawal المناسب للمستشفيات -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Tajawal', sans-serif !important;
         }
         body {
             background-color: #f4f7f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
+            color: #2c3e50;
             padding: 20px;
         }
         .container {
@@ -22,13 +24,13 @@
             margin: 0 auto;
         }
         .header-banner {
-            background-color: #1F4E78;
+            background: linear-gradient(135deg, #1F4E78 0%, #163a5d 100%);
             color: white;
             padding: 25px;
             border-radius: 12px;
             text-align: center;
             margin-bottom: 25px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(31,78,120,0.15);
             position: relative;
             display: flex;
             align-items: center;
@@ -42,8 +44,9 @@
             border-radius: 8px;
         }
         .header-banner h2 {
-            font-size: 1.6rem;
-            font-weight: 600;
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
         .main-layout {
             display: flex;
@@ -54,8 +57,9 @@
             background: white;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
             margin-bottom: 20px;
+            border: 1px solid #eef2f5;
         }
         .form-container {
             flex: 1;
@@ -68,16 +72,16 @@
         }
         .card-title {
             color: #1F4E78;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
+            font-weight: 700;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid #f0f4f8;
             text-align: center;
         }
         .mb-3 {
             margin-bottom: 15px;
         }
-        /* تنسيق الصف الأفقي الجديد للكادر المؤقت */
         .temp-row {
             display: flex;
             gap: 10px;
@@ -91,20 +95,21 @@
             margin-bottom: 6px;
             font-weight: 600;
             font-size: 0.9rem;
-            color: #444;
+            color: #34495e;
         }
         .form-control, .form-select {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid #ccc;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
             font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
+            background-color: #fff;
         }
         .form-control:focus, .form-select:focus {
             border-color: #1F4E78;
-            box-shadow: 0 0 5px rgba(31, 78, 120, 0.2);
+            box-shadow: 0 0 0 3px rgba(31, 78, 120, 0.12);
         }
         .btn {
             width: 100%;
@@ -112,7 +117,7 @@
             border: none;
             border-radius: 8px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: background 0.2s;
             margin-top: 8px;
@@ -164,15 +169,15 @@
         }
         th, td {
             padding: 12px 10px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #edf2f7;
         }
         th {
             background-color: #1F4E78;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
         }
         tr:hover {
-            background-color: #f9fafb;
+            background-color: #f8fafc;
         }
         .text-muted {
             color: #888;
@@ -404,7 +409,7 @@
 </div>
 
 <!-- بطاقة التذكرة الحرارية -->
-<div id="ticket-card" style="direction: rtl; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif;">
+<div id="ticket-card" style="direction: rtl; text-align: center;">
     <h3 style="margin: 0; font-size: 13px; color: #1F4E78;">إدارة تجربة المريض</h3>
     <p style="font-size: 8px; color: #555; margin: 1px 0;">وحدة الدعم المساندة</p>
     <hr style="border: 0.5px dashed #aaa; margin: 3px 0;">
@@ -443,7 +448,6 @@
         filterCurrentShiftByDefault();
     });
 
-    // إدارة تفعيل وإلغاء خصائص الإلزام (required) وحقول الإرسال للموظف الأساسي أو المؤقت
     function handleStaffSelectionType() {
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
@@ -459,21 +463,18 @@
         }
 
         if (tempTypeSelect.value !== "" && tempNameInput.value.trim() !== "") {
-            // إذا تم اختيار كادر مؤقت واسمه، نلغي إلزامية القائمة الأساسية
             employeeSelect.removeAttribute('name');
             employeeSelect.removeAttribute('required');
             tempTypeSelect.removeAttribute('name');
             tempNameInput.removeAttribute('name');
             hid.value = tempTypeSelect.value + " - " + tempNameInput.value.trim();
         } else {
-            // إذا لم يتم استخدام الكادر المؤقت، تعود القائمة الأساسية إلزامية
             employeeSelect.setAttribute('name', 'employee_name');
             employeeSelect.setAttribute('required', 'required');
             if(hid) hid.remove();
         }
     }
 
-    // التحقق عند الإرسال للتأكد من اختيار إما موظف أساسي أو كادر مؤقت صحيح
     function validateAndSubmitForm() {
         setLiveDateTime();
         const employeeSelect = document.getElementById('employee_select');
@@ -488,7 +489,6 @@
             return false;
         }
 
-        // إذا تم تعبئة أحدهما جزئياً (مثلاً نوع الكادر بدون اسم أو العكس)
         if ((tempTypeSelect.value !== "" && tempNameInput.value.trim() === "") || 
             (tempTypeSelect.value === "" && tempNameInput.value.trim() !== "")) {
             alert("يرجى إكمال حقول الكادر المؤقت (اختر نوع الكادر وأدخل الاسم معاً) أو تركها فارغة واختيار موظف أساسي.");
