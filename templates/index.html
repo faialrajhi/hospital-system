@@ -16,11 +16,12 @@
         body {
             background-color: #f4f7f9;
             color: #2c3e50;
-            padding: 20px;
+            padding: 15px;
         }
+        /* تعديل الحاوية الرئيسية لتأخذ عرضاً أكبر ومريحاً للشاشة بالكامل */
         .container {
             width: 100%;
-            max-width: 1350px;
+            max-width: 1750px;
             margin: 0 auto;
         }
         .header-banner {
@@ -48,11 +49,15 @@
             font-weight: 700;
             letter-spacing: 0.5px;
         }
+        
+        /* تعديل التخطيط باستخدام Grid لتوزيع المساحة بشكل ممتاز وبدون انكماش */
         .main-layout {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1.15fr 2.85fr; /* إعطاء مساحة أوسع لنموذج الإدخال ومساحة كبرى للجدول */
             gap: 20px;
-            flex-wrap: wrap;
+            align-items: start;
         }
+
         .card {
             background: white;
             border-radius: 12px;
@@ -62,13 +67,10 @@
             border: 1px solid #eef2f5;
         }
         .form-container {
-            flex: 1;
-            min-width: 280px;
-            max-width: 380px;
+            width: 100%;
         }
         .table-container {
-            flex: 2.5;
-            min-width: 550px;
+            width: 100%;
         }
         .card-title {
             color: #1F4E78;
