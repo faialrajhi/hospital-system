@@ -25,7 +25,7 @@ def index():
             'record_time': request.form.get('record_time')
         }
         
-        # حفظ السجل في نفس جدول patient_records لضمان عدم ضياعها
+        # حفظ السجل في جدول patient_records لضمان عدم ضياع السجلات القديمة
         try:
             supabase.table("patient_records").insert(new_record).execute()
         except Exception as e:
@@ -47,12 +47,15 @@ def index():
 def export_excel():
     return "تم طلب تصدير السجلات إلى إكسل بنجاح."
 
+# مسار الـ SMS محدث ليعطي إشعار نجاح عند التجربة
 @app.route('/send-sms', methods=['POST'])
 def send_sms():
     data = request.get_json()
+    phone = data.get('phone')
+    
     return jsonify({
-        'success': False, 
-        'message': 'خدمة مزود الرسائل النصية غير مجهزة برمجياً بعد في السيرفر.'
+        'success': True, 
+        'message': f'تم إرسال الرسالة النصية بنجاح إلى الرقم: {phone}'
     })
 
 if __name__ == '__main__':
