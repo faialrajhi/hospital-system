@@ -185,6 +185,41 @@
             white-space: normal;
         }
 
+        /* تنسيق اسم المريض القابل للضغط في الجدول */
+        .patient-name-link {
+            color: #1F4E78;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .patient-name-link:hover {
+            color: #163a5d;
+        }
+
+        /* تنسيق نافذة الإجراء المتخذ المنبثقة (Modal) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            direction: rtl;
+            position: relative;
+        }
+
         #ticket-card {
             display: none;
         }
@@ -354,7 +389,7 @@
 
         <div class="table-container">
             <div class="card">
-                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة (الشفت الحالي)</h4>
+                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة (الشفت الحالي) - <span style="font-size: 0.85rem; color: #555;">انقر على اسم المريض لإضافة الإجراء المتخذ</span></h4>
                 
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
@@ -385,7 +420,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>الاسم</th>
+                                <th>الاسم (الإجراء المتخذ)</th>
                                 <th>الهوية</th>
                                 <th>رقم الملف</th>
                                 <th>الخدمة المطلوبة</th>
@@ -399,7 +434,11 @@
                             {% for record in records | reverse %}
                             <tr data-index="{{ loop.revindex }}">
                                 <td><strong class="row-num">{{ loop.index }}</strong></td>
-                                <td>{{ record.get('patient_name', '-') }}</td>
+                                <td>
+                                    <span class="patient-name-link" onclick="openNotesModal('{{ record.get('patient_name', '-') }}', '{{ record.get('national_id', '-') }}')" title="انقر لإضافة أو عرض الإجراء المتخذ للمريض">
+                                        {{ record.get('patient_name', '-') }}
+                                    </span>
+                                </td>
                                 <td>{{ record.get('national_id', '-') }}</td>
                                 <td>{{ record.get('file_number', '-') }}</td>
                                 <td>{{ record.get('requested_service', '-') }}</td>
@@ -417,6 +456,25 @@
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة الإجراء المتخذ المنبثقة (Modal) -->
+<div id="notesModal" class="modal-overlay">
+    <div class="modal-content">
+        <h4 style="color: #1F4E78; margin-bottom: 10px; font-size: 1.15rem;">الإجراء المتخذ للمريض: <span id="modal-patient-name" style="color: #2c3e50;"></span></h4>
+        <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">رقم الهوية: <span id="modal-patient-id-display"></span></p>
+        <input type="hidden" id="modal-patient-id">
+        
+        <div class="mb-3">
+            <label style="font-size: 0.85rem; margin-bottom: 5px; color: #1F4E78;">تفاصيل الإجراء المتخذ:</label>
+            <textarea id="patient-notes-input" class="form-control" rows="5" placeholder="اكتب الإجراء المتخذ مع المريض هنا..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn btn-primary" onclick="savePatientNotes()" style="margin-top: 0;">حفظ الإجراء</button>
+            <button type="button" class="btn btn-secondary" onclick="closeNotesModal()" style="margin-top: 0;">إغلاق</button>
         </div>
     </div>
 </div>
@@ -448,7 +506,6 @@
         loadSavedFormData();
         loadSavedRecordsToTable();
 
-        // تفعيل الحفظ التلقائي عند الكتابة أو التغيير في الحقول
         document.querySelectorAll('.save-input').forEach(input => {
             input.addEventListener('input', saveFormDataToLocal);
             input.addEventListener('change', saveFormDataToLocal);
@@ -468,6 +525,37 @@
 
         filterCurrentShiftByDefault();
     });
+
+    // دوال نافذة الإجراء المتخذ المنبثقة
+    function openNotesModal(patientName, nationalId) {
+        document.getElementById('modal-patient-name').innerText = patientName;
+        document.getElementById('modal-patient-id').value = nationalId;
+        document.getElementById('modal-patient-id-display').innerText = nationalId;
+        
+        // جلب الإجراء المتخذ المحفوظ سابقاً إن وجد لهذا المريض عبر رقم الهوية
+        const savedNote = localStorage.getItem('patient_action_' + nationalId) || '';
+        document.getElementById('patient-notes-input').value = savedNote;
+        
+        // إظهار النافذة
+        document.getElementById('notesModal').style.display = 'flex';
+    }
+
+    function closeNotesModal() {
+        document.getElementById('notesModal').style.display = 'none';
+    }
+
+    function savePatientNotes() {
+        const nationalId = document.getElementById('modal-patient-id').value;
+        const noteText = document.getElementById('patient-notes-input').value;
+        
+        if (nationalId) {
+            localStorage.setItem('patient_action_' + nationalId, noteText);
+            alert('تم حفظ الإجراء المتخذ بنجاح!');
+            closeNotesModal();
+        } else {
+            alert('رقم هویة المريض غير متوفر.');
+        }
+    }
 
     // دوال حفظ واسترجاع بيانات النموذج
     function saveFormDataToLocal() {
@@ -496,7 +584,6 @@
         }
     }
 
-    // دوال حفظ واسترجاع السجلات المحلية لعدم ضياعها عند التحديث
     function saveRecordLocally(recordObj) {
         let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
         localRecords.push(recordObj);
@@ -518,7 +605,11 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong class="row-num"></strong></td>
-                <td>${rec.patient_name || '-'}</td>
+                <td>
+                    <span class="patient-name-link" onclick="openNotesModal('${rec.patient_name || '-'}', '${rec.national_id || '-'}')" title="انقر لإضافة أو عرض الإجراء المتخذ للمريض">
+                        ${rec.patient_name || '-'}
+                    </span>
+                </td>
                 <td>${rec.national_id || '-'}</td>
                 <td>${rec.file_number || '-'}</td>
                 <td>${rec.requested_service || '-'}</td>
@@ -531,7 +622,6 @@
         });
     }
 
-    // تحديث دالة إدارة الموظفين والكوادر المؤقتة بسلاسة تامة دون تعطيل خاطئ
     function handleStaffSelectionType() {
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
@@ -546,24 +636,17 @@
             document.getElementById('patientForm').appendChild(hid);
         }
 
-        // إذا تم كتابة أو اختيار شيء في الكادر المؤقت
         if (tempTypeSelect.value !== "" || tempNameInput.value.trim() !== "") {
-            employeeSelect.value = ""; // تصفية الموظف الأساسي
+            employeeSelect.value = "";
             employeeSelect.removeAttribute('required');
-            
             hid.value = tempTypeSelect.value + " - " + tempNameInput.value.trim();
-        } 
-        // إذا تم اختيار موظف أساسي
-        else if (employeeSelect.value !== "") {
+        } else if (employeeSelect.value !== "") {
             tempTypeSelect.value = "";
             tempNameInput.value = "";
-            
             employeeSelect.setAttribute('name', 'employee_name');
             employeeSelect.setAttribute('required', 'required');
             if(hid) hid.remove();
-        } 
-        // إذا كان الكل فارغاً
-        else {
+        } else {
             employeeSelect.setAttribute('name', 'employee_name');
             if(hid) hid.remove();
         }
