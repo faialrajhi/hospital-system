@@ -309,7 +309,7 @@
                     <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل إلى Excel</a>
                 </div>
                 
-                <!-- شريط البحث والتصفية الذي طلبته -->
+                <!-- شريط البحث والتصفية -->
                 <div style="background-color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 140px;">
                         <label style="font-size: 0.75rem;">رقم الهوية (بحث شامل)</label>
@@ -520,6 +520,7 @@
         const nationalId = document.getElementById('modal-patient-id').value;
         const noteText = document.getElementById('patient-notes-input').value;
         if (nationalId) {
+            // تم جعل حفظ الملاحظات والإجراءات مستمراً ودائماً بدون وقت انتهاء
             localStorage.setItem('patient_action_' + nationalId, noteText);
             alert('تم حفظ الإجراء المتخذ بنجاح!');
             closeNotesModal();
@@ -529,6 +530,7 @@
     function saveFormDataToLocal() {
         const formData = {};
         document.querySelectorAll('.save-input').forEach(input => { formData[input.id] = input.value; });
+        // تم جعل البيانات تبقى دائمة في المتصفح ولن تختفي بعد ١٢ ساعة
         localStorage.setItem('hospital_patient_form_data', JSON.stringify(formData));
     }
 
