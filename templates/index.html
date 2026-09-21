@@ -248,7 +248,7 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية</label>
-                        <input type="text" id="national_id" name="national_id" class="form-control save-input" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
+                        <input type="text" id="national_id" name="national_id" class="form-control save-input" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" required>
                         <small id="id-warning" style="color: #e53e3e; font-size: 0.75rem; display: none; margin-top: 3px; font-weight: bold;"></small>
                     </div>
 
@@ -349,7 +349,6 @@
                     <!-- الحقول المخفية للتاريخ والوقت -->
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
-                    <input type="hidden" id="final_employee_name" name="final_employee_name">
 
                     <!-- خيارات الإرسال المزدوجة (SMS و WhatsApp) -->
                     <button type="button" class="btn btn-sms" onclick="sendSmsTicket()">إرسال تذكرة عبر (SMS)</button>
@@ -367,22 +366,6 @@
                 
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 140px;">
-                            <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية (بحث شامل):</label>
-                            <input type="text" id="filter_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 6px 10px; font-size: 0.9rem;">
-                        </div>
-                        <div style="flex: 1; min-width: 130px;">
-                            <label for="filter_start" style="font-size: 0.85rem; margin-bottom: 4px;">من تاريخ:</label>
-                            <input type="date" id="filter_start" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
-                        </div>
-                        <div style="flex: 1; min-width: 130px;">
-                            <label for="filter_end" style="font-size: 0.85rem; margin-bottom: 4px;">إلى تاريخ :</label>
-                            <input type="date" id="filter_end" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
-                        </div>
-                        <div style="display: flex; gap: 6px; margin-top: 0;">
-                            <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">بحث</button>
-                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح البحث</button>
-                        </div>
                         <div>
                             <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 12px; font-size: 0.85rem; border-radius: 6px; margin-top: 0; display: inline-block;">تحميل إلى Excel</a>
                         </div>
@@ -454,8 +437,6 @@
 </div>
 
 <script>
-    const registeredPatients = {};
-    
     document.addEventListener("DOMContentLoaded", function() {
         setLiveDateTime();
         loadSavedFormData();
@@ -464,21 +445,24 @@
             input.addEventListener('input', saveFormDataToLocal);
             input.addEventListener('change', saveFormDataToLocal);
         });
-        
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length >= 4) {
-                const id = cols[2].innerText.trim();
-                const name = cols[1].innerText.trim();
-                if (id && id !== '-') {
-                    registeredPatients[id] = name;
-                }
-            }
-        });
-
-        filterCurrentShiftByDefault();
     });
+
+    // دالة توليد التاريخ والوقت الحالي تلقائياً وإضافتها للحقول المخفية
+    function setLiveDateTime() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+
+        const dateField = document.getElementById('record_date');
+        const timeField = document.getElementById('record_time');
+
+        if (dateField) dateField.value = year + '-' + month + '-' + day;
+        if (timeField) timeField.value = hours + ':' + minutes + ':' + seconds;
+    }
 
     // دالة توليد رقم الدور المتسلسل (A/P)
     function generateQueueNumber() {
@@ -526,7 +510,7 @@
         window.open(whatsappUrl, '_blank');
     }
 
-    // إرسال عبر SMS (مع معالجة الخطأ لتجنب توقف النظام)
+    // إرسال عبر SMS
     function sendSmsTicket() {
         const patientName = document.getElementById('patient_name').value.trim();
         const phone = document.getElementById('patient_phone').value.trim();
@@ -664,7 +648,7 @@
     }
 
     function validateAndSubmitForm() {
-        setLiveDateTime();
+        setLiveDateTime(); // تحديث الوقت والتاريخ قبل الإرسال الفعلي
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
         const tempNameInput = document.getElementById('temp_name_input');
@@ -693,119 +677,6 @@
         const hid = document.getElementById('dynamic_hidden_emp');
         if(hid) hid.remove();
         localStorage.removeItem('hospital_patient_form_data');
-    }
-
-    function filterCurrentShiftByDefault() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const todayStr = year + '-' + month + '-' + day;
-        
-        const currentHour = now.getHours();
-        const isMorningShift = (currentHour >= 0 && currentHour < 12);
-
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        let visibleCount = 1;
-
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length >= 9) {
-                const dateText = cols[7].innerText.trim();
-                const timeText = cols[8].innerText.trim();
-
-                if (dateText === todayStr && timeText) {
-                    const hour = parseInt(timeText.split(':')[0]);
-                    const recordIsMorning = (hour >= 0 && hour < 12);
-
-                    if (recordIsMorning === isMorningShift) {
-                        row.style.display = "";
-                        const numCell = row.querySelector('.row-num');
-                        if (numCell) numCell.innerText = visibleCount++;
-                    } else {
-                        row.style.display = "none";
-                    }
-                } else {
-                    row.style.display = "none";
-                }
-            }
-        });
-    }
-
-    function checkPatientIdentity(idValue) {
-        idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
-        document.getElementById('national_id').value = idValue;
-        saveFormDataToLocal();
-        
-        const warningEl = document.getElementById('id-warning');
-
-        if (idValue.length === 10) {
-            if (registeredPatients[idValue]) {
-                const existingName = registeredPatients[idValue];
-                warningEl.style.display = 'block';
-                warningEl.innerText = "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " + existingName;
-            } else {
-                warningEl.style.display = 'none';
-            }
-        } else {
-            warningEl.style.display = 'none';
-        }
-    }
-
-    function applyFilters() {
-        const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
-        const startFilter = document.getElementById('filter_start').value;
-        const endFilter = document.getElementById('filter_end').value;
-        
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        let visibleCount = 1;
-        
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length >= 8) {
-                const idText = cols[2].innerText.trim().toLowerCase();
-                const dateText = cols[7].innerText.trim();
-                
-                let matchesId = (idFilter === '' || idText.includes(idFilter));
-                let matchesDate = true;
-
-                if (startFilter && dateText < startFilter) matchesDate = false;
-                if (endFilter && dateText > endFilter) matchesDate = false;
-
-                if (matchesId && matchesDate) {
-                    row.style.display = "";
-                    const numCell = row.querySelector('.row-num');
-                    if (numCell) numCell.innerText = visibleCount++;
-                } else {
-                    row.style.display = "none";
-                }
-            }
-        });
-    }
-
-    function clearFilters() {
-        document.getElementById('filter_id').value = '';
-        document.getElementById('filter_start').value = '';
-        document.getElementById('filter_end').value = '';
-        filterCurrentShiftByDefault();
-    }
-
-    function setLiveDateTime() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const currentDate = year + '-' + month + '-' + day;
-        
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const currentTime = hours + ':' + minutes;
-
-        const dateInput = document.getElementById('record_date');
-        const timeInput = document.getElementById('record_time');
-        
-        if (dateInput) dateInput.value = currentDate;
-        if (timeInput) timeInput.value = currentTime;
     }
 </script>
 
