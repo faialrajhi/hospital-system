@@ -46,7 +46,6 @@
             font-size: 1.6rem;
             font-weight: 700;
         }
-        /* تخطيط الشاشة الأساسي: النموذج والجدول بجانب بعضهما */
         .main-layout {
             display: flex;
             gap: 20px;
@@ -185,7 +184,7 @@
     </div>
 
     <div class="main-layout">
-        <!-- نموذج إدخال البيانات (الجانب الأيمن) -->
+        <!-- نموذج إدخال البيانات -->
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
@@ -302,14 +301,33 @@
             </div>
         </div>
 
-        <!-- جدول عرض السجلات (الجانب الأيسر) -->
+        <!-- جدول عرض السجلات مع شريط البحث -->
         <div class="table-container">
             <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #f0f4f8; padding-bottom: 10px;">
                     <h4 class="card-title" style="margin-bottom: 0; border-bottom: none;">السجل - <span style="font-size: 0.8rem; color: #555;">انقر على اسم المريض لإضافة الإجراء</span></h4>
                     <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل إلى Excel</a>
                 </div>
                 
+                <!-- شريط البحث والتصفية الذي طلبته -->
+                <div style="background-color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 140px;">
+                        <label style="font-size: 0.75rem;">رقم الهوية (بحث شامل)</label>
+                        <input type="text" id="search_national_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 7px; font-size: 0.85rem;" oninput="filterTableRecords()">
+                    </div>
+                    <div style="width: 130px;">
+                        <label style="font-size: 0.75rem;">من تاريخ:</label>
+                        <input type="date" id="search_date_from" class="form-control" style="padding: 7px; font-size: 0.85rem;" onchange="filterTableRecords()">
+                    </div>
+                    <div style="width: 130px;">
+                        <label style="font-size: 0.75rem;">إلى تاريخ:</label>
+                        <input type="date" id="search_date_to" class="form-control" style="padding: 7px; font-size: 0.85rem;" onchange="filterTableRecords()">
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary" onclick="resetSearchFilters()" style="padding: 7px 12px; font-size: 0.8rem; margin-top: 0;">مسح البحث</button>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
                     <table id="recordsTable">
                         <thead>
@@ -327,19 +345,19 @@
                         </thead>
                         <tbody>
                             {% for record in records | reverse %}
-                            <tr>
+                            <tr class="record-row">
                                 <td><strong class="row-num">{{ loop.index }}</strong></td>
                                 <td>
                                     <span class="patient-name-link" onclick="openNotesModal('{{ record.get('patient_name', '-') }}', '{{ record.get('national_id', '-') }}')">
                                         {{ record.get('patient_name', '-') }}
                                     </span>
                                 </td>
-                                <td>{{ record.get('national_id', '-') }}</td>
+                                <td class="col-national-id">{{ record.get('national_id', '-') }}</td>
                                 <td>{{ record.get('file_number', '-') }}</td>
                                 <td>{{ record.get('requested_service', '-') }}</td>
                                 <td>{{ record.get('service_name', '-') }}</td>
                                 <td>{{ record.get('employee_name', '-') }}</td>
-                                <td>{{ record.get('record_date', '-') }}</td>
+                                <td class="col-date">{{ record.get('record_date', '-') }}</td>
                                 <td>{{ record.get('record_time', '-') }}</td>
                             </tr>
                             {% else %}
@@ -396,6 +414,46 @@
         const timeField = document.getElementById('record_time');
         if (dateField) dateField.value = year + '-' + month + '-' + day;
         if (timeField) timeField.value = hours + ':' + minutes + ':' + seconds;
+    }
+
+    // دوال البحث والتصفية
+    function filterTableRecords() {
+        const searchId = document.getElementById('search_national_id').value.trim();
+        const dateFrom = document.getElementById('search_date_from').value;
+        const dateTo = document.getElementById('search_date_to').value;
+        const rows = document.querySelectorAll('.record-row');
+
+        rows.forEach(row => {
+            const nationalIdText = row.querySelector('.col-national-id').innerText;
+            const dateText = row.querySelector('.col-date').innerText;
+
+            let matchesId = true;
+            let matchesDate = true;
+
+            if (searchId !== "" && !nationalIdText.includes(searchId)) {
+                matchesId = false;
+            }
+
+            if (dateFrom && dateText < dateFrom) {
+                matchesDate = false;
+            }
+            if (dateTo && dateText > dateTo) {
+                matchesDate = false;
+            }
+
+            if (matchesId && matchesDate) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    function resetSearchFilters() {
+        document.getElementById('search_national_id').value = "";
+        document.getElementById('search_date_from').value = "";
+        document.getElementById('search_date_to').value = "";
+        filterTableRecords();
     }
 
     function generateQueueNumber() {
