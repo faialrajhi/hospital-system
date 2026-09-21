@@ -129,12 +129,19 @@
         .btn-primary:hover {
             background-color: #163a5d;
         }
-        .btn-print {
+        .btn-sms {
             background-color: #2b6cb0;
             color: white;
         }
-        .btn-print:hover {
+        .btn-sms:hover {
             background-color: #2c5282;
+        }
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+        }
+        .btn-whatsapp:hover {
+            background-color: #1ebe57;
         }
         .btn-secondary {
             background-color: #e2e8f0;
@@ -219,48 +226,6 @@
             direction: rtl;
             position: relative;
         }
-
-        #ticket-card {
-            display: none;
-        }
-
-        /* تعديلات الطباعة لضمان ظهورها في صفحة واحدة وبحجم مدمج */
-        @media print {
-            * {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            html, body {
-                width: 80mm !important;
-                height: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: white !important;
-                overflow: hidden !important;
-            }
-            body * {
-                visibility: hidden !important;
-            }
-            #ticket-card, #ticket-card * {
-                visibility: visible !important;
-            }
-            #ticket-card {
-                display: block !important;
-                position: absolute !important;
-                top: 0 !important;
-                right: 0 !important;
-                left: 0 !important;
-                width: 76mm !important;
-                max-height: 100mm !important;
-                margin: 0 auto !important;
-                padding: 2mm !important;
-                background: white !important;
-            }
-            @page {
-                size: 80mm auto;
-                margin: 0mm;
-            }
-        }
     </style>
 </head>
 <body>
@@ -290,6 +255,12 @@
                     <div class="mb-3">
                         <label>رقم الملف </label>
                         <input type="text" id="file_number" name="file_number" class="form-control save-input" placeholder="20XXXXXX">
+                    </div>
+
+                    <!-- حقل رقم الجوال للإرسال (SMS / WhatsApp) -->
+                    <div class="mb-3">
+                        <label>رقم جوال المريض</label>
+                        <input type="tel" id="patient_phone" name="patient_phone" class="form-control save-input" placeholder="05xxxxxxxx" maxlength="10">
                     </div>
 
                     <div class="mb-3">
@@ -380,7 +351,10 @@
                     <input type="hidden" id="record_time" name="record_time">
                     <input type="hidden" id="final_employee_name" name="final_employee_name">
 
-                    <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
+                    <!-- خيارات الإرسال المزدوجة (SMS و WhatsApp) -->
+                    <button type="button" class="btn btn-sms" onclick="sendSmsTicket()">إرسال تذكرة عبر (SMS)</button>
+                    <button type="button" class="btn btn-whatsapp" onclick="sendWhatsAppTicket()">إرسال تذكرة عبر (WhatsApp)</button>
+                    
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary" onclick="resetFormCustom()">مسح الحقول</button>
                 </form>
@@ -479,25 +453,6 @@
     </div>
 </div>
 
-<!-- بطاقة التذكرة الحرارية -->
-<div id="ticket-card" style="direction: rtl; text-align: center;">
-    <h3 style="margin: 0; font-size: 13px; color: #1F4E78;">إدارة تجربة المريض</h3>
-    <p style="font-size: 8px; color: #555; margin: 1px 0;">وحدة الدعم المساندة</p>
-    <hr style="border: 0.5px dashed #aaa; margin: 3px 0;">
-    <div style="margin: 3px 0;">
-        <span style="font-size: 10px; display: block; color: #333;">رقم الدور :</span>
-        <span id="t-number" style="font-size: 20px; font-weight: bold; color: #1F4E78;">A-1</span>
-    </div>
-    <div style="text-align: right; font-size: 9px; margin-top: 3px; line-height: 1.2;">
-        <p style="margin: 1px 0;"><strong>المريض:</strong> <span id="t-patient">--</span></p>
-        <p style="margin: 1px 0;"><strong>الخدمة:</strong> <span id="t-req-service">--</span></p>
-        <p style="margin: 1px 0;"><strong>القسم:</strong> <span id="t-service">--</span></p>
-        <p style="margin: 1px 0;"><strong>التاريخ:</strong> <span id="t-date">--</span> | <strong>الوقت:</strong> <span id="t-time">--</span></p>
-    </div>
-    <hr style="border: 0.5px dashed #aaa; margin: 3px 0 2px 0;">
-    <p style="font-size: 7px; color: #777; margin: 0;">يرجى الانتظار لحين نداء الرقم</p>
-</div>
-
 <script>
     const registeredPatients = {};
     
@@ -526,7 +481,98 @@
         filterCurrentShiftByDefault();
     });
 
-    // دوال نافذة الإجراء المتخذ المنبثقة
+    // دالة توليد رقم الدور المتسلسل (A/P)
+    function generateQueueNumber() {
+        const now = new Date();
+        const hours = now.getHours();
+        const prefix = hours >= 12 ? 'P' : 'A'; 
+        let dateStr = now.toISOString().split('T')[0];
+        let dailyKey = 'queue_num_' + dateStr + '_' + prefix;
+        let currentNum = localStorage.getItem(dailyKey);
+        
+        if (!currentNum) {
+            currentNum = 1;
+        } else {
+            currentNum = parseInt(currentNum) + 1;
+        }
+        localStorage.setItem(dailyKey, currentNum);
+        return prefix + "-" + currentNum;
+    }
+
+    // إرسال عبر الواتساب مباشرة
+    function sendWhatsAppTicket() {
+        const phone = document.getElementById('patient_phone').value.trim();
+        const patientName = document.getElementById('patient_name').value.trim();
+        const serviceSelect = document.getElementById('service_name');
+        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
+
+        if (!patientName) {
+            alert('يرجى إدخال اسم المريض أولاً.');
+            document.getElementById('patient_name').focus();
+            return;
+        }
+
+        if (!phone) {
+            alert('يرجى إدخال رقم الجوال أولاً.');
+            document.getElementById('patient_phone').focus();
+            return;
+        }
+
+        let formattedPhone = phone.startsWith('0') ? '966' + phone.slice(1) : phone;
+        const ticketNumber = generateQueueNumber();
+
+        const message = `مرحباً بالصديق/ة ${patientName} 🏥\nتم إصدار تذكرتك في وحدة الدعم المساندة:\n\n🔢 رقم الدور: *${ticketNumber}*\n📌 القسم: ${serviceName}\n\nيرجى الانتظار لحين نداء رقمك. شكراً لتعاونكم.`;
+        
+        const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+
+    // إرسال عبر SMS (عبر السيرفر)
+    function sendSmsTicket() {
+        const patientName = document.getElementById('patient_name').value.trim();
+        const phone = document.getElementById('patient_phone').value.trim();
+        const serviceSelect = document.getElementById('service_name');
+        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
+
+        if (!patientName) {
+            alert('يرجى إدخال اسم المريض أولاً.');
+            return;
+        }
+
+        if (!phone || phone.length < 10) {
+            alert('يرجى إدخال رقم جوال صحيح يتكون من 10 أرقام.');
+            return;
+        }
+
+        const ticketNumber = generateQueueNumber();
+
+        fetch('/send-sms', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                phone: phone,
+                name: patientName,
+                ticket: ticketNumber,
+                service: serviceName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('تم إرسال رسالة الـ SMS بنجاح إلى المريض!');
+            } else {
+                alert('فشل إرسال الرسالة: ' + (data.message || 'خطأ من الخادم'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء الاتصال بخدمة الرسائل.');
+        });
+    }
+
+    // دوال نافذة الإجراء المتخذ
     function openNotesModal(patientName, nationalId) {
         document.getElementById('modal-patient-name').innerText = patientName;
         document.getElementById('modal-patient-id').value = nationalId;
@@ -551,11 +597,11 @@
             alert('تم حفظ الإجراء المتخذ بنجاح!');
             closeNotesModal();
         } else {
-            alert('رقم هویة المريض غير متوفر.');
+            alert('رقم هوية المريض غير متوفر.');
         }
     }
 
-    // دوال حفظ واسترجاع بيانات النموذج
+    // دوال الحفظ المحلي واسترجاع النموذج
     function saveFormDataToLocal() {
         const formData = {};
         document.querySelectorAll('.save-input').forEach(input => {
@@ -814,53 +860,6 @@
         
         if (dateInput) dateInput.value = currentDate;
         if (timeInput) timeInput.value = currentTime;
-    }
-
-    function printTicket() {
-        setLiveDateTime();
-
-        const patientNameInput = document.getElementById('patient_name');
-        const patientName = patientNameInput ? patientNameInput.value.trim() : '';
-        
-        if (!patientName) {
-            alert('يرجى إدخال اسم المريض على الأقل قبل طباعة التذكرة.');
-            if (patientNameInput) patientNameInput.focus();
-            return;
-        }
-
-        const reqServiceSelect = document.getElementById('requested_service');
-        const reqServiceName = reqServiceSelect && reqServiceSelect.selectedIndex >= 0 ? reqServiceSelect.options[reqServiceSelect.selectedIndex].text : '-';
-
-        const serviceSelect = document.getElementById('service_name');
-        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
-        
-        const recordDate = document.getElementById('record_date') ? document.getElementById('record_date').value : '';
-        const recordTime = document.getElementById('record_time') ? document.getElementById('record_time').value : '';
-
-        document.getElementById('t-patient').innerText = patientName;
-        document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
-        document.getElementById('t-service').innerText = serviceName !== 'اختر القسم...' ? serviceName : '-';
-        document.getElementById('t-date').innerText = recordDate || '-';
-        document.getElementById('t-time').innerText = recordTime || '-';
-        
-        const now = new Date();
-        const hours = now.getHours();
-        const prefix = hours >= 12 ? 'P' : 'A'; 
-
-        let dateStr = now.toISOString().split('T')[0];
-        let dailyKey = 'queue_num_' + dateStr + '_' + prefix;
-        let currentNum = localStorage.getItem(dailyKey);
-        
-        if (!currentNum) {
-            currentNum = 1;
-        } else {
-            currentNum = parseInt(currentNum) + 1;
-        }
-        localStorage.setItem(dailyKey, currentNum);
-
-        document.getElementById('t-number').innerText = prefix + "-" + currentNum;
-
-        window.print();
     }
 </script>
 
