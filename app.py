@@ -5,8 +5,9 @@ import os
 
 app = Flask(__name__)
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+# إعدادات اتصال Supabase
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "رابط_السوبابيس_هنا")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "مفتاح_السوبابيس_هنا")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # جلب بيانات تويليو بأمان تام من بيئة النظام (Environment Variables)
@@ -17,6 +18,7 @@ TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        # استقبال البيانات من النموذج وحفظها
         new_record = {
             'patient_name': request.form.get('patient_name'),
             'national_id': request.form.get('national_id'),
@@ -28,12 +30,15 @@ def index():
             'record_date': request.form.get('record_date'),
             'record_time': request.form.get('record_time')
         }
+        
         try:
             supabase.table("patient_records").insert(new_record).execute()
         except Exception as e:
             print("Error saving to Supabase:", e)
+            
         return redirect(url_for('index'))
     
+    # استرجاع وعرض جميع السجلات القديمة والجديدة من جدول patient_records
     try:
         response = supabase.table("patient_records").select("*").execute()
         records = response.data if response.data else []
@@ -47,6 +52,7 @@ def index():
 def export_excel():
     return "تم طلب تصدير السجلات إلى إكسل بنجاح."
 
+# مسار إرسال الرسائل النصية عبر Twilio
 @app.route('/send-sms', methods=['POST'])
 def send_sms():
     data = request.get_json()
@@ -60,15 +66,23 @@ def send_sms():
 
     try:
         client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        
         message = client.messages.create(
             body="عزيزي المريض، تم تسجيل تفاصيل تجربتك بنجاح في النظام. شكراً لثقتك بنا.",
             from_=TWILIO_PHONE_NUMBER,
             to=phone
         )
-        return jsonify({'success': True, 'message': f'تم إرسال الرسالة النصية بنجاح إلى الرقم: {phone}'})
+        
+        return jsonify({
+            'success': True, 
+            'message': f'تم إرسال الرسالة النصية بنجاح إلى الرقم: {phone}'
+        })
     except Exception as e:
         print("Error sending SMS via Twilio:", e)
-        return jsonify({'success': False, 'message': f'فشل إرسال الرسالة: {str(e)}'}), 500
+        return jsonify({
+            'success': False,
+            'message': f'فشل إرسال الرسالة: {str(e)}'
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
