@@ -253,7 +253,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label>رقم الملف </label>
+                        <label>رقم الملف</label>
                         <input type="text" id="file_number" name="file_number" class="form-control save-input" placeholder="20XXXXXX">
                     </div>
 
@@ -363,7 +363,7 @@
 
         <div class="table-container">
             <div class="card">
-                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;"> السجل  - <span style="font-size: 0.85rem; color: #555;">انقر على اسم المريض لإضافة الإجراء المتخذ</span></h4>
+                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">السجل - <span style="font-size: 0.85rem; color: #555;">انقر على اسم المريض لإضافة الإجراء المتخذ</span></h4>
                 
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
@@ -459,7 +459,6 @@
     document.addEventListener("DOMContentLoaded", function() {
         setLiveDateTime();
         loadSavedFormData();
-        loadSavedRecordsToTable();
 
         document.querySelectorAll('.save-input').forEach(input => {
             input.addEventListener('input', saveFormDataToLocal);
@@ -499,7 +498,7 @@
         return prefix + "-" + currentNum;
     }
 
-    // إرسال عبر الواتساب مباشرة
+    // إرسال عبر الواتساب مباشرة بالصيغة المطلوبة
     function sendWhatsAppTicket() {
         const phone = document.getElementById('patient_phone').value.trim();
         const patientName = document.getElementById('patient_name').value.trim();
@@ -521,13 +520,13 @@
         let formattedPhone = phone.startsWith('0') ? '966' + phone.slice(1) : phone;
         const ticketNumber = generateQueueNumber();
 
-        const message = `مرحباً بالصديق/ة ${patientName} 🏥\nتم إصدار تذكرتك في وحدة الدعم المساندة:\n\n🔢 رقم الدور: *${ticketNumber}*\n📌 القسم: ${serviceName}\n\nيرجى الانتظار لحين نداء رقمك. شكراً لتعاونكم.`;
+        const message = `مرحبًا ${patientName}\nتم إصدار تذكرتك في وحدة الدعم المساندة:\n\nرقم الدور: *${ticketNumber}*\nالقسم: ${serviceName}\n\nيرجى الانتظار لحين نداء رقمك شكراً لتعاونكم.`;
         
         const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
     }
 
-    // إرسال عبر SMS (عبر السيرفر)
+    // إرسال عبر SMS (مع معالجة الخطأ لتجنب توقف النظام)
     function sendSmsTicket() {
         const patientName = document.getElementById('patient_name').value.trim();
         const phone = document.getElementById('patient_phone').value.trim();
@@ -558,7 +557,12 @@
                 service: serviceName
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('خدمة الرسائل غير متوفرة حالياً في السيرفر.');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 alert('تم إرسال رسالة الـ SMS بنجاح إلى المريض!');
@@ -568,7 +572,7 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('حدث خطأ أثناء الاتصال بخدمة الرسائل.');
+            alert('عذراً، خدمة الرسائل النصية (SMS) غير مفعلة حالياً على الخادم. يمكنك الاعتماد على إرسال الواتساب.');
         });
     }
 
@@ -601,7 +605,6 @@
         }
     }
 
-    // دوال الحفظ المحلي واسترجاع النموذج
     function saveFormDataToLocal() {
         const formData = {};
         document.querySelectorAll('.save-input').forEach(input => {
@@ -626,44 +629,6 @@
                 console.error("Error loading saved form data", e);
             }
         }
-    }
-
-    function saveRecordLocally(recordObj) {
-        let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
-        localRecords.push(recordObj);
-        localStorage.setItem('hospital_local_records', JSON.stringify(localRecords));
-    }
-
-    function loadSavedRecordsToTable() {
-        let localRecords = JSON.parse(localStorage.getItem('hospital_local_records')) || [];
-        const tbody = document.querySelector("#recordsTable tbody");
-        
-        if (localRecords.length > 0) {
-            const emptyRow = tbody.querySelector('.text-muted');
-            if (emptyRow) {
-                emptyRow.closest('tr').remove();
-            }
-        }
-
-        localRecords.forEach((rec) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong class="row-num"></strong></td>
-                <td>
-                    <span class="patient-name-link" onclick="openNotesModal('${rec.patient_name || '-'}', '${rec.national_id || '-'}')" title="انقر لإضافة أو عرض الإجراء المتخذ للمريض">
-                        ${rec.patient_name || '-'}
-                    </span>
-                </td>
-                <td>${rec.national_id || '-'}</td>
-                <td>${rec.file_number || '-'}</td>
-                <td>${rec.requested_service || '-'}</td>
-                <td>${rec.service_name || '-'}</td>
-                <td>${rec.employee_name || '-'}</td>
-                <td>${rec.record_date || '-'}</td>
-                <td>${rec.record_time || '-'}</td>
-            `;
-            tbody.prepend(tr);
-        });
     }
 
     function handleStaffSelectionType() {
@@ -718,24 +683,6 @@
             return false;
         }
 
-        let finalEmpName = employeeSelect.value;
-        const hid = document.getElementById('dynamic_hidden_emp');
-        if (hid && hid.value) {
-            finalEmpName = hid.value;
-        }
-
-        const newRecordObj = {
-            patient_name: document.getElementById('patient_name').value,
-            national_id: document.getElementById('national_id').value,
-            file_number: document.getElementById('file_number').value,
-            requested_service: document.getElementById('requested_service').options[document.getElementById('requested_service').selectedIndex].text,
-            service_name: document.getElementById('service_name').options[document.getElementById('service_name').selectedIndex].text,
-            employee_name: finalEmpName,
-            record_date: document.getElementById('record_date').value,
-            record_time: document.getElementById('record_time').value
-        };
-
-        saveRecordLocally(newRecordObj);
         localStorage.removeItem('hospital_patient_form_data');
         return true;
     }
@@ -745,7 +692,6 @@
         document.getElementById('employee_select').setAttribute('required', 'required');
         const hid = document.getElementById('dynamic_hidden_emp');
         if(hid) hid.remove();
-        document.getElementById('id-warning').style.display = 'none';
         localStorage.removeItem('hospital_patient_form_data');
     }
 
