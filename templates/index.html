@@ -301,7 +301,7 @@
             </div>
         </div>
 
-        <!-- جدول عرض السجلات مع شريط البحث -->
+        <!-- جدول عرض السجلات مع شريط البحث بالترتيب تماماً كما في الصورة -->
         <div class="table-container">
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #f0f4f8; padding-bottom: 10px;">
@@ -309,23 +309,28 @@
                     <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل إلى Excel</a>
                 </div>
                 
-                <!-- شريط البحث والتصفية -->
+                <!-- شريط البحث والتصفية (بأزرار البحث ومسح البحث كما في الصورة) -->
                 <div style="background-color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 140px;">
-                        <label style="font-size: 0.75rem;">رقم الهوية (بحث شامل)</label>
-                        <input type="text" id="search_national_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 7px; font-size: 0.85rem;" oninput="filterTableRecords()">
+                    
+                    <div style="width: 100px;">
+                        <button type="button" class="btn btn-secondary" onclick="resetSearchFilters()" style="padding: 8px 10px; font-size: 0.85rem; margin-top: 0; background-color: #e2e8f0; color: #333;">مسح البحث</button>
                     </div>
-                    <div style="width: 130px;">
-                        <label style="font-size: 0.75rem;">من تاريخ:</label>
-                        <input type="date" id="search_date_from" class="form-control" style="padding: 7px; font-size: 0.85rem;" onchange="filterTableRecords()">
+                    <div style="width: 80px;">
+                        <button type="button" class="btn btn-primary" onclick="filterTableRecords()" style="padding: 8px 10px; font-size: 0.85rem; margin-top: 0; background-color: #1F4E78;">بحث</button>
                     </div>
-                    <div style="width: 130px;">
+                    <div style="width: 140px;">
                         <label style="font-size: 0.75rem;">إلى تاريخ:</label>
                         <input type="date" id="search_date_to" class="form-control" style="padding: 7px; font-size: 0.85rem;" onchange="filterTableRecords()">
                     </div>
-                    <div>
-                        <button type="button" class="btn btn-secondary" onclick="resetSearchFilters()" style="padding: 7px 12px; font-size: 0.8rem; margin-top: 0;">مسح البحث</button>
+                    <div style="width: 140px;">
+                        <label style="font-size: 0.75rem;">من تاريخ:</label>
+                        <input type="date" id="search_date_from" class="form-control" style="padding: 7px; font-size: 0.85rem;" onchange="filterTableRecords()">
                     </div>
+                    <div style="flex: 1; min-width: 160px;">
+                        <label style="font-size: 0.75rem;">رقم الهوية (بحث شامل)</label>
+                        <input type="text" id="search_national_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 7px; font-size: 0.85rem;" oninput="filterTableRecords()">
+                    </div>
+
                 </div>
 
                 <div class="table-responsive">
@@ -416,7 +421,6 @@
         if (timeField) timeField.value = hours + ':' + minutes + ':' + seconds;
     }
 
-    // دوال البحث والتصفية
     function filterTableRecords() {
         const searchId = document.getElementById('search_national_id').value.trim();
         const dateFrom = document.getElementById('search_date_from').value;
@@ -520,7 +524,6 @@
         const nationalId = document.getElementById('modal-patient-id').value;
         const noteText = document.getElementById('patient-notes-input').value;
         if (nationalId) {
-            // تم جعل حفظ الملاحظات والإجراءات مستمراً ودائماً بدون وقت انتهاء
             localStorage.setItem('patient_action_' + nationalId, noteText);
             alert('تم حفظ الإجراء المتخذ بنجاح!');
             closeNotesModal();
@@ -530,7 +533,6 @@
     function saveFormDataToLocal() {
         const formData = {};
         document.querySelectorAll('.save-input').forEach(input => { formData[input.id] = input.value; });
-        // تم جعل البيانات تبقى دائمة في المتصفح ولن تختفي بعد ١٢ ساعة
         localStorage.setItem('hospital_patient_form_data', JSON.stringify(formData));
     }
 
