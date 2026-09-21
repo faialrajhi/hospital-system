@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# إعدادات اتصال Supabase (تأكدي من وضع الرابط والمفتاح الخاص بكِ هنا أو في متغيرات البيئة)
+# إعدادات اتصال Supabase
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "رابط_السوبابيس_هنا")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "مفتاح_السوبابيس_هنا")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -25,17 +25,17 @@ def index():
             'record_time': request.form.get('record_time')
         }
         
-        # حفظ السجل مباشرة في جدول Supabase (تأكد أن اسم الجدول لديك هو patients أو records)
+        # حفظ السجل في نفس جدول patient_records لضمان عدم ضياعها
         try:
-            supabase.table("patients").insert(new_record).execute()
+            supabase.table("patient_records").insert(new_record).execute()
         except Exception as e:
             print("Error saving to Supabase:", e)
             
         return redirect(url_for('index'))
     
-    # جلب السجلات مباشرة من جدول Supabase لكي لا تختفي أبدا
+    # جلب السجلات من جدول patient_records
     try:
-        response = supabase.table("patients").select("*").execute()
+        response = supabase.table("patient_records").select("*").execute()
         records = response.data if response.data else []
     except Exception as e:
         print("Error fetching from Supabase:", e)
