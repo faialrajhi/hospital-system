@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from supabase import create_client, Client
 from twilio.rest import Client as TwilioClient
+from datetime import datetime
 import os
 
 app = Flask(__name__)
@@ -18,6 +19,10 @@ TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        # توليد التاريخ والوقت الحالي تلقائياً كقيمة افتراضية لضمان عدم توقف الحفظ
+        current_date = datetime.now().strftime('%Y-%m-%d')
+        current_time = datetime.now().strftime('%H:%M:%S')
+
         # استقبال البيانات من النموذج وحفظها
         new_record = {
             'patient_name': request.form.get('patient_name'),
@@ -27,14 +32,15 @@ def index():
             'requested_service': request.form.get('requested_service'),
             'service_name': request.form.get('service_name'),
             'employee_name': request.form.get('employee_name'),
-            'record_date': request.form.get('record_date'),
-            'record_time': request.form.get('record_time')
+            'record_date': request.form.get('record_date') or current_date,
+            'record_time': request.form.get('record_time') or current_time
         }
         
         try:
-            supabase.table("patient_records").insert(new_record).execute()
+            response = supabase.table("patient_records").insert(new_record).execute()
+            print("Insert Response:", response)
         except Exception as e:
-            print("Error saving to Supabase:", e)
+            print("Error saving to Supabase:", str(e))
             
         return redirect(url_for('index'))
     
