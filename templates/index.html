@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة تجربة المريض - وحدة الدعم المساندة</title>
+    <!-- استيراد خط Tajawal المناسب للمستشفيات -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -19,16 +20,16 @@
         }
         .container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1350px;
             margin: 0 auto;
         }
         .header-banner {
             background: linear-gradient(135deg, #1F4E78 0%, #163a5d 100%);
             color: white;
-            padding: 20px 25px;
+            padding: 25px;
             border-radius: 12px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             box-shadow: 0 4px 15px rgba(31,78,120,0.15);
             position: relative;
             display: flex;
@@ -36,68 +37,72 @@
             justify-content: center;
         }
         .header-banner img {
-            height: 70px;
+            height: 190px;
             width: auto;
             position: absolute;
             right: 25px;
-            border-radius: 6px;
+            border-radius: 8px;
         }
         .header-banner h2 {
-            font-size: 1.6rem;
+            font-size: 1.7rem;
             font-weight: 700;
+            letter-spacing: 0.5px;
         }
         .main-layout {
             display: flex;
             gap: 20px;
-            align-items: flex-start;
+            flex-wrap: wrap;
         }
         .card {
             background: white;
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
             border: 1px solid #eef2f5;
         }
         .form-container {
-            flex: 0 0 360px;
+            flex: 1;
+            min-width: 280px;
+            max-width: 380px;
         }
         .table-container {
-            flex: 1;
-            overflow: hidden;
+            flex: 2.5;
+            min-width: 550px;
         }
         .card-title {
             color: #1F4E78;
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
             border-bottom: 2px solid #f0f4f8;
             text-align: center;
         }
         .mb-3 {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
         .temp-row {
             display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
         .temp-row .col {
             flex: 1;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #34495e;
         }
         .form-control, .form-select {
             width: 100%;
-            padding: 9px 10px;
+            padding: 10px 12px;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             outline: none;
             transition: all 0.2s ease;
             background-color: #fff;
@@ -108,30 +113,56 @@
         }
         .btn {
             width: 100%;
-            padding: 10px;
+            padding: 11px;
             border: none;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
             transition: background 0.2s;
-            margin-top: 6px;
+            margin-top: 8px;
         }
-        .btn-primary { background-color: #1F4E78; color: white; }
-        .btn-primary:hover { background-color: #163a5d; }
-        .btn-sms { background-color: #2b6cb0; color: white; }
-        .btn-whatsapp { background-color: #25D366; color: white; }
-        .btn-secondary { background-color: #e2e8f0; color: #475569; }
-        
+        .btn-primary {
+            background-color: #1F4E78;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #163a5d;
+        }
+        .btn-sms {
+            background-color: #2b6cb0;
+            color: white;
+        }
+        .btn-sms:hover {
+            background-color: #2c5282;
+        }
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+        }
+        .btn-whatsapp:hover {
+            background-color: #1ebe57;
+        }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
         .btn-success {
             background-color: #2e7d32;
             color: white;
             text-decoration: none;
             display: inline-block;
-            padding: 6px 12px;
+            padding: 7px 12px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
+            text-align: center;
+        }
+        .btn-success:hover {
+            background-color: #1b5e20;
         }
         .table-responsive {
             overflow-x: auto;
@@ -140,11 +171,11 @@
             width: 100%;
             border-collapse: collapse;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             white-space: nowrap;
         }
         th, td {
-            padding: 10px 8px;
+            padding: 12px 10px;
             border-bottom: 1px solid #edf2f7;
         }
         th {
@@ -152,26 +183,44 @@
             color: white;
             font-weight: 700;
         }
-        tr:hover { background-color: #f8fafc; }
-        .text-muted { color: #888; padding: 20px; }
-
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        .text-muted {
+            color: #888;
+            padding: 20px;
+            white-space: normal;
+        }
         .patient-name-link {
             color: #1F4E78;
             font-weight: 700;
             cursor: pointer;
             text-decoration: underline;
         }
+        .patient-name-link:hover {
+            color: #163a5d;
+        }
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            justify-content: center; align-items: center;
+            justify-content: center;
+            align-items: center;
             z-index: 2000;
         }
         .modal-content {
-            background: white; padding: 25px; border-radius: 12px;
-            width: 100%; max-width: 450px; direction: rtl;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            direction: rtl;
+            position: relative;
         }
     </style>
 </head>
@@ -184,7 +233,6 @@
     </div>
 
     <div class="main-layout">
-        <!-- نموذج إدخال البيانات -->
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
@@ -196,7 +244,8 @@
 
                     <div class="mb-3">
                         <label>رقم الهوية</label>
-                        <input type="text" id="national_id" name="national_id" class="form-control save-input" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" required>
+                        <input type="text" id="national_id" name="national_id" class="form-control save-input" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
+                        <small id="id-warning" style="color: #e53e3e; font-size: 0.75rem; display: none; margin-top: 3px; font-weight: bold;"></small>
                     </div>
 
                     <div class="mb-3">
@@ -276,8 +325,8 @@
 
                     <div class="temp-row">
                         <div class="col">
-                            <label style="font-size: 0.75rem;">نوع الكادر:</label>
-                            <select id="temp_type_select" class="form-select save-input" style="font-size: 0.85rem; padding: 8px;" onchange="handleStaffSelectionType()">
+                            <label style="font-size: 0.8rem;">نوع الكادر:</label>
+                            <select id="temp_type_select" class="form-select save-input" style="font-size: 0.9rem; padding: 9px 8px;" onchange="handleStaffSelectionType()">
                                 <option value="" selected>اختر</option>
                                 <option value="متطوع">متطوع</option>
                                 <option value="تمهير">تمهير</option>
@@ -285,54 +334,52 @@
                             </select>
                         </div>
                         <div class="col" style="flex: 1.4;">
-                            <label style="font-size: 0.75rem;">الاسم</label>
-                            <input type="text" id="temp_name_input" class="form-control save-input" placeholder="ادخل الاسم" style="font-size: 0.85rem; padding: 8px;" oninput="handleStaffSelectionType()">
+                            <label style="font-size: 0.8rem;">الاسم</label>
+                            <input type="text" id="temp_name_input" class="form-control save-input" placeholder="ادخل الاسم" style="font-size: 0.9rem; padding: 9px 8px;" oninput="handleStaffSelectionType()">
                         </div>
                     </div>
 
                     <input type="hidden" id="record_date" name="record_date">
                     <input type="hidden" id="record_time" name="record_time">
+                    <input type="hidden" id="final_employee_name" name="final_employee_name">
 
                     <button type="button" class="btn btn-sms" onclick="sendSmsTicket()">إرسال تذكرة عبر (SMS)</button>
                     <button type="button" class="btn btn-whatsapp" onclick="sendWhatsAppTicket()">إرسال تذكرة عبر (WhatsApp)</button>
+                    
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary" onclick="resetFormCustom()">مسح الحقول</button>
                 </form>
             </div>
         </div>
 
-        <!-- جدول عرض السجلات مع شريط البحث بالترتيب تماماً كما في الصورة -->
         <div class="table-container">
             <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #f0f4f8; padding-bottom: 10px;">
-                    <h4 class="card-title" style="margin-bottom: 0; border-bottom: none;">السجل - <span style="font-size: 0.8rem; color: #555;">انقر على اسم المريض لإضافة الإجراء</span></h4>
-                    <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل إلى Excel</a>
+                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">السجل - <span style="font-size: 0.85rem; color: #555;">انقر على اسم المريض لإضافة الإجراء المتخذ</span></h4>
+                
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 140px;">
+                            <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية (بحث شامل):</label>
+                            <input type="text" id="filter_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 6px 10px; font-size: 0.9rem;">
+                        </div>
+                        <div style="flex: 1; min-width: 130px;">
+                            <label for="filter_start" style="font-size: 0.85rem; margin-bottom: 4px;">من تاريخ:</label>
+                            <input type="date" id="filter_start" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
+                        </div>
+                        <div style="flex: 1; min-width: 130px;">
+                            <label for="filter_end" style="font-size: 0.85rem; margin-bottom: 4px;">إلى تاريخ :</label>
+                            <input type="date" id="filter_end" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
+                        </div>
+                        <div style="display: flex; gap: 6px; margin-top: 0;">
+                            <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">بحث</button>
+                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح البحث</button>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 12px; font-size: 0.85rem; border-radius: 6px; margin-top: 0; display: inline-block;">تحميل إلى Excel</a>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- شريط البحث والتصفية (بأزرار البحث ومسح البحث كما في الصورة) -->
-                <div style="background-color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
-                    
-                    <div style="width: 100px;">
-                        <button type="button" class="btn btn-secondary" onclick="resetSearchFilters()" style="padding: 8px 10px; font-size: 0.85rem; margin-top: 0; background-color: #e2e8f0; color: #333;">مسح البحث</button>
-                    </div>
-                    <div style="width: 80px;">
-                        <button type="button" class="btn btn-primary" onclick="filterTableRecords()" style="padding: 8px 10px; font-size: 0.85rem; margin-top: 0; background-color: #1F4E78;">بحث</button>
-                    </div>
-                    <div style="width: 140px;">
-                        <label style="font-size: 0.75rem;">إلى تاريخ:</label>
-                        <input type="date" id="search_date_to" class="form-control" style="padding: 7px; font-size: 0.85rem;" onchange="filterTableRecords()">
-                    </div>
-                    <div style="width: 140px;">
-                        <label style="font-size: 0.75rem;">من تاريخ:</label>
-                        <input type="date" id="search_date_from" class="form-control" style="padding: 7px; font-size: 0.85rem;" onchange="filterTableRecords()">
-                    </div>
-                    <div style="flex: 1; min-width: 160px;">
-                        <label style="font-size: 0.75rem;">رقم الهوية (بحث شامل)</label>
-                        <input type="text" id="search_national_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 7px; font-size: 0.85rem;" oninput="filterTableRecords()">
-                    </div>
-
-                </div>
-
                 <div class="table-responsive">
                     <table id="recordsTable">
                         <thead>
@@ -350,19 +397,19 @@
                         </thead>
                         <tbody>
                             {% for record in records | reverse %}
-                            <tr class="record-row">
+                            <tr data-index="{{ loop.revindex }}">
                                 <td><strong class="row-num">{{ loop.index }}</strong></td>
                                 <td>
-                                    <span class="patient-name-link" onclick="openNotesModal('{{ record.get('patient_name', '-') }}', '{{ record.get('national_id', '-') }}')">
+                                    <span class="patient-name-link" onclick="openNotesModal('{{ record.get('patient_name', '-') }}', '{{ record.get('national_id', '-') }}')" title="انقر لإضافة أو عرض الإجراء المتخذ للمريض">
                                         {{ record.get('patient_name', '-') }}
                                     </span>
                                 </td>
-                                <td class="col-national-id">{{ record.get('national_id', '-') }}</td>
+                                <td>{{ record.get('national_id', '-') }}</td>
                                 <td>{{ record.get('file_number', '-') }}</td>
                                 <td>{{ record.get('requested_service', '-') }}</td>
-                                <td>{{ record.get('service_name', '-') }}</td>
+                                <td>{{ record.get('service_name', record.get('service', '-')) }}</td>
                                 <td>{{ record.get('employee_name', '-') }}</td>
-                                <td class="col-date">{{ record.get('record_date', '-') }}</td>
+                                <td>{{ record.get('record_date', '-') }}</td>
                                 <td>{{ record.get('record_time', '-') }}</td>
                             </tr>
                             {% else %}
@@ -378,34 +425,53 @@
     </div>
 </div>
 
-<!-- نافذة الإجراء المنبثقة -->
+<!-- نافذة الإجراء المتخذ المنبثقة (Modal) -->
 <div id="notesModal" class="modal-overlay">
     <div class="modal-content">
-        <h4 style="color: #1F4E78; margin-bottom: 10px; font-size: 1.1rem;">الإجراء المتخذ للمريض: <span id="modal-patient-name"></span></h4>
-        <p style="font-size: 0.8rem; color: #666; margin-bottom: 12px;">رقم الهوية: <span id="modal-patient-id-display"></span></p>
+        <h4 style="color: #1F4E78; margin-bottom: 10px; font-size: 1.15rem;">الإجراء المتخذ للمريض: <span id="modal-patient-name" style="color: #2c3e50;"></span></h4>
+        <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">رقم الهوية: <span id="modal-patient-id-display"></span></p>
         <input type="hidden" id="modal-patient-id">
         
         <div class="mb-3">
-            <textarea id="patient-notes-input" class="form-control" rows="4" placeholder="اكتب الإجراء المتخذ مع المريض هنا..."></textarea>
+            <label style="font-size: 0.85rem; margin-bottom: 5px; color: #1F4E78;">تفاصيل الإجراء المتخذ:</label>
+            <textarea id="patient-notes-input" class="form-control" rows="5" placeholder="اكتب الإجراء المتخذ مع المريض هنا..."></textarea>
         </div>
 
         <div style="display: flex; gap: 10px;">
-            <button type="button" class="btn btn-primary" onclick="savePatientNotes()">حفظ الإجراء</button>
-            <button type="button" class="btn btn-secondary" onclick="closeNotesModal()">إغلاق</button>
+            <button type="button" class="btn btn-primary" onclick="savePatientNotes()" style="margin-top: 0;">حفظ الإجراء</button>
+            <button type="button" class="btn btn-secondary" onclick="closeNotesModal()" style="margin-top: 0;">إغلاق</button>
         </div>
     </div>
 </div>
 
 <script>
+    const registeredPatients = {};
+    
     document.addEventListener("DOMContentLoaded", function() {
         setLiveDateTime();
         loadSavedFormData();
+
         document.querySelectorAll('.save-input').forEach(input => {
             input.addEventListener('input', saveFormDataToLocal);
             input.addEventListener('change', saveFormDataToLocal);
         });
+        
+        const rows = document.querySelectorAll("#recordsTable tbody tr");
+        rows.forEach(row => {
+            const cols = row.querySelectorAll("td");
+            if (cols.length >= 4) {
+                const id = cols[2].innerText.trim();
+                const name = cols[1].innerText.trim();
+                if (id && id !== '-') {
+                    registeredPatients[id] = name;
+                }
+            }
+        });
+
+        filterCurrentShiftByDefault();
     });
 
+    // تعيين التاريخ والوقت الحاليين تلقائياً في الحقول المخفية
     function setLiveDateTime() {
         const now = new Date();
         const year = now.getFullYear();
@@ -417,102 +483,176 @@
 
         const dateField = document.getElementById('record_date');
         const timeField = document.getElementById('record_time');
-        if (dateField) dateField.value = year + '-' + month + '-' + day;
-        if (timeField) timeField.value = hours + ':' + minutes + ':' + seconds;
+
+        if (dateField) dateField.value = `${year}-${month}-${day}`;
+        if (timeField) timeField.value = `${hours}:${minutes}:${seconds}`;
     }
 
-    function filterTableRecords() {
-        const searchId = document.getElementById('search_national_id').value.trim();
-        const dateFrom = document.getElementById('search_date_from').value;
-        const dateTo = document.getElementById('search_date_to').value;
-        const rows = document.querySelectorAll('.record-row');
-
-        rows.forEach(row => {
-            const nationalIdText = row.querySelector('.col-national-id').innerText;
-            const dateText = row.querySelector('.col-date').innerText;
-
-            let matchesId = true;
-            let matchesDate = true;
-
-            if (searchId !== "" && !nationalIdText.includes(searchId)) {
-                matchesId = false;
-            }
-
-            if (dateFrom && dateText < dateFrom) {
-                matchesDate = false;
-            }
-            if (dateTo && dateText > dateTo) {
-                matchesDate = false;
-            }
-
-            if (matchesId && matchesDate) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
-        });
-    }
-
-    function resetSearchFilters() {
-        document.getElementById('search_national_id').value = "";
-        document.getElementById('search_date_from').value = "";
-        document.getElementById('search_date_to').value = "";
-        filterTableRecords();
-    }
-
+    // دالة توليد رقم الدور المتسلسل (A/P)
     function generateQueueNumber() {
         const now = new Date();
         const hours = now.getHours();
         const prefix = hours >= 12 ? 'P' : 'A'; 
         let dateStr = now.toISOString().split('T')[0];
         let dailyKey = 'queue_num_' + dateStr + '_' + prefix;
-        let currentNum = localStorage.getItem(dailyKey) || 1;
-        localStorage.setItem(dailyKey, parseInt(currentNum) + 1);
+        let currentNum = localStorage.getItem(dailyKey);
+        
+        if (!currentNum) {
+            currentNum = 1;
+        } else {
+            currentNum = parseInt(currentNum) + 1;
+        }
+        localStorage.setItem(dailyKey, currentNum);
         return prefix + "-" + currentNum;
     }
 
+    // التحقق من رقم الهوية وتنبيه المستخدم إذا مكرر مسبقاً
+    function checkPatientIdentity(idValue) {
+        const warningEl = document.getElementById('id-warning');
+        if (!warningEl) return;
+
+        if (idValue.length === 10) {
+            if (registeredPatients[idValue]) {
+                warningEl.style.display = 'block';
+                warningEl.innerText = `تنبيه: هذا المريض مسجل مسبقاً باسم (${registeredPatients[idValue]})`;
+            } else {
+                warningEl.style.display = 'none';
+                warningEl.innerText = '';
+            }
+        } else {
+            warningEl.style.display = 'none';
+            warningEl.innerText = '';
+        }
+    }
+
+    // تصفية السجلات بناءً على التاريخ ورقم الهوية
+    function applyFilters() {
+        const filterId = document.getElementById('filter_id').value.trim();
+        const startDate = document.getElementById('filter_start').value;
+        const endDate = document.getElementById('filter_end').value;
+
+        const rows = document.querySelectorAll("#recordsTable tbody tr");
+        let visibleCount = 1;
+
+        rows.forEach(row => {
+            const cols = row.querySelectorAll("td");
+            if (cols.length >= 9) {
+                const name = cols[1].innerText.trim();
+                const id = cols[2].innerText.trim();
+                const dateText = cols[7].innerText.trim();
+
+                let matchesId = !filterId || id.includes(filterId) || name.includes(filterId);
+                let matchesDate = true;
+
+                if (startDate && dateText < startDate) matchesDate = false;
+                if (endDate && dateText > endDate) matchesDate = false;
+
+                if (matchesId && matchesDate) {
+                    row.style.display = "";
+                    const numCell = row.querySelector('.row-num');
+                    if (numCell) numCell.innerText = visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            }
+        });
+    }
+
+    // مسح الفلاتر وإعادة عرض الجدول بالشكل الافتراضي
+    function clearFilters() {
+        document.getElementById('filter_id').value = '';
+        document.getElementById('filter_start').value = '';
+        document.getElementById('filter_end').value = '';
+        filterCurrentShiftByDefault();
+    }
+
+    // إرسال عبر الواتساب مباشرة بالصيغة المطلوبة
     function sendWhatsAppTicket() {
         const phone = document.getElementById('patient_phone').value.trim();
         const patientName = document.getElementById('patient_name').value.trim();
         const serviceSelect = document.getElementById('service_name');
         const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
 
-        if (!patientName || !phone) {
-            alert('يرجى إدخال اسم المريض ورقم الجوال أولاً.');
+        if (!patientName) {
+            alert('يرجى إدخال اسم المريض أولاً.');
+            document.getElementById('patient_name').focus();
             return;
         }
+
+        if (!phone) {
+            alert('يرجى إدخال رقم الجوال أولاً.');
+            document.getElementById('patient_phone').focus();
+            return;
+        }
+
         let formattedPhone = phone.startsWith('0') ? '966' + phone.slice(1) : phone;
         const ticketNumber = generateQueueNumber();
+
         const message = `مرحبًا ${patientName}\nتم إصدار تذكرتك في وحدة الدعم المساندة:\n\nرقم الدور: *${ticketNumber}*\nالقسم: ${serviceName}\n\nيرجى الانتظار لحين نداء رقمك شكراً لتعاونكم.`;
-        window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`, '_blank');
+        
+        const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
     }
 
+    // إرسال عبر SMS
     function sendSmsTicket() {
         const patientName = document.getElementById('patient_name').value.trim();
         const phone = document.getElementById('patient_phone').value.trim();
         const serviceSelect = document.getElementById('service_name');
         const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
 
-        if (!patientName || !phone) {
-            alert('يرجى إدخال اسم المريض ورقم الجوال أولاً.');
+        if (!patientName) {
+            alert('يرجى إدخال اسم المريض أولاً.');
             return;
         }
+
+        if (!phone || phone.length < 10) {
+            alert('يرجى إدخال رقم جوال صحيح يتكون من 10 أرقام.');
+            return;
+        }
+
         const ticketNumber = generateQueueNumber();
+
         fetch('/send-sms', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, name: patientName, ticket: ticketNumber, service: serviceName })
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                phone: phone,
+                name: patientName,
+                ticket: ticketNumber,
+                service: serviceName
+            })
         })
-        .then(res => res.json())
-        .then(data => alert(data.success ? 'تم إرسال رسالة الـ SMS بنجاح!' : 'فشل الإرسال: ' + data.message))
-        .catch(() => alert('عذراً، خدمة الرسائل النصية غير مفعلة حالياً.'));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('خدمة الرسائل غير متوفرة حالياً في السيرفر.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('تم إرسال رسالة الـ SMS بنجاح إلى المريض!');
+            } else {
+                alert('فشل إرسال الرسالة: ' + (data.message || 'خطأ من الخادم'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('عذراً، خدمة الرسائل النصية (SMS) غير مفعلة حالياً على الخادم. يمكنك الاعتماد على إرسال الواتساب.');
+        });
     }
 
+    // دوال نافذة الإجراء المتخذ
     function openNotesModal(patientName, nationalId) {
         document.getElementById('modal-patient-name').innerText = patientName;
         document.getElementById('modal-patient-id').value = nationalId;
         document.getElementById('modal-patient-id-display').innerText = nationalId;
-        document.getElementById('patient-notes-input').value = localStorage.getItem('patient_action_' + nationalId) || '';
+        
+        const savedNote = localStorage.getItem('patient_action_' + nationalId) || '';
+        document.getElementById('patient-notes-input').value = savedNote;
+        
         document.getElementById('notesModal').style.display = 'flex';
     }
 
@@ -523,16 +663,21 @@
     function savePatientNotes() {
         const nationalId = document.getElementById('modal-patient-id').value;
         const noteText = document.getElementById('patient-notes-input').value;
+        
         if (nationalId) {
             localStorage.setItem('patient_action_' + nationalId, noteText);
             alert('تم حفظ الإجراء المتخذ بنجاح!');
             closeNotesModal();
+        } else {
+            alert('رقم هوية المريض غير متوفر.');
         }
     }
 
     function saveFormDataToLocal() {
         const formData = {};
-        document.querySelectorAll('.save-input').forEach(input => { formData[input.id] = input.value; });
+        document.querySelectorAll('.save-input').forEach(input => {
+            formData[input.id] = input.value;
+        });
         localStorage.setItem('hospital_patient_form_data', JSON.stringify(formData));
     }
 
@@ -543,10 +688,14 @@
                 const formData = JSON.parse(savedData);
                 for (const id in formData) {
                     const input = document.getElementById(id);
-                    if (input) input.value = formData[id];
+                    if (input) {
+                        input.value = formData[id];
+                    }
                 }
                 handleStaffSelectionType();
-            } catch (e) {}
+            } catch (e) {
+                console.error("Error loading saved form data", e);
+            }
         }
     }
 
@@ -554,9 +703,9 @@
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
         const tempNameInput = document.getElementById('temp_name_input');
+
         let hid = document.getElementById('dynamic_hidden_emp');
-        
-        if (!hid) {
+        if(!hid) {
             hid = document.createElement('input');
             hid.type = 'hidden';
             hid.id = 'dynamic_hidden_emp';
@@ -568,10 +717,17 @@
             employeeSelect.value = "";
             employeeSelect.removeAttribute('required');
             hid.value = tempTypeSelect.value + " - " + tempNameInput.value.trim();
-        } else {
+        } else if (employeeSelect.value !== "") {
+            tempTypeSelect.value = "";
+            tempNameInput.value = "";
+            employeeSelect.setAttribute('name', 'employee_name');
             employeeSelect.setAttribute('required', 'required');
-            if (hid) hid.remove();
+            if(hid) hid.remove();
+        } else {
+            employeeSelect.setAttribute('name', 'employee_name');
+            if(hid) hid.remove();
         }
+        
         saveFormDataToLocal();
     }
 
@@ -580,24 +736,69 @@
         const employeeSelect = document.getElementById('employee_select');
         const tempTypeSelect = document.getElementById('temp_type_select');
         const tempNameInput = document.getElementById('temp_name_input');
-        
+
         const isTempFilled = (tempTypeSelect.value !== "" && tempNameInput.value.trim() !== "");
         const isEmployeeSelected = (employeeSelect.value !== "");
 
         if (!isTempFilled && !isEmployeeSelected) {
-            alert("يرجى اختيار اسم الموظف الأساسي أو تعبئة حقول الكادر المؤقت.");
+            alert("يرجى اختيار اسم الموظف الأساسي أو تعبئة حقول الكادر المؤقت (نوع الكادر والاسم).");
             return false;
         }
+
+        if ((tempTypeSelect.value !== "" && tempNameInput.value.trim() === "") || 
+            (tempTypeSelect.value === "" && tempNameInput.value.trim() !== "")) {
+            alert("يرجى إكمال حقول الكادر المؤقت (اختر نوع الكادر وأدخل الاسم معاً) أو تركها فارغة واختيار موظف أساسي.");
+            return false;
+        }
+
         localStorage.removeItem('hospital_patient_form_data');
         return true;
     }
 
     function resetFormCustom() {
+        document.getElementById('employee_select').setAttribute('name', 'employee_name');
+        document.getElementById('employee_select').setAttribute('required', 'required');
         const hid = document.getElementById('dynamic_hidden_emp');
-        if (hid) hid.remove();
+        if(hid) hid.remove();
         localStorage.removeItem('hospital_patient_form_data');
     }
-</script>
 
+    function filterCurrentShiftByDefault() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayStr = year + '-' + month + '-' + day;
+        
+        const currentHour = now.getHours();
+        const isMorningShift = (currentHour >= 0 && currentHour < 12);
+
+        const rows = document.querySelectorAll("#recordsTable tbody tr");
+        let visibleCount = 1;
+
+        rows.forEach(row => {
+            const cols = row.querySelectorAll("td");
+            if (cols.length >= 9) {
+                const dateText = cols[7].innerText.trim();
+                const timeText = cols.length > 8 ? cols[8].innerText.trim() : '';
+
+                if (dateText === todayStr && timeText) {
+                    const hour = parseInt(timeText.split(':')[0]);
+                    const recordIsMorning = (hour >= 0 && hour < 12);
+
+                    if (recordIsMorning === isMorningShift) {
+                        row.style.display = "";
+                        const numCell = row.querySelector('.row-num');
+                        if (numCell) numCell.innerText = visibleCount++;
+                    } else {
+                        row.style.display = "none";
+                    }
+                } else {
+                    row.style.display = "none";
+                }
+            }
+        });
+    }
+</script>
 </body>
 </html>
