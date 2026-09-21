@@ -10,7 +10,7 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "رابط_السوبابيس_هن�
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "مفتاح_السوبابيس_هنا")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# جلب بيانات تويليو بأمان تام من بيئة النظام (Environment Variables)
+# بيانات تويليو
 TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
