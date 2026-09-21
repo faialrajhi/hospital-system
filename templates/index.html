@@ -420,7 +420,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>الاسم (الإجراء المتخذ)</th>
+                                <th>الاسم</th>
                                 <th>الهوية</th>
                                 <th>رقم الملف</th>
                                 <th>الخدمة المطلوبة</th>
@@ -532,11 +532,9 @@
         document.getElementById('modal-patient-id').value = nationalId;
         document.getElementById('modal-patient-id-display').innerText = nationalId;
         
-        // جلب الإجراء المتخذ المحفوظ سابقاً إن وجد لهذا المريض عبر رقم الهوية
         const savedNote = localStorage.getItem('patient_action_' + nationalId) || '';
         document.getElementById('patient-notes-input').value = savedNote;
         
-        // إظهار النافذة
         document.getElementById('notesModal').style.display = 'flex';
     }
 
