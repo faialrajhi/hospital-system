@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>إدارة تجربة المريض - وحدة الدعم المساندة</title>
-    <!-- استيراد خط Tajawal المناسب للمستشفيات -->
+
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
     <style>
         * {
             box-sizing: border-box;
@@ -13,17 +15,19 @@
             padding: 0;
             font-family: 'Tajawal', sans-serif !important;
         }
+
         body {
             background-color: #f4f7f9;
             color: #2c3e50;
             padding: 15px;
         }
-        /* تعديل الحاوية الرئيسية لتأخذ عرضاً أكبر ومريحاً للشاشة بالكامل */
+
         .container {
             width: 100%;
             max-width: 1750px;
             margin: 0 auto;
         }
+
         .header-banner {
             background: linear-gradient(135deg, #1F4E78 0%, #163a5d 100%);
             color: white;
@@ -36,24 +40,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: 120px;
         }
+
         .header-banner img {
-            height: 190px;
+            height: 100px;
             width: auto;
             position: absolute;
             right: 25px;
             border-radius: 8px;
         }
+
         .header-banner h2 {
             font-size: 1.7rem;
             font-weight: 700;
             letter-spacing: 0.5px;
         }
-        
-        /* تعديل التخطيط باستخدام Grid لتوزيع المساحة بشكل ممتاز وبدون انكماش */
+
         .main-layout {
             display: grid;
-            grid-template-columns: 1.15fr 2.85fr; /* إعطاء مساحة أوسع لنموذج الإدخال ومساحة كبرى للجدول */
+            grid-template-columns: 1.15fr 2.85fr;
             gap: 20px;
             align-items: start;
         }
@@ -66,12 +72,12 @@
             margin-bottom: 20px;
             border: 1px solid #eef2f5;
         }
-        .form-container {
-            width: 100%;
-        }
+
+        .form-container,
         .table-container {
             width: 100%;
         }
+
         .card-title {
             color: #1F4E78;
             font-size: 1.25rem;
@@ -81,17 +87,21 @@
             border-bottom: 2px solid #f0f4f8;
             text-align: center;
         }
+
         .mb-3 {
             margin-bottom: 15px;
         }
+
         .temp-row {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
         }
+
         .temp-row .col {
             flex: 1;
         }
+
         label {
             display: block;
             margin-bottom: 6px;
@@ -99,7 +109,9 @@
             font-size: 0.9rem;
             color: #34495e;
         }
-        .form-control, .form-select {
+
+        .form-control,
+        .form-select {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #cbd5e1;
@@ -109,10 +121,13 @@
             transition: all 0.2s ease;
             background-color: #fff;
         }
-        .form-control:focus, .form-select:focus {
+
+        .form-control:focus,
+        .form-select:focus {
             border-color: #1F4E78;
             box-shadow: 0 0 0 3px rgba(31, 78, 120, 0.12);
         }
+
         .btn {
             width: 100%;
             padding: 11px;
@@ -124,27 +139,34 @@
             transition: background 0.2s;
             margin-top: 8px;
         }
+
         .btn-primary {
             background-color: #1F4E78;
             color: white;
         }
+
         .btn-primary:hover {
             background-color: #163a5d;
         }
+
         .btn-print {
             background-color: #2b6cb0;
             color: white;
         }
+
         .btn-print:hover {
             background-color: #2c5282;
         }
+
         .btn-secondary {
             background-color: #e2e8f0;
             color: #475569;
         }
+
         .btn-secondary:hover {
             background-color: #cbd5e1;
         }
+
         .btn-success {
             background-color: #2e7d32;
             color: white;
@@ -156,12 +178,15 @@
             font-weight: 600;
             text-align: center;
         }
+
         .btn-success:hover {
             background-color: #1b5e20;
         }
+
         .table-responsive {
             overflow-x: auto;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -169,18 +194,23 @@
             font-size: 0.9rem;
             white-space: nowrap;
         }
-        th, td {
+
+        th,
+        td {
             padding: 12px 10px;
             border-bottom: 1px solid #edf2f7;
         }
+
         th {
             background-color: #1F4E78;
             color: white;
             font-weight: 700;
         }
+
         tr:hover {
             background-color: #f8fafc;
         }
+
         .text-muted {
             color: #888;
             padding: 20px;
@@ -191,13 +221,75 @@
             display: none;
         }
 
+        .button-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .button-group .btn {
+            flex: 1;
+            margin-top: 0 !important;
+            min-width: 100px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 6px;
+            margin-top: 0;
+        }
+
+        .filter-buttons button {
+            width: auto;
+            margin-top: 0;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .header-banner img {
+                height: 70px;
+                right: 10px;
+            }
+
+            .header-banner h2 {
+                font-size: 1.25rem;
+                padding: 0 70px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .temp-row {
+                flex-direction: column;
+            }
+
+            .header-banner {
+                min-height: 100px;
+            }
+
+            .header-banner img {
+                display: none;
+            }
+
+            .header-banner h2 {
+                padding: 0;
+                font-size: 1.15rem;
+            }
+        }
+
         @media print {
             body * {
                 visibility: hidden !important;
             }
-            #ticket-card, #ticket-card * {
+
+            #ticket-card,
+            #ticket-card * {
                 visibility: visible !important;
             }
+
             #ticket-card {
                 display: block !important;
                 position: absolute !important;
@@ -210,80 +302,217 @@
                 background: white !important;
                 overflow: hidden !important;
             }
+
             @page {
                 size: 80mm auto;
                 margin: 0mm;
             }
         }
-        .button-group {
-    display: flex;
-    gap: 8px; /* المسافة بين الأزارير */
-    flex-wrap: wrap; /* لضمان التوافق مع الشاشات الصغيرة */
-    margin-top: 8px;
-}
-.button-group .btn {
-    flex: 1; /* لتوزيع الأزرار بالتساوي أو جعلها مرنة */
-    margin-top: 0 !important; /* إلغاء الهامش العُلوي الافتراضي للزر */
-    min-width: 100px; /* أقل عرض للزر ليبقى شكله منسقاً */
-}
     </style>
 </head>
+
 <body>
 
 <div class="container">
+
+    <!-- الهيدر -->
     <div class="header-banner">
         <img src="{{ url_for('static', filename='logo.png') }}" alt="شعار المستشفى">
         <h2>إدارة تجربة المريض — وحدة الدعم المساندة</h2>
     </div>
 
     <div class="main-layout">
+
+        <!-- ========================= -->
+        <!-- نموذج الإدخال -->
+        <!-- ========================= -->
+
         <div class="form-container">
+
             <div class="card">
+
                 <h4 class="card-title">لوحة إدخال البيانات</h4>
-                <form id="patientForm" action="/" method="POST" onsubmit="return validateAndSubmitForm()">
+
+                <form
+                    id="patientForm"
+                    action="/"
+                    method="POST"
+                    onsubmit="return validateAndSubmitForm()"
+                >
+
+                    <!-- اسم المريض -->
                     <div class="mb-3">
                         <label>اسم المريض</label>
-                        <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المريض" required>
+
+                        <input
+                            type="text"
+                            id="patient_name"
+                            name="patient_name"
+                            class="form-control"
+                            placeholder="اسم المريض"
+                            required
+                        >
                     </div>
 
+
+                    <!-- رقم الهوية -->
                     <div class="mb-3">
+
                         <label>رقم الهوية</label>
-                        <input type="text" id="national_id" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
-                        <small id="id-warning" style="color: #e53e3e; font-size: 0.75rem; display: none; margin-top: 3px; font-weight: bold;"></small>
-                    </div>
-                    <div class="mb-3">
-    <label for="patient_phone">رقم الجوال:</label>
-    <input type="text" id="patient_phone" name="patient_phone" class="form-control" placeholder="9665xxxxxxxx+" required>
-</div>
-                    <div class="mb-3">
-                        <label>رقم الملف </label>
-                        <input type="text" id="file_number" name="file_number" class="form-control" placeholder="20XXXXXX">
+
+                        <input
+                            type="text"
+                            id="national_id"
+                            name="national_id"
+                            class="form-control"
+                            placeholder="10xxxxxxxx"
+                            maxlength="10"
+                            pattern="[0-9]{10}"
+                            title="يجب أن تتكون الهوية من 10 أرقام فقط"
+                            oninput="checkPatientIdentity(this.value)"
+                            required
+                        >
+
+                        <small
+                            id="id-warning"
+                            style="
+                                color:#e53e3e;
+                                font-size:0.75rem;
+                                display:none;
+                                margin-top:3px;
+                                font-weight:bold;
+                            "
+                        ></small>
+
                     </div>
 
+
+                    <!-- رقم الجوال -->
                     <div class="mb-3">
+
+                        <label for="patient_phone">رقم الجوال:</label>
+
+                        <input
+                            type="text"
+                            id="patient_phone"
+                            name="patient_phone"
+                            class="form-control"
+                            placeholder="05xxxxxxxx"
+                            maxlength="10"
+                            pattern="[0-9]{10}"
+                            title="يجب أن يتكون رقم الجوال من 10 أرقام"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- رقم الملف -->
+                    <div class="mb-3">
+
+                        <label>رقم الملف</label>
+
+                        <input
+                            type="text"
+                            id="file_number"
+                            name="file_number"
+                            class="form-control"
+                            placeholder="20XXXXXX"
+                        >
+
+                    </div>
+
+
+                    <!-- الخدمة المطلوبة -->
+                    <div class="mb-3">
+
                         <label>الخدمة المطلوبة</label>
-                        <select id="requested_service" name="requested_service" class="form-select" required>
-                            <option value="" disabled selected>اختر الخدمة المطلوبة</option>
-                            <option value="طلب مقابلة طبيب">طلب مقابلة طبيب</option>
-                            <option value="طلب صرف دواء">طلب صرف دواء</option>
-                            <option value="موعد جديد عيادات">موعد جديد عيادات</option>
-                            <option value="اعادة موعد عيادات">اعادة موعد عيادات</option>
-                            <option value="موعد عيادة الصحة النفسية">موعد عيادة الصحة النفسية</option>
-                            <option value="اعادة موعد عيادة الصحة النفسية">اعادة موعد عيادة الصحة النفسية</option>
-                            <option value="عدم ظهور طلب تحليل في النظام">عدم ظهور طلب تحليل في النظام</option>
-                            <option value="عدم ظهور طلب الاشعة في النظام">عدم ظهور طلب الاشعة في النظام</option>
-                            <option value="عدم ظهور الادوية في النظام">عدم ظهور الادوية في النظام</option>
-                            <option value="طلب مرافقة جديد">طلب مرافقة جديد</option>
-                            <option value="اعادة طلب مرافقة">اعادة طلب مرافقة</option>
-                            <option value="شكوى ضد موظف">شكوى ضد موظف</option>
-                            <option value="شكوى من خدمة">شكوى من خدمة</option>
+
+                        <select
+                            id="requested_service"
+                            name="requested_service"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="" disabled selected>
+                                اختر الخدمة المطلوبة
+                            </option>
+
+                            <option value="طلب مقابلة طبيب">
+                                طلب مقابلة طبيب
+                            </option>
+
+                            <option value="طلب صرف دواء">
+                                طلب صرف دواء
+                            </option>
+
+                            <option value="موعد جديد عيادات">
+                                موعد جديد عيادات
+                            </option>
+
+                            <option value="اعادة موعد عيادات">
+                                اعادة موعد عيادات
+                            </option>
+
+                            <option value="موعد عيادة الصحة النفسية">
+                                موعد عيادة الصحة النفسية
+                            </option>
+
+                            <option value="اعادة موعد عيادة الصحة النفسية">
+                                اعادة موعد عيادة الصحة النفسية
+                            </option>
+
+                            <option value="عدم ظهور طلب تحليل في النظام">
+                                عدم ظهور طلب تحليل في النظام
+                            </option>
+
+                            <option value="عدم ظهور طلب الاشعة في النظام">
+                                عدم ظهور طلب الاشعة في النظام
+                            </option>
+
+                            <option value="عدم ظهور الادوية في النظام">
+                                عدم ظهور الادوية في النظام
+                            </option>
+
+                            <option value="طلب مرافقة جديد">
+                                طلب مرافقة جديد
+                            </option>
+
+                            <option value="اعادة طلب مرافقة">
+                                اعادة طلب مرافقة
+                            </option>
+
+                            <option value="شكوى ضد موظف">
+                                شكوى ضد موظف
+                            </option>
+
+                            <option value="شكوى من خدمة">
+                                شكوى من خدمة
+                            </option>
+
                         </select>
+
                     </div>
 
+
+                    <!-- القسم -->
                     <div class="mb-3">
+
                         <label>القسم</label>
-                        <select id="service_name" name="service_name" class="form-select" required>
-                            <option value="" disabled selected>اختر القسم</option>
+
+                        <select
+                            id="service_name"
+                            name="service_name"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="" disabled selected>
+                                اختر القسم
+                            </option>
+
                             <option value="اطباء الباطنة">اطباء الباطنة</option>
                             <option value="تمريض الباطنة">تمريض الباطنة</option>
                             <option value="اطباء الجراحة">اطباء الجراحة</option>
@@ -307,93 +536,336 @@
                             <option value="الإمداد">الإمداد</option>
                             <option value="المختبر">المختبر</option>
                             <option value="إدارة القبول">إدارة القبول</option>
+
                         </select>
+
                     </div>
-<!-- قائمة الموظفين الثابتين الأساسية -->
-    <div class="mb-3">
-        <label>اسم الموظف</label>
-        <select id="employee_select" name="employee_name" class="form-select" required onchange="handleStaffSelectionType()">
-            <option value="" disabled selected>اختر اسم الموظف</option>
-            <option value="ابراهيم بخاري">ابراهيم بخاري</option>
-            <option value="صالح حنيف">صالح حنيف</option>
-            <option value="احلام هوساوي">احلام هوساوي</option>
-            <option value="معتوق سيف">معتوق سيف</option>
-            <option value="تركي عبدالعزيز">تركي عبدالعزيز</option>
-            <option value="سليم الشريف">سليم الشريف</option>
-            <option value="فوزي بليلة">فوزي بليلة</option>
-            <option value="رامي اللقماني">رامي اللقماني</option>
-        </select>
-    </div>
 
-    <!-- صف أفقي يضم نوع الكادر المؤقت واسم المتطوع/المتدرب بجانب بعضهما -->
-    <div class="temp-row">
-        <div class="col">
-            <label style="font-size: 0.8rem;">نوع الكادر:</label>
-            <select id="temp_type_select" class="form-select" style="font-size: 0.9rem; padding: 9px 8px;" onchange="handleStaffSelectionType()">
-                <option value="" selected>اختر</option>
-                <option value="متطوع">متطوع</option>
-                <option value="تمهير">تمهير</option>
-                <option value="تدريب">تدريب</option>
-            </select>
-        </div>
-        <div class="col" style="flex: 1.4;">
-            <label style="font-size: 0.8rem;">الاسم</label>
-            <input type="text" id="temp_name_input" class="form-control" placeholder="ادخل الاسم" style="font-size: 0.9rem; padding: 9px 8px;" oninput="handleStaffSelectionType()">
-        </div>
-    </div>
-                   
 
-                    <!-- الحقول المخفية للتاريخ والوقت -->
-                    <input type="hidden" id="record_date" name="record_date">
-                    <input type="hidden" id="record_time" name="record_time">
-                    <input type="hidden" id="final_employee_name" name="final_employee_name">
-         
+                    <!-- الموظف الأساسي -->
+                    <div class="mb-3">
+
+                        <label>اسم الموظف</label>
+
+                        <select
+                            id="employee_select"
+                            name="employee_name"
+                            class="form-select"
+                            required
+                            onchange="handleStaffSelectionType()"
+                        >
+
+                            <option value="" disabled selected>
+                                اختر اسم الموظف
+                            </option>
+
+                            <option value="ابراهيم بخاري">ابراهيم بخاري</option>
+                            <option value="صالح حنيف">صالح حنيف</option>
+                            <option value="احلام هوساوي">احلام هوساوي</option>
+                            <option value="معتوق سيف">معتوق سيف</option>
+                            <option value="تركي عبدالعزيز">تركي عبدالعزيز</option>
+                            <option value="سليم الشريف">سليم الشريف</option>
+                            <option value="فوزي بليلة">فوزي بليلة</option>
+                            <option value="رامي اللقماني">رامي اللقماني</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- الكادر المؤقت -->
+                    <div class="temp-row">
+
+                        <div class="col">
+
+                            <label style="font-size:0.8rem;">
+                                نوع الكادر:
+                            </label>
+
+                            <select
+                                id="temp_type_select"
+                                class="form-select"
+                                style="font-size:0.9rem;padding:9px 8px;"
+                                onchange="handleStaffSelectionType()"
+                            >
+
+                                <option value="" selected>
+                                    اختر
+                                </option>
+
+                                <option value="متطوع">
+                                    متطوع
+                                </option>
+
+                                <option value="تمهير">
+                                    تمهير
+                                </option>
+
+                                <option value="تدريب">
+                                    تدريب
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div
+                            class="col"
+                            style="flex:1.4;"
+                        >
+
+                            <label style="font-size:0.8rem;">
+                                الاسم
+                            </label>
+
+                            <input
+                                type="text"
+                                id="temp_name_input"
+                                class="form-control"
+                                placeholder="ادخل الاسم"
+                                style="font-size:0.9rem;padding:9px 8px;"
+                                oninput="handleStaffSelectionType()"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- التاريخ والوقت -->
+                    <input
+                        type="hidden"
+                        id="record_date"
+                        name="record_date"
+                    >
+
+                    <input
+                        type="hidden"
+                        id="record_time"
+                        name="record_time"
+                    >
+
+                    <input
+                        type="hidden"
+                        id="final_employee_name"
+                        name="final_employee_name"
+                    >
+
+
+                    <!-- أزرار التواصل -->
                     <div class="button-group">
-    <!-- أزرار الواتساب و SMS متجاورة -->
-    <button type="button" class="btn" style="background-color: #25d366; color: white;" onclick="sendWhatsAppViaServer()">واتساب</button>
-    <button type="button" class="btn" style="background-color: #0284c7; color: white;" onclick="sendSMSViaServer()">SMS</button>
-</div>
-                    <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
-                    <button type="submit" class="btn btn-primary">حفظ السجل</button>
-                    <button type="reset" class="btn btn-secondary" onclick="resetFormCustom()">مسح الحقول</button>
-      
+
+                        <button
+                            type="button"
+                            class="btn"
+                            style="background-color:#25d366;color:white;"
+                            onclick="sendWhatsApp()"
+                        >
+                            واتساب
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn"
+                            style="background-color:#0284c7;color:white;"
+                            onclick="sendSMS()"
+                        >
+                            SMS
+                        </button>
+
+                    </div>
+
+
+                    <!-- الطباعة -->
+                    <button
+                        type="button"
+                        class="btn btn-print"
+                        onclick="printTicket()"
+                    >
+                        طباعة تذكرة
+                    </button>
+
+
+                    <!-- الحفظ -->
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        حفظ السجل
+                    </button>
+
+
+                    <!-- المسح -->
+                    <button
+                        type="reset"
+                        class="btn btn-secondary"
+                        onclick="resetFormCustom()"
+                    >
+                        مسح الحقول
+                    </button>
 
                 </form>
+
             </div>
+
         </div>
 
+
+        <!-- ========================= -->
+        <!-- جدول السجلات -->
+        <!-- ========================= -->
+
         <div class="table-container">
+
             <div class="card">
-                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">آخر السجلات المسجلة</h4>
-                
-                <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
-                    <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 140px;">
-                            <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية :</label>
-                            <input type="text" id="filter_id" class="form-control" placeholder="ابحث بالهوية.." style="padding: 6px 10px; font-size: 0.9rem;">
+
+                <h4
+                    class="card-title"
+                    style="text-align:right;margin-bottom:15px;"
+                >
+                    آخر السجلات المسجلة
+                </h4>
+
+
+                <!-- البحث -->
+                <div
+                    style="
+                        background-color:#f8fafc;
+                        padding:15px;
+                        border-radius:8px;
+                        margin-bottom:20px;
+                        border:1px solid #e2e8f0;
+                    "
+                >
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:10px;
+                            align-items:flex-end;
+                            flex-wrap:wrap;
+                        "
+                    >
+
+                        <div style="flex:1;min-width:140px;">
+
+                            <label
+                                for="filter_id"
+                                style="font-size:0.85rem;margin-bottom:4px;"
+                            >
+                                رقم الهوية :
+                            </label>
+
+                            <input
+                                type="text"
+                                id="filter_id"
+                                class="form-control"
+                                placeholder="ابحث بالهوية.."
+                                style="padding:6px 10px;font-size:0.9rem;"
+                            >
+
                         </div>
-                        <div style="flex: 1; min-width: 130px;">
-                            <label for="filter_start" style="font-size: 0.85rem; margin-bottom: 4px;">من تاريخ:</label>
-                            <input type="date" id="filter_start" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
+
+
+                        <div style="flex:1;min-width:130px;">
+
+                            <label
+                                for="filter_start"
+                                style="font-size:0.85rem;margin-bottom:4px;"
+                            >
+                                من تاريخ:
+                            </label>
+
+                            <input
+                                type="date"
+                                id="filter_start"
+                                class="form-control"
+                                style="padding:6px 10px;font-size:0.9rem;"
+                            >
+
                         </div>
-                        <div style="flex: 1; min-width: 130px;">
-                            <label for="filter_end" style="font-size: 0.85rem; margin-bottom: 4px;">إلى تاريخ :</label>
-                            <input type="date" id="filter_end" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;">
+
+
+                        <div style="flex:1;min-width:130px;">
+
+                            <label
+                                for="filter_end"
+                                style="font-size:0.85rem;margin-bottom:4px;"
+                            >
+                                إلى تاريخ:
+                            </label>
+
+                            <input
+                                type="date"
+                                id="filter_end"
+                                class="form-control"
+                                style="padding:6px 10px;font-size:0.9rem;"
+                            >
+
                         </div>
-                        <div style="display: flex; gap: 6px; margin-top: 0;">
-                            <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">بحث</button>
-                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح البحث</button>
+
+
+                        <div class="filter-buttons">
+
+                            <button
+                                type="button"
+                                class="btn"
+                                style="
+                                    background-color:#1F4E78;
+                                    color:white;
+                                    padding:7px 12px;
+                                    font-size:0.85rem;
+                                    border-radius:6px;
+                                "
+                                onclick="applyFilters()"
+                            >
+                                بحث
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn"
+                                style="
+                                    background-color:#e2e8f0;
+                                    color:#475569;
+                                    padding:7px 12px;
+                                    font-size:0.85rem;
+                                    border-radius:6px;
+                                "
+                                onclick="clearFilters()"
+                            >
+                                مسح البحث
+                            </button>
+
                         </div>
+
+
                         <div>
-                            <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 12px; font-size: 0.85rem; border-radius: 6px; margin-top: 0; display: inline-block;">تحميل إلى Excel</a>
+
+                            <a
+                                href="{{ url_for('export_excel') }}"
+                                class="btn-success"
+                            >
+                                تحميل إلى Excel
+                            </a>
+
                         </div>
+
                     </div>
+
                 </div>
-                
+
+
+                <!-- الجدول -->
                 <div class="table-responsive">
+
                     <table id="recordsTable">
+
                         <thead>
+
                             <tr>
+
                                 <th>#</th>
                                 <th>الاسم</th>
                                 <th>الهوية</th>
@@ -403,568 +875,1633 @@
                                 <th>الموظف / القائم بالخدمة</th>
                                 <th>التاريخ</th>
                                 <th>الوقت</th>
+
                             </tr>
+
                         </thead>
+
+
                         <tbody>
+
                             {% for record in records | reverse %}
-                            <tr data-index="{{ loop.revindex }}">
-                                <td><strong class="row-num">{{ loop.index }}</strong></td>
-                                <td>{{ record.get('patient_name', '-') }}</td>
-                                <td>{{ record.get('national_id', '-') }}</td>
-                                <td>{{ record.get('file_number', '-') }}</td>
-                                <td>{{ record.get('requested_service', '-') }}</td>
-                                <td>{{ record.get('service_name', record.get('service', '-')) }}</td>
-                                <td>{{ record.get('employee_name', '-') }}</td>
-                                <td>{{ record.get('record_date', '-') }}</td>
-                                <td>{{ record.get('record_time', '-') }}</td>
-                            </tr>
-                            {% else %}
+
                             <tr>
-                                <td colspan="9" class="text-muted">لا توجد سجلات مسجلة حديثاً.</td>
+
+                                <td>
+                                    <strong class="row-num">
+                                        {{ loop.index }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {{ record.get('patient_name', record.get('name', '-')) }}
+                                </td>
+
+                                <td>
+                                    {{ record.get('national_id', record.get('idNumber', '-')) }}
+                                </td>
+
+                                <td>
+                                    {{ record.get('file_number', '-') }}
+                                </td>
+
+                                <td>
+                                    {{ record.get('requested_service', record.get('requestedService', '-')) }}
+                                </td>
+
+                                <td>
+                                    {{ record.get('service_name', record.get('serviceName', record.get('service', '-'))) }}
+                                </td>
+
+                                <td>
+                                    {{ record.get('employee_name', record.get('employeeName', '-')) }}
+                                </td>
+
+                                <td class="record-date">
+                                    {{ record.get('record_date', record.get('date', '-')) }}
+                                </td>
+
+                                <td class="record-time">
+                                    {{ record.get('record_time', record.get('time', '-')) }}
+                                </td>
+
                             </tr>
+
+                            {% else %}
+
+                            <tr>
+
+                                <td
+                                    colspan="9"
+                                    class="text-muted"
+                                >
+                                    لا توجد سجلات مسجلة حديثاً.
+                                </td>
+
+                            </tr>
+
                             {% endfor %}
+
                         </tbody>
+
                     </table>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
 
-<!-- بطاقة التذكرة الحرارية -->
-<div id="ticket-card" style="direction: rtl; text-align: center;">
-    <h3 style="margin: 0; font-size: 13px; color: #1F4E78;">إدارة تجربة المريض</h3>
-    <p style="font-size: 8px; color: #555; margin: 1px 0;">وحدة الدعم المساندة</p>
-    <hr style="border: 0.5px dashed #aaa; margin: 3px 0;">
-    <div style="margin: 3px 0;">
-        <span style="font-size: 10px; display: block; color: #333;">رقم الدور :</span>
-        <span id="t-number" style="font-size: 20px; font-weight: bold; color: #1F4E78;">A-1</span>
+
+<!-- ========================= -->
+<!-- بطاقة التذكرة -->
+<!-- ========================= -->
+
+<div
+    id="ticket-card"
+    style="direction:rtl;text-align:center;"
+>
+
+    <h3
+        style="
+            margin:0;
+            font-size:13px;
+            color:#1F4E78;
+        "
+    >
+        إدارة تجربة المريض
+    </h3>
+
+    <p
+        style="
+            font-size:8px;
+            color:#555;
+            margin:1px 0;
+        "
+    >
+        وحدة الدعم المساندة
+    </p>
+
+    <hr
+        style="
+            border:0.5px dashed #aaa;
+            margin:3px 0;
+        "
+    >
+
+    <div style="margin:3px 0;">
+
+        <span
+            style="
+                font-size:10px;
+                display:block;
+                color:#333;
+            "
+        >
+            رقم الدور :
+        </span>
+
+        <span
+            id="t-number"
+            style="
+                font-size:20px;
+                font-weight:bold;
+                color:#1F4E78;
+            "
+        >
+            A-1
+        </span>
+
     </div>
-    <div style="text-align: right; font-size: 9px; margin-top: 3px; line-height: 1.2;">
-        <p style="margin: 1px 0;"><strong>المريض:</strong> <span id="t-patient">--</span></p>
-        <p style="margin: 1px 0;"><strong>الخدمة:</strong> <span id="t-req-service">--</span></p>
-        <p style="margin: 1px 0;"><strong>القسم:</strong> <span id="t-service">--</span></p>
-        <p style="margin: 1px 0;"><strong>التاريخ:</strong> <span id="t-date">--</span> | <strong>الوقت:</strong> <span id="t-time">--</span></p>
+
+
+    <div
+        style="
+            text-align:right;
+            font-size:9px;
+            margin-top:3px;
+            line-height:1.2;
+        "
+    >
+
+        <p style="margin:1px 0;">
+            <strong>المريض:</strong>
+            <span id="t-patient">--</span>
+        </p>
+
+        <p style="margin:1px 0;">
+            <strong>الخدمة:</strong>
+            <span id="t-req-service">--</span>
+        </p>
+
+        <p style="margin:1px 0;">
+            <strong>القسم:</strong>
+            <span id="t-service">--</span>
+        </p>
+
+        <p style="margin:1px 0;">
+            <strong>التاريخ:</strong>
+            <span id="t-date">--</span>
+            |
+            <strong>الوقت:</strong>
+            <span id="t-time">--</span>
+        </p>
+
     </div>
-    <hr style="border: 0.5px dashed #aaa; margin: 3px 0 2px 0;">
-    <p style="font-size: 7px; color: #777; margin: 0;">يرجى الانتظار لحين نداء الرقم</p>
+
+
+    <hr
+        style="
+            border:0.5px dashed #aaa;
+            margin:3px 0 2px 0;
+        "
+    >
+
+    <p
+        style="
+            font-size:7px;
+            color:#777;
+            margin:0;
+        "
+    >
+        يرجى الانتظار لحين نداء الرقم
+    </p>
+
 </div>
+
 
 <script>
+
+    /* =========================================================
+       المتغيرات الأساسية
+    ========================================================= */
+
     const registeredPatients = {};
-    
-    document.addEventListener("DOMContentLoaded", function() {
+
+    const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
+
+
+    /* =========================================================
+       عند تحميل الصفحة
+    ========================================================= */
+
+    document.addEventListener("DOMContentLoaded", function () {
+
         setLiveDateTime();
-        
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length >= 4) {
-                const id = cols[2].innerText.trim();
-                const name = cols[1].innerText.trim();
-                if (id && id !== '-') {
-                    registeredPatients[id] = name;
-                }
-            }
-        });
+
+        collectRegisteredPatients();
 
         filterCurrentShiftByDefault();
+
+        handleStaffSelectionType();
+
     });
 
-    function handleStaffSelectionType() {
-        const employeeSelect = document.getElementById('employee_select');
-        const tempTypeSelect = document.getElementById('temp_type_select');
-        const tempNameInput = document.getElementById('temp_name_input');
 
-        let hid = document.getElementById('dynamic_hidden_emp');
-        if(!hid) {
-            hid = document.createElement('input');
-            hid.type = 'hidden';
-            hid.id = 'dynamic_hidden_emp';
-            hid.name = 'employee_name';
-            document.getElementById('patientForm').appendChild(hid);
-        }
+    /* =========================================================
+       جمع أرقام الهويات الموجودة في الجدول
+    ========================================================= */
 
-        if (tempTypeSelect.value !== "" && tempNameInput.value.trim() !== "") {
-            employeeSelect.removeAttribute('name');
-            employeeSelect.removeAttribute('required');
-            tempTypeSelect.removeAttribute('name');
-            tempNameInput.removeAttribute('name');
-            hid.value = tempTypeSelect.value + " - " + tempNameInput.value.trim();
-        } else {
-            employeeSelect.setAttribute('name', 'employee_name');
-            employeeSelect.setAttribute('required', 'required');
-            if(hid) hid.remove();
-        }
-    }
+    function collectRegisteredPatients() {
 
-    function validateAndSubmitForm() {
-        setLiveDateTime();
-        const employeeSelect = document.getElementById('employee_select');
-        const tempTypeSelect = document.getElementById('temp_type_select');
-        const tempNameInput = document.getElementById('temp_name_input');
-
-        const isTempFilled = (tempTypeSelect.value !== "" && tempNameInput.value.trim() !== "");
-        const isEmployeeSelected = (employeeSelect.value !== "");
-
-        if (!isTempFilled && !isEmployeeSelected) {
-            alert("يرجى اختيار اسم الموظف الأساسي أو تعبئة حقول الكادر المؤقت (نوع الكادر والاسم).");
-            return false;
-        }
-
-        if ((tempTypeSelect.value !== "" && tempNameInput.value.trim() === "") || 
-            (tempTypeSelect.value === "" && tempNameInput.value.trim() !== "")) {
-            alert("يرجى إكمال حقول الكادر المؤقت (اختر نوع الكادر وأدخل الاسم معاً) أو تركها فارغة واختيار موظف أساسي.");
-            return false;
-        }
-
-        return true;
-    }
-
-    function resetFormCustom() {
-        document.getElementById('employee_select').setAttribute('name', 'employee_name');
-        document.getElementById('employee_select').setAttribute('required', 'required');
-        const hid = document.getElementById('dynamic_hidden_emp');
-        if(hid) hid.remove();
-        document.getElementById('id-warning').style.display = 'none';
-    }
-
-    function filterCurrentShiftByDefault() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const todayStr = year + '-' + month + '-' + day;
-        
-        const currentHour = now.getHours();
-        const isMorningShift = (currentHour >= 0 && currentHour < 12);
-
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        let visibleCount = 1;
+        const rows = document.querySelectorAll(
+            "#recordsTable tbody tr"
+        );
 
         rows.forEach(row => {
+
             const cols = row.querySelectorAll("td");
+
             if (cols.length >= 9) {
-                const dateText = cols[7].innerText.trim();
-                const timeText = cols[8].innerText.trim();
 
-                if (dateText === todayStr && timeText) {
-                    const hour = parseInt(timeText.split(':')[0]);
-                    const recordIsMorning = (hour >= 0 && hour < 12);
+                const id = cols[2].innerText.trim();
 
-                    if (recordIsMorning === isMorningShift) {
-                        row.style.display = "";
-                        const numCell = row.querySelector('.row-num');
-                        if (numCell) numCell.innerText = visibleCount++;
-                    } else {
-                        row.style.display = "none";
-                    }
-                } else {
-                    row.style.display = "none";
+                const name = cols[1].innerText.trim();
+
+                if (id && id !== "-") {
+
+                    registeredPatients[id] = name;
+
                 }
+
             }
+
         });
+
     }
 
-    function checkPatientIdentity(idValue) {
-        idValue = idValue.replace(/[^0-9]/g, '').slice(0, 10);
-        document.getElementById('national_id').value = idValue;
-        
-        const nameInput = document.getElementById('patient_name');
-        const warningEl = document.getElementById('id-warning');
 
-        if (idValue.length === 10) {
-            if (registeredPatients[idValue]) {
-                const existingName = registeredPatients[idValue];
-                warningEl.style.display = 'block';
-                warningEl.innerText = "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " + existingName;
-            } else {
-                warningEl.style.display = 'none';
-            }
-        } else {
-            warningEl.style.display = 'none';
-        }
-    }
+    /* =========================================================
+       التعامل مع الموظف والكادر المؤقت
+    ========================================================= */
 
-    function applyFilters() {
-        const idFilter = document.getElementById('filter_id').value.trim().toLowerCase();
-        const startFilter = document.getElementById('filter_start').value;
-        const endFilter = document.getElementById('filter_end').value;
-        
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        let visibleCount = 1;
-        
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length >= 8) {
-                const idText = cols[2].innerText.trim().toLowerCase();
-                const dateText = cols[7].innerText.trim();
-                
-                let matchesId = (idFilter === '' || idText.includes(idFilter));
-                let matchesDate = true;
-
-                if (startFilter && dateText < startFilter) matchesDate = false;
-                if (endFilter && dateText > endFilter) matchesDate = false;
-
-                if (matchesId && matchesDate) {
-                    row.style.display = "";
-                    const numCell = row.querySelector('.row-num');
-                    if (numCell) numCell.innerText = visibleCount++;
-                } else {
-                    row.style.display = "none";
-                }
-            }
-        });
-    }
-
-    function clearFilters() {
-        document.getElementById('filter_id').value = '';
-        document.getElementById('filter_start').value = '';
-        document.getElementById('filter_end').value = '';
-        filterCurrentShiftByDefault();
-    }
-
-    function setLiveDateTime() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const currentDate = year + '-' + month + '-' + day;
-        
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const currentTime = hours + ':' + minutes;
-
-        const dateInput = document.getElementById('record_date');
-        const timeInput = document.getElementById('record_time');
-        
-        if (dateInput) dateInput.value = currentDate;
-        if (timeInput) timeInput.value = currentTime;
-    }
-
-    function printTicket() {
-        setLiveDateTime();
-
-        const patientNameInput = document.getElementById('patient_name');
-        const patientName = patientNameInput ? patientNameInput.value.trim() : '';
-        
-        if (!patientName) {
-            alert('يرجى إدخال اسم المريض على الأقل قبل طباعة التذكرة.');
-            if (patientNameInput) patientNameInput.focus();
-            return;
-        }
-
-        const reqServiceSelect = document.getElementById('requested_service');
-        const reqServiceName = reqServiceSelect && reqServiceSelect.selectedIndex >= 0 ? reqServiceSelect.options[reqServiceSelect.selectedIndex].text : '-';
-
-        const serviceSelect = document.getElementById('service_name');
-        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
-        
-        const recordDate = document.getElementById('record_date') ? document.getElementById('record_date').value : '';
-        const recordTime = document.getElementById('record_time') ? document.getElementById('record_time').value : '';
-
-        document.getElementById('t-patient').innerText = patientName;
-        document.getElementById('t-req-service').innerText = reqServiceName !== 'اختر الخدمة المطلوبة...' ? reqServiceName : '-';
-        document.getElementById('t-service').innerText = serviceName !== 'اختر القسم...' ? serviceName : '-';
-        document.getElementById('t-date').innerText = recordDate || '-';
-        document.getElementById('t-time').innerText = recordTime || '-';
-        
-        const now = new Date();
-        const hours = now.getHours();
-        const prefix = hours >= 12 ? 'P' : 'A'; 
-
-        let dateStr = now.toISOString().split('T')[0];
-        let dailyKey = 'queue_num_' + dateStr + '_' + prefix;
-        let currentNum = localStorage.getItem(dailyKey);
-        
-        if (!currentNum) {
-            currentNum = 1;
-        } else {
-            currentNum = parseInt(currentNum) + 1;
-        }
-        localStorage.setItem(dailyKey, currentNum);
-
-        document.getElementById('t-number').innerText = prefix + "-" + currentNum;
-
-        window.print();
-    }
-    function sendWhatsApp() {
-    const phoneInput = document.getElementById('phone'); // تأكد من مطابقة اسم الـ ID لديك في النموذج
-    const nameInput = document.getElementById('patientName');
-    const serviceInput = document.getElementById('service');
-    if (!phoneInput || !phoneInput.value.trim()) {
-        alert("الرجاء إدخال رقم الجوال أولاً.");
-        return;
-    }
-
-    const phone = phoneInput.value.trim();
-    const name = nameInput ? nameInput.value.trim() : "المريض";
-    const service = serviceInput ? serviceInput.value.trim() : "الخدمة الطبية";
-
-    const message = `مرحباً بك يا ${name}، نود إفادتك بأن طلب خدمتك (${service}) في وحدة الدعم المساندة قيد المعالجة. شكراً لتواصلك معنا.`;
-    const encodedMessage = encodeURIComponent(message);
-    
-    // فتح محادثة الواتساب مباشرة مع الرقم والنص الجاهز
-    const whatsappURL = `https://wa.me/${phone}?text=${encodedMessage}`;
-    window.open(whatsappURL, '_blank');
-}
-    function sendSMS() {
-    const phoneInput = document.getElementById('phone');
-    const nameInput = document.getElementById('patientName');
-    const serviceInput = document.getElementById('service');
-
-    if (!phoneInput || !phoneInput.value.trim()) {
-        alert("الرجاء إدخال رقم الجوال أولاً.");
-        return;
-    }
-
-    const phone = phoneInput.value.trim();
-    const name = nameInput ? nameInput.value.trim() : "المريض";
-    const service = serviceInput ? serviceInput.value.trim() : "الخدمة";
-
-    const message = `مرحباً ${name}، تم تسجيل طلبك للخدمة (${service}) بنجاح في وحدة الدعم المساندة.`;
-    
-    // استخدام بروتوكول sms لفتح تطبيق الرسائل الافتراضي في الجهاز
-    const smsURL = `sms:${phone}?body=${encodeURIComponent(message)}`;
-    window.location.href = smsURL;
-}
-    function checkAndRegisterPatient(idNumber) {
-    let records = JSON.parse(localStorage.getItem('patient_records')) || [];
-    const existing = records.find(p => p.idNumber === idNumber);
-    
-    if (existing) {
-        alert("تنبيه: رقم الهوية مسجل مسبقاً في النظام لهذا المريض.");
-        return true; // موجود مسبقاً
-    }
-    return false; // غير موجود
-}
-    // دالة للتبديل بين تعطيل خانة الموظف أو المتطوع بناءً على المدخلات
-function handleStaffSelectionType() {
-    const employeeSelect = document.getElementById('employee_select');
-    const tempTypeSelect = document.getElementById('temp_type_select');
-    const tempNameInput = document.getElementById('temp_name_input');
-
-    if (!employeeSelect || !tempTypeSelect || !tempNameInput) return;
-
-    // 1. إذا اختار المستخدم موظفاً أساسياً من القائمة
-    if (employeeSelect.value !== "") {
-        // تصفير وقفل حقول الكادر المؤقت وتحويلها للرمادي
-        tempTypeSelect.value = "";
-        tempTypeSelect.disabled = true;
-        tempTypeSelect.style.backgroundColor = "#e9ecef";
-        tempTypeSelect.style.cursor = "not-allowed";
-
-        tempNameInput.value = "";
-        tempNameInput.disabled = true;
-        tempNameInput.style.backgroundColor = "#e9ecef";
-        tempNameInput.style.cursor = "not-allowed";
-    } 
-    // 2. إذا اختار نوع الكادر أو كتب في الاسم (المؤقت)
-    else if (tempTypeSelect.value !== "" || tempNameInput.value.trim() !== "") {
-        // قفل وتصفير قائمة الموظفين الأساسيين وتحويلها للرمادي
-        employeeSelect.value = "";
-        employeeSelect.disabled = true;
-        employeeSelect.style.backgroundColor = "#e9ecef";
-        employeeSelect.style.cursor = "not-allowed";
-    } 
-    // 3. إذا كانت الخانات فارغة بالكامل -> إعادة التفعيل للأعضاء واللون الأبيض
-    else {
-        employeeSelect.disabled = false;
-        employeeSelect.style.backgroundColor = "#fff";
-        employeeSelect.style.cursor = "pointer";
-
-        tempTypeSelect.disabled = false;
-        tempTypeSelect.style.backgroundColor = "#fff";
-        tempTypeSelect.style.cursor = "pointer";
-
-        tempNameInput.disabled = false;
-        tempNameInput.style.backgroundColor = "#fff";
-        tempNameInput.style.cursor = "text";
-    }
-}
-        // دالة تحديد رقم الجوال من ١٠ ارقام
-const phoneInput = document.getElementById('phone').value.trim();
-
-// التحقق من أن رقم الجوال يتكون من 10 أرقام بالضبط وأنها أرقام فقط
-const phoneRegex = /^[0-9]{10}$/;
-
-if (!phoneRegex.test(phoneInput)) {
-    alert("خطأ: يجب أن يتكون رقم الجوال من 10 أرقام فقط (مثال: 05xxxxxxxx).");
-    return; // إيقاف تنفيذ العملية وعدم الحفظ
-}
-    function loadRecords() {
-    let records = JSON.parse(localStorage.getItem('patient_records')) || [];
-    const tbody = document.querySelector('#recordsTable tbody');
-    if (!tbody) return; // تأكد أن الجدول موجود بالصفحة
-    tbody.innerHTML = '';
-
-    const now = new Date().getTime(); // الوقت الحالي بالمللي ثانية
-    const twelveHoursInMs = 12 * 60 * 60 * 12; // أو 12 * 60 * 60 * 1000 (حسب طريقتك لحساب الوقت)
-
-    records.forEach(record => {
-        // افترض أنكِ تخزنين وقت الإضافة باسم (record.timestamp) عند تسجيل المريض
-        const recordTime = record.timestamp || now; 
-        const timeDifference = now - recordTime;
-
-        // الشروط: 
-        // 1. إذا مر عليها أقل من 12 ساعة -> تظهر في الجدول الرئيسي تلقائياً
-        // 2. أو إذا كانت مطابقة لبحث المستخدم بالتاريخ (إن وجد)
-        
-        let isWithin12Hours = timeDifference <= (12 * 60 * 60 * 1000); 
-
-        if (isWithin12Hours) {
-            // كود إضافة الصف للجدول الرئيسي
-            const row = `<tr>
-                <td>${record.name || '-'}</td>
-                <td>${record.phone || '-'}</td>
-                <!-- باقي أعمدة الجدول -->
-            </tr>`;
-            tbody.innerHTML += row;
-        }
-    });
-}
-    function sendWhatsApp() {
-        const phoneInput = document.getElementById('patient_phone') || document.getElementById('phone');
-        const nameInput = document.getElementById('patient_name') || document.getElementById('patientName');
-        const serviceInput = document.getElementById('requested_service') || document.getElementById('service');
-        
-        if (!phoneInput || !phoneInput.value.trim()) {
-            alert("الرجاء إدخال رقم الجوال أولاً.");
-            return;
-        }
-
-        const phone = phoneInput.value.trim();
-        const name = nameInput ? nameInput.value.trim() : "المريض";
-        const service = serviceInput ? serviceInput.value.trim() : "الخدمة الطبية";
-
-        const message = `مرحباً بك يا ${name}، نود إفادتك بأن طلب خدمتك (${service}) في وحدة الدعم المساندة قيد المعالجة. شكراً لتواصلك معنا.`;
-        const encodedMessage = encodeURIComponent(message);
-        
-        const whatsappURL = `https://wa.me/${phone}?text=${encodedMessage}`;
-        window.open(whatsappURL, '_blank');
-    }
-
-    function sendSMS() {
-        const phoneInput = document.getElementById('patient_phone') || document.getElementById('phone');
-        const nameInput = document.getElementById('patient_name') || document.getElementById('patientName');
-        const serviceInput = document.getElementById('requested_service') || document.getElementById('service');
-
-        if (!phoneInput || !phoneInput.value.trim()) {
-            alert("الرجاء إدخال رقم الجوال أولاً.");
-            return;
-        }
-
-        const phone = phoneInput.value.trim();
-        const name = nameInput ? nameInput.value.trim() : "المريض";
-        const service = serviceInput ? serviceInput.value.trim() : "الخدمة";
-
-        const message = `مرحباً ${name}، تم تسجيل طلبك للخدمة (${service}) بنجاح في وحدة الدعم المساندة.`;
-        const smsURL = `sms:${phone}?body=${encodeURIComponent(message)}`;
-        window.location.href = smsURL;
-    }
-
-    function checkAndRegisterPatient(idNumber) {
-        let records = JSON.parse(localStorage.getItem('patient_records')) || [];
-        const existing = records.find(p => p.idNumber === idNumber);
-        
-        if (existing) {
-            alert("تنبيه: رقم الهوية مسجل مسبقاً في النظام لهذا المريض.");
-            return true; // موجود مسبقاً
-        }
-        return false; // غير موجود
-    }
-
-    // دالة للتبديل بين تعطيل خانة الموظف أو المتطوع بناءً على المدخلات
     function handleStaffSelectionType() {
-        const employeeSelect = document.getElementById('employee_select');
-        const tempTypeSelect = document.getElementById('temp_type_select');
-        const tempNameInput = document.getElementById('temp_name_input');
 
-        if (!employeeSelect || !tempTypeSelect || !tempNameInput) return;
+        const employeeSelect =
+            document.getElementById("employee_select");
 
-        // 1. إذا اختار المستخدم موظفاً أساسياً من القائمة
-        if (employeeSelect.value !== "") {
+        const tempTypeSelect =
+            document.getElementById("temp_type_select");
+
+        const tempNameInput =
+            document.getElementById("temp_name_input");
+
+        const finalEmployeeName =
+            document.getElementById("final_employee_name");
+
+
+        if (
+            !employeeSelect ||
+            !tempTypeSelect ||
+            !tempNameInput
+        ) {
+            return;
+        }
+
+
+        const hasEmployee =
+            employeeSelect.value !== "";
+
+        const hasTempType =
+            tempTypeSelect.value !== "";
+
+        const hasTempName =
+            tempNameInput.value.trim() !== "";
+
+
+        /* موظف أساسي */
+
+        if (hasEmployee) {
+
             tempTypeSelect.value = "";
-            tempTypeSelect.disabled = true;
-            tempTypeSelect.style.backgroundColor = "#e9ecef";
-            tempTypeSelect.style.cursor = "not-allowed";
 
             tempNameInput.value = "";
+
+            tempTypeSelect.disabled = true;
             tempNameInput.disabled = true;
+
+            tempTypeSelect.style.backgroundColor = "#e9ecef";
             tempNameInput.style.backgroundColor = "#e9ecef";
+
+            tempTypeSelect.style.cursor = "not-allowed";
             tempNameInput.style.cursor = "not-allowed";
-        } 
-        // 2. إذا اختار نوع الكادر أو كتب في الاسم (المؤقت)
-        else if (tempTypeSelect.value !== "" || tempNameInput.value.trim() !== "") {
-            employeeSelect.value = "";
-            employeeSelect.disabled = true;
-            employeeSelect.style.backgroundColor = "#e9ecef";
-            employeeSelect.style.cursor = "not-allowed";
-        } 
-        // 3. إذا كانت الخانات فارغة بالكامل -> إعادة التفعيل
-        else {
+
             employeeSelect.disabled = false;
             employeeSelect.style.backgroundColor = "#fff";
             employeeSelect.style.cursor = "pointer";
 
-            tempTypeSelect.disabled = false;
-            tempTypeSelect.style.backgroundColor = "#fff";
-            tempTypeSelect.style.cursor = "pointer";
+            if (finalEmployeeName) {
+                finalEmployeeName.value =
+                    employeeSelect.value;
+            }
 
-            tempNameInput.disabled = false;
-            tempNameInput.style.backgroundColor = "#fff";
-            tempNameInput.style.cursor = "text";
+            return;
         }
+
+
+        /* كادر مؤقت */
+
+        if (hasTempType || hasTempName) {
+
+            employeeSelect.value = "";
+
+            employeeSelect.disabled = true;
+
+            employeeSelect.style.backgroundColor = "#e9ecef";
+            employeeSelect.style.cursor = "not-allowed";
+
+            tempTypeSelect.disabled = false;
+            tempNameInput.disabled = false;
+
+            tempTypeSelect.style.backgroundColor = "#fff";
+            tempNameInput.style.backgroundColor = "#fff";
+
+            tempTypeSelect.style.cursor = "pointer";
+            tempNameInput.style.cursor = "text";
+
+            if (
+                hasTempType &&
+                hasTempName
+            ) {
+
+                if (finalEmployeeName) {
+
+                    finalEmployeeName.value =
+                        tempTypeSelect.value +
+                        " - " +
+                        tempNameInput.value.trim();
+
+                }
+
+            }
+
+            return;
+        }
+
+
+        /* لا يوجد اختيار */
+
+        employeeSelect.disabled = false;
+
+        tempTypeSelect.disabled = false;
+        tempNameInput.disabled = false;
+
+        employeeSelect.style.backgroundColor = "#fff";
+        tempTypeSelect.style.backgroundColor = "#fff";
+        tempNameInput.style.backgroundColor = "#fff";
+
+        employeeSelect.style.cursor = "pointer";
+        tempTypeSelect.style.cursor = "pointer";
+        tempNameInput.style.cursor = "text";
+
+        if (finalEmployeeName) {
+            finalEmployeeName.value = "";
+        }
+
     }
 
-    function validatePhoneInput() {
-        const phoneField = document.getElementById('patient_phone') || document.getElementById('phone');
-        if (!phoneField) return true;
-        
-        const phoneInputVal = phoneField.value.trim();
-        const phoneRegex = /^[0-9]{10}$/;
 
-        if (!phoneRegex.test(phoneInputVal)) {
-            alert("خطأ: يجب أن يتكون رقم الجوال من 10 أرقام فقط (مثال: 05xxxxxxxx).");
+    /* =========================================================
+       التحقق من النموذج قبل الحفظ
+    ========================================================= */
+
+    function validateAndSubmitForm() {
+
+        setLiveDateTime();
+
+        const employeeSelect =
+            document.getElementById("employee_select");
+
+        const tempTypeSelect =
+            document.getElementById("temp_type_select");
+
+        const tempNameInput =
+            document.getElementById("temp_name_input");
+
+        const phoneField =
+            document.getElementById("patient_phone");
+
+
+        /* التحقق من الجوال */
+
+        if (!validatePhoneInput()) {
+
+            return false;
+
+        }
+
+
+        const isEmployeeSelected =
+            employeeSelect &&
+            employeeSelect.value !== "";
+
+
+        const hasTempType =
+            tempTypeSelect &&
+            tempTypeSelect.value !== "";
+
+
+        const hasTempName =
+            tempNameInput &&
+            tempNameInput.value.trim() !== "";
+
+
+        const isTempComplete =
+            hasTempType &&
+            hasTempName;
+
+
+        /* لا موظف ولا كادر مؤقت */
+
+        if (
+            !isEmployeeSelected &&
+            !isTempComplete
+        ) {
+
+            alert(
+                "يرجى اختيار اسم الموظف الأساسي أو تعبئة حقول الكادر المؤقت."
+            );
+
             return false;
         }
-        return true;
-    }
 
-    function loadRecords() {
-        let records = JSON.parse(localStorage.getItem('patient_records')) || [];
-        const tbody = document.querySelector('#recordsTable tbody');
-        if (!tbody) return; 
-        tbody.innerHTML = '';
 
-        const now = new Date().getTime(); 
-        const twelveHoursInMs = 12 * 60 * 60 * 1000; // تم التصحيح إلى 1000 مللي ثانية لحساب الـ 12 ساعة بدقة
+        /* الكادر المؤقت ناقص */
 
-        records.forEach(record => {
-            const recordTime = record.timestamp || now; 
-            const timeDifference = now - recordTime;
+        if (
+            (hasTempType && !hasTempName) ||
+            (!hasTempType && hasTempName)
+        ) {
 
-            let isWithin12Hours = timeDifference <= twelveHoursInMs; 
+            alert(
+                "يرجى إكمال حقول الكادر المؤقت: اختر نوع الكادر وأدخل الاسم معاً."
+            );
 
-            if (isWithin12Hours) {
-                const row = `<tr>
-                    <td>${record.date || '-'}</td>
-                    <td>${record.time || '-'}</td>
-                    <td>${record.idNumber || '-'}</td>
-                    <td>${record.name || '-'}</td>
-                    <td>${record.phone || '-'}</td>
-                    <td>${record.requestedService || '-'}</td>
-                    <td>${record.serviceName || '-'}</td>
-                    <td>${record.employeeName || '-'}</td>
-                    <td>
-                        <button class="btn btn-sm btn-success" onclick="sendWhatsApp()">واتساب</button>
-                        <button class="btn btn-sm btn-info text-white" onclick="sendSMS()">SMS</button>
-                    </td>
-                </tr>`;
-                tbody.innerHTML += row;
+            return false;
+        }
+
+
+        /* تحديد الموظف النهائي */
+
+        const finalEmployeeName =
+            document.getElementById("final_employee_name");
+
+
+        if (finalEmployeeName) {
+
+            if (isEmployeeSelected) {
+
+                finalEmployeeName.value =
+                    employeeSelect.value;
+
+            } else {
+
+                finalEmployeeName.value =
+                    tempTypeSelect.value +
+                    " - " +
+                    tempNameInput.value.trim();
+
             }
-        });
+
+        }
+
+
+        /*
+         * مهم:
+         * إذا كان المستخدم اختار كادر مؤقت،
+         * نحتاج أن نرسل employee_name للسيرفر.
+         */
+
+        let dynamicHidden =
+            document.getElementById("dynamic_hidden_emp");
+
+
+        if (isTempComplete) {
+
+            if (!dynamicHidden) {
+
+                dynamicHidden =
+                    document.createElement("input");
+
+                dynamicHidden.type = "hidden";
+
+                dynamicHidden.id =
+                    "dynamic_hidden_emp";
+
+                dynamicHidden.name =
+                    "employee_name";
+
+                document
+                    .getElementById("patientForm")
+                    .appendChild(dynamicHidden);
+
+            }
+
+            dynamicHidden.value =
+                tempTypeSelect.value +
+                " - " +
+                tempNameInput.value.trim();
+
+
+            employeeSelect.removeAttribute("name");
+            employeeSelect.removeAttribute("required");
+
+        } else {
+
+            if (dynamicHidden) {
+                dynamicHidden.remove();
+            }
+
+            employeeSelect.setAttribute(
+                "name",
+                "employee_name"
+            );
+
+            employeeSelect.setAttribute(
+                "required",
+                "required"
+            );
+
+        }
+
+
+        return true;
+
     }
+
+
+    /* =========================================================
+       إعادة النموذج
+    ========================================================= */
+
+    function resetFormCustom() {
+
+        setTimeout(function () {
+
+            const employeeSelect =
+                document.getElementById("employee_select");
+
+            const tempTypeSelect =
+                document.getElementById("temp_type_select");
+
+            const tempNameInput =
+                document.getElementById("temp_name_input");
+
+            const finalEmployeeName =
+                document.getElementById("final_employee_name");
+
+            const dynamicHidden =
+                document.getElementById("dynamic_hidden_emp");
+
+
+            if (dynamicHidden) {
+                dynamicHidden.remove();
+            }
+
+
+            employeeSelect.setAttribute(
+                "name",
+                "employee_name"
+            );
+
+            employeeSelect.setAttribute(
+                "required",
+                "required"
+            );
+
+
+            employeeSelect.disabled = false;
+            tempTypeSelect.disabled = false;
+            tempNameInput.disabled = false;
+
+
+            employeeSelect.style.backgroundColor = "#fff";
+            tempTypeSelect.style.backgroundColor = "#fff";
+            tempNameInput.style.backgroundColor = "#fff";
+
+
+            employeeSelect.style.cursor = "pointer";
+            tempTypeSelect.style.cursor = "pointer";
+            tempNameInput.style.cursor = "text";
+
+
+            if (finalEmployeeName) {
+                finalEmployeeName.value = "";
+            }
+
+
+            const warning =
+                document.getElementById("id-warning");
+
+            if (warning) {
+                warning.style.display = "none";
+            }
+
+        }, 50);
+
+    }
+
+
+    /* =========================================================
+       تحويل التاريخ والوقت إلى Date
+       
+       هذه أهم دالة في موضوع الـ 12 ساعة.
+    ========================================================= */
+
+    function getRecordDateTime(dateText, timeText) {
+
+        if (
+            !dateText ||
+            dateText === "-" ||
+            !timeText ||
+            timeText === "-"
+        ) {
+            return null;
+        }
+
+
+        const dateParts =
+            dateText.split("-");
+
+
+        const timeParts =
+            timeText.split(":");
+
+
+        if (
+            dateParts.length !== 3 ||
+            timeParts.length < 2
+        ) {
+            return null;
+        }
+
+
+        const year =
+            parseInt(dateParts[0], 10);
+
+        const month =
+            parseInt(dateParts[1], 10) - 1;
+
+        const day =
+            parseInt(dateParts[2], 10);
+
+        const hour =
+            parseInt(timeParts[0], 10);
+
+        const minute =
+            parseInt(timeParts[1], 10);
+
+
+        if (
+            isNaN(year) ||
+            isNaN(month) ||
+            isNaN(day) ||
+            isNaN(hour) ||
+            isNaN(minute)
+        ) {
+            return null;
+        }
+
+
+        return new Date(
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            0,
+            0
+        );
+
+    }
+
+
+    /* =========================================================
+       هل السجل داخل آخر 12 ساعة؟
+    ========================================================= */
+
+    function isRecordWithin12Hours(row) {
+
+        const dateCell =
+            row.querySelector(".record-date");
+
+        const timeCell =
+            row.querySelector(".record-time");
+
+
+        if (!dateCell || !timeCell) {
+            return false;
+        }
+
+
+        const dateText =
+            dateCell.innerText.trim();
+
+        const timeText =
+            timeCell.innerText.trim();
+
+
+        const recordDate =
+            getRecordDateTime(
+                dateText,
+                timeText
+            );
+
+
+        if (!recordDate) {
+            return false;
+        }
+
+
+        const now =
+            new Date();
+
+
+        const difference =
+            now.getTime() -
+            recordDate.getTime();
+
+
+        /*
+         * السجل يظهر فقط إذا:
+         * - ليس من المستقبل
+         * - ومر عليه أقل من 12 ساعة
+         */
+
+        return (
+            difference >= 0 &&
+            difference <= TWELVE_HOURS_MS
+        );
+
+    }
+
+
+    /* =========================================================
+       العرض الافتراضي:
+       آخر 12 ساعة فقط
+    ========================================================= */
+
+    function filterCurrentShiftByDefault() {
+
+        const rows =
+            document.querySelectorAll(
+                "#recordsTable tbody tr"
+            );
+
+
+        let visibleCount = 1;
+
+
+        rows.forEach(function (row) {
+
+            const cols =
+                row.querySelectorAll("td");
+
+
+            if (cols.length < 9) {
+                return;
+            }
+
+
+            if (isRecordWithin12Hours(row)) {
+
+                row.style.display = "";
+
+                const numCell =
+                    row.querySelector(".row-num");
+
+
+                if (numCell) {
+
+                    numCell.innerText =
+                        visibleCount++;
+
+                }
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+    }
+
+
+    /* =========================================================
+       التحقق من الهوية
+    ========================================================= */
+
+    function checkPatientIdentity(idValue) {
+
+        idValue =
+            idValue
+                .replace(/[^0-9]/g, "")
+                .slice(0, 10);
+
+
+        const nationalId =
+            document.getElementById(
+                "national_id"
+            );
+
+
+        if (nationalId) {
+            nationalId.value = idValue;
+        }
+
+
+        const warningEl =
+            document.getElementById(
+                "id-warning"
+            );
+
+
+        if (idValue.length === 10) {
+
+            if (registeredPatients[idValue]) {
+
+                warningEl.style.display =
+                    "block";
+
+                warningEl.innerText =
+                    "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " +
+                    registeredPatients[idValue];
+
+            } else {
+
+                warningEl.style.display =
+                    "none";
+
+            }
+
+        } else {
+
+            warningEl.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       البحث
+       
+       مهم:
+       البحث يتجاهل شرط الـ 12 ساعة.
+       يعني السجلات القديمة تظهر عند البحث.
+    ========================================================= */
+
+    function applyFilters() {
+
+        const idFilter =
+            document
+                .getElementById("filter_id")
+                .value
+                .trim()
+                .toLowerCase();
+
+
+        const startFilter =
+            document
+                .getElementById("filter_start")
+                .value;
+
+
+        const endFilter =
+            document
+                .getElementById("filter_end")
+                .value;
+
+
+        const hasSearch =
+            idFilter !== "" ||
+            startFilter !== "" ||
+            endFilter !== "";
+
+
+        const rows =
+            document.querySelectorAll(
+                "#recordsTable tbody tr"
+            );
+
+
+        let visibleCount = 1;
+
+
+        rows.forEach(function (row) {
+
+            const cols =
+                row.querySelectorAll("td");
+
+
+            if (cols.length < 9) {
+                return;
+            }
+
+
+            const idText =
+                cols[2]
+                    .innerText
+                    .trim()
+                    .toLowerCase();
+
+
+            const dateText =
+                cols[7]
+                    .innerText
+                    .trim();
+
+
+            /*
+             * البحث بالهوية
+             */
+
+            const matchesId =
+                idFilter === "" ||
+                idText.includes(idFilter);
+
+
+            /*
+             * البحث بالتاريخ
+             */
+
+            let matchesDate = true;
+
+
+            if (
+                startFilter &&
+                dateText < startFilter
+            ) {
+
+                matchesDate = false;
+
+            }
+
+
+            if (
+                endFilter &&
+                dateText > endFilter
+            ) {
+
+                matchesDate = false;
+
+            }
+
+
+            /*
+             * إذا كان هناك بحث:
+             * نعرض السجل حتى لو مر عليه أكثر من 12 ساعة.
+             *
+             * إذا لم يوجد بحث:
+             * نعرض آخر 12 ساعة فقط.
+             */
+
+            let shouldShow = false;
+
+
+            if (hasSearch) {
+
+                shouldShow =
+                    matchesId &&
+                    matchesDate;
+
+            } else {
+
+                shouldShow =
+                    isRecordWithin12Hours(row);
+
+            }
+
+
+            if (shouldShow) {
+
+                row.style.display = "";
+
+                const numCell =
+                    row.querySelector(".row-num");
+
+
+                if (numCell) {
+
+                    numCell.innerText =
+                        visibleCount++;
+
+                }
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+    }
+
+
+    /* =========================================================
+       مسح البحث
+       يرجع مباشرة لعرض آخر 12 ساعة
+    ========================================================= */
+
+    function clearFilters() {
+
+        document.getElementById(
+            "filter_id"
+        ).value = "";
+
+
+        document.getElementById(
+            "filter_start"
+        ).value = "";
+
+
+        document.getElementById(
+            "filter_end"
+        ).value = "";
+
+
+        filterCurrentShiftByDefault();
+
+    }
+
+
+    /* =========================================================
+       التاريخ والوقت الحالي
+    ========================================================= */
+
+    function setLiveDateTime() {
+
+        const now =
+            new Date();
+
+
+        const year =
+            now.getFullYear();
+
+
+        const month =
+            String(
+                now.getMonth() + 1
+            ).padStart(2, "0");
+
+
+        const day =
+            String(
+                now.getDate()
+            ).padStart(2, "0");
+
+
+        const hours =
+            String(
+                now.getHours()
+            ).padStart(2, "0");
+
+
+        const minutes =
+            String(
+                now.getMinutes()
+            ).padStart(2, "0");
+
+
+        const currentDate =
+            year +
+            "-" +
+            month +
+            "-" +
+            day;
+
+
+        const currentTime =
+            hours +
+            ":" +
+            minutes;
+
+
+        const dateInput =
+            document.getElementById(
+                "record_date"
+            );
+
+
+        const timeInput =
+            document.getElementById(
+                "record_time"
+            );
+
+
+        if (dateInput) {
+            dateInput.value =
+                currentDate;
+        }
+
+
+        if (timeInput) {
+            timeInput.value =
+                currentTime;
+        }
+
+    }
+
+
+    /* =========================================================
+       طباعة التذكرة
+    ========================================================= */
+
+    function printTicket() {
+
+        setLiveDateTime();
+
+
+        const patientNameInput =
+            document.getElementById(
+                "patient_name"
+            );
+
+
+        const patientName =
+            patientNameInput
+                ? patientNameInput.value.trim()
+                : "";
+
+
+        if (!patientName) {
+
+            alert(
+                "يرجى إدخال اسم المريض على الأقل قبل طباعة التذكرة."
+            );
+
+
+            if (patientNameInput) {
+                patientNameInput.focus();
+            }
+
+
+            return;
+
+        }
+
+
+        const reqServiceSelect =
+            document.getElementById(
+                "requested_service"
+            );
+
+
+        const reqServiceName =
+            reqServiceSelect &&
+            reqServiceSelect.selectedIndex >= 0
+                ? reqServiceSelect.options[
+                    reqServiceSelect.selectedIndex
+                ].text
+                : "-";
+
+
+        const serviceSelect =
+            document.getElementById(
+                "service_name"
+            );
+
+
+        const serviceName =
+            serviceSelect &&
+            serviceSelect.selectedIndex >= 0
+                ? serviceSelect.options[
+                    serviceSelect.selectedIndex
+                ].text
+                : "-";
+
+
+        const recordDate =
+            document.getElementById(
+                "record_date"
+            ).value;
+
+
+        const recordTime =
+            document.getElementById(
+                "record_time"
+            ).value;
+
+
+        document.getElementById(
+            "t-patient"
+        ).innerText =
+            patientName;
+
+
+        document.getElementById(
+            "t-req-service"
+        ).innerText =
+            reqServiceName || "-";
+
+
+        document.getElementById(
+            "t-service"
+        ).innerText =
+            serviceName || "-";
+
+
+        document.getElementById(
+            "t-date"
+        ).innerText =
+            recordDate || "-";
+
+
+        document.getElementById(
+            "t-time"
+        ).innerText =
+            recordTime || "-";
+
+
+        const now =
+            new Date();
+
+
+        const hours =
+            now.getHours();
+
+
+        const prefix =
+            hours >= 12
+                ? "P"
+                : "A";
+
+
+        /*
+         * استخدام التاريخ المحلي وليس UTC
+         * حتى لا يتغير رقم اليوم بسبب toISOString().
+         */
+
+        const localDateKey =
+            now.getFullYear() +
+            "-" +
+            String(
+                now.getMonth() + 1
+            ).padStart(2, "0") +
+            "-" +
+            String(
+                now.getDate()
+            ).padStart(2, "0");
+
+
+        const dailyKey =
+            "queue_num_" +
+            localDateKey +
+            "_" +
+            prefix;
+
+
+        let currentNum =
+            localStorage.getItem(
+                dailyKey
+            );
+
+
+        if (!currentNum) {
+
+            currentNum = 1;
+
+        } else {
+
+            currentNum =
+                parseInt(currentNum, 10) + 1;
+
+        }
+
+
+        localStorage.setItem(
+            dailyKey,
+            currentNum
+        );
+
+
+        document.getElementById(
+            "t-number"
+        ).innerText =
+            prefix +
+            "-" +
+            currentNum;
+
+
+        window.print();
+
+    }
+
+
+    /* =========================================================
+       واتساب
+    ========================================================= */
+
+    function sendWhatsApp() {
+
+        const phoneInput =
+            document.getElementById(
+                "patient_phone"
+            );
+
+
+        const nameInput =
+            document.getElementById(
+                "patient_name"
+            );
+
+
+        const serviceInput =
+            document.getElementById(
+                "requested_service"
+            );
+
+
+        if (
+            !phoneInput ||
+            !phoneInput.value.trim()
+        ) {
+
+            alert(
+                "الرجاء إدخال رقم الجوال أولاً."
+            );
+
+            return;
+
+        }
+
+
+        if (!validatePhoneInput()) {
+            return;
+        }
+
+
+        const phone =
+            phoneInput.value.trim();
+
+
+        const name =
+            nameInput
+                ? nameInput.value.trim()
+                : "المريض";
+
+
+        const service =
+            serviceInput
+                ? serviceInput.value
+                : "الخدمة الطبية";
+
+
+        const message =
+            `مرحباً بك يا ${name}، نود إفادتك بأن طلب خدمتك (${service}) في وحدة الدعم المساندة قيد المعالجة. شكراً لتواصلك معنا.`;
+
+
+        const encodedMessage =
+            encodeURIComponent(message);
+
+
+        /*
+         * إذا كان الرقم سعودي 05xxxxxxxx
+         * نحوله تلقائياً إلى 9665xxxxxxxx
+         */
+
+        let whatsappPhone =
+            phone;
+
+
+        if (
+            whatsappPhone.startsWith("05") &&
+            whatsappPhone.length === 10
+        ) {
+
+            whatsappPhone =
+                "966" +
+                whatsappPhone.substring(1);
+
+        }
+
+
+        const whatsappURL =
+            `https://wa.me/${whatsappPhone}?text=${encodedMessage}`;
+
+
+        window.open(
+            whatsappURL,
+            "_blank"
+        );
+
+    }
+
+
+    /* =========================================================
+       SMS
+    ========================================================= */
+
+    function sendSMS() {
+
+        const phoneInput =
+            document.getElementById(
+                "patient_phone"
+            );
+
+
+        const nameInput =
+            document.getElementById(
+                "patient_name"
+            );
+
+
+        const serviceInput =
+            document.getElementById(
+                "requested_service"
+            );
+
+
+        if (
+            !phoneInput ||
+            !phoneInput.value.trim()
+        ) {
+
+            alert(
+                "الرجاء إدخال رقم الجوال أولاً."
+            );
+
+            return;
+
+        }
+
+
+        if (!validatePhoneInput()) {
+            return;
+        }
+
+
+        const phone =
+            phoneInput.value.trim();
+
+
+        const name =
+            nameInput
+                ? nameInput.value.trim()
+                : "المريض";
+
+
+        const service =
+            serviceInput
+                ? serviceInput.value
+                : "الخدمة";
+
+
+        const message =
+            `مرحباً ${name}، تم تسجيل طلبك للخدمة (${service}) بنجاح في وحدة الدعم المساندة.`;
+
+
+        const smsURL =
+            `sms:${phone}?body=${encodeURIComponent(message)}`;
+
+
+        window.location.href =
+            smsURL;
+
+    }
+
+
+    /* =========================================================
+       التحقق من رقم الجوال
+    ========================================================= */
+
+    function validatePhoneInput() {
+
+        const phoneField =
+            document.getElementById(
+                "patient_phone"
+            );
+
+
+        if (!phoneField) {
+            return true;
+        }
+
+
+        const phoneValue =
+            phoneField.value.trim();
+
+
+        const phoneRegex =
+            /^05[0-9]{8}$/;
+
+
+        if (!phoneRegex.test(phoneValue)) {
+
+            alert(
+                "خطأ: يجب أن يتكون رقم الجوال من 10 أرقام ويبدأ بـ 05."
+            );
+
+            phoneField.focus();
+
+            return false;
+
+        }
+
+
+        return true;
+
+    }
+
+
+    /* =========================================================
+       فحص وجود المريض
+    ========================================================= */
+
+    function checkAndRegisterPatient(idNumber) {
+
+        let records =
+            JSON.parse(
+                localStorage.getItem(
+                    "patient_records"
+                )
+            ) || [];
+
+
+        const existing =
+            records.find(function (p) {
+
+                return p.idNumber === idNumber;
+
+            });
+
+
+        if (existing) {
+
+            alert(
+                "تنبيه: رقم الهوية مسجل مسبقاً في النظام لهذا المريض."
+            );
+
+            return true;
+
+        }
+
+
+        return false;
+
+    }
+
+
+    /* =========================================================
+       تحديث تلقائي للعرض كل دقيقة
+       
+       حتى لو كانت الصفحة مفتوحة،
+       السجل يختفي بمجرد تجاوز 12 ساعة.
+    ========================================================= */
+
+    setInterval(
+        function () {
+
+            const idFilter =
+                document.getElementById(
+                    "filter_id"
+                ).value.trim();
+
+
+            const startFilter =
+                document.getElementById(
+                    "filter_start"
+                ).value;
+
+
+            const endFilter =
+                document.getElementById(
+                    "filter_end"
+                ).value;
+
+
+            /*
+             * إذا المستخدم يبحث،
+             * لا نلمس نتائج البحث.
+             */
+
+            if (
+                idFilter !== "" ||
+                startFilter !== "" ||
+                endFilter !== ""
+            ) {
+
+                return;
+
+            }
+
+
+            filterCurrentShiftByDefault();
+
+        },
+        60 * 1000
+    );
+
+
 </script>
+
 </body>
 </html>
