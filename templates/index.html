@@ -1,70 +1,54 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
-
     <title>
         إدارة تجربة المريض - وحدة الدعم المساندة
     </title>
-
     <link
         href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap"
         rel="stylesheet"
     >
-
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Tajawal', sans-serif !important;
         }
-
         body {
             background-color: #f4f7f9;
             color: #2c3e50;
             padding: 15px;
         }
-
         .container {
             width: 100%;
             max-width: 1750px;
             margin: 0 auto;
         }
-
         .header-banner {
             background: linear-gradient(
                 135deg,
                 #1F4E78 0%,
                 #163a5d 100%
             );
-
             color: white;
             padding: 25px;
             border-radius: 12px;
             text-align: center;
             margin-bottom: 25px;
-
             box-shadow:
                 0 4px 15px rgba(31,78,120,0.15);
-
             position: relative;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             min-height: 120px;
         }
-
         .header-banner img {
             height: 190px;
             width: auto;
@@ -72,37 +56,30 @@
             right: 25px;
             border-radius: 8px;
         }
-
         .header-banner h2 {
             font-size: 1.7rem;
             font-weight: 700;
             letter-spacing: 0.5px;
         }
-
         .main-layout {
             display: grid;
             grid-template-columns: 1.15fr 2.85fr;
             gap: 20px;
             align-items: start;
         }
-
         .card {
             background: white;
             border-radius: 12px;
             padding: 25px;
-
             box-shadow:
                 0 4px 12px rgba(0,0,0,0.04);
-
             margin-bottom: 20px;
             border: 1px solid #eef2f5;
         }
-
         .form-container,
         .table-container {
             width: 100%;
         }
-
         .card-title {
             color: #1F4E78;
             font-size: 1.25rem;
@@ -112,21 +89,17 @@
             border-bottom: 2px solid #f0f4f8;
             text-align: center;
         }
-
         .mb-3 {
             margin-bottom: 15px;
         }
-
         .temp-row {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
         }
-
         .temp-row .col {
             flex: 1;
         }
-
         label {
             display: block;
             margin-bottom: 6px;
@@ -134,7 +107,6 @@
             font-size: 0.9rem;
             color: #34495e;
         }
-
         .form-control,
         .form-select {
             width: 100%;
@@ -146,15 +118,12 @@
             transition: all 0.2s ease;
             background-color: #fff;
         }
-
         .form-control:focus,
         .form-select:focus {
             border-color: #1F4E78;
-
             box-shadow:
                 0 0 0 3px rgba(31, 78, 120, 0.12);
         }
-
         .btn {
             width: 100%;
             padding: 11px;
@@ -166,39 +135,31 @@
             transition: background 0.2s;
             margin-top: 8px;
         }
-
         .btn:disabled {
             opacity: 0.65;
             cursor: not-allowed;
         }
-
         .btn-primary {
             background-color: #1F4E78;
             color: white;
         }
-
         .btn-primary:hover {
             background-color: #163a5d;
         }
-
         .btn-print {
             background-color: #2b6cb0;
             color: white;
         }
-
         .btn-print:hover {
             background-color: #2c5282;
         }
-
         .btn-secondary {
             background-color: #e2e8f0;
             color: #475569;
         }
-
         .btn-secondary:hover {
             background-color: #cbd5e1;
         }
-
         .btn-success {
             background-color: #2e7d32;
             color: white;
@@ -210,15 +171,12 @@
             font-weight: 600;
             text-align: center;
         }
-
         .btn-success:hover {
             background-color: #1b5e20;
         }
-
         .table-responsive {
             overflow-x: auto;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -226,183 +184,251 @@
             font-size: 0.9rem;
             white-space: nowrap;
         }
-
         th,
         td {
             padding: 12px 10px;
             border-bottom: 1px solid #edf2f7;
         }
-
         th {
             background-color: #1F4E78;
             color: white;
             font-weight: 700;
         }
-
         tr:hover {
             background-color: #f8fafc;
         }
-
         .text-muted {
             color: #888;
             padding: 20px;
             white-space: normal;
         }
-
         #ticket-card {
             display: none;
         }
-
         .button-group {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
             margin-top: 8px;
         }
-
         .button-group .btn {
             flex: 1;
             margin-top: 0 !important;
             min-width: 100px;
         }
-
         .filter-buttons {
             display: flex;
             gap: 6px;
             margin-top: 0;
         }
-
         .filter-buttons button {
             width: auto;
             margin-top: 0;
         }
-
+        /* =====================================================
+           اسم المريض القابل للضغط
+        ===================================================== */
+        .patient-name-link {
+            color: #1F4E78;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+            transition: all 0.2s ease;
+        }
+        .patient-name-link:hover {
+            color: #163a5d;
+        }
+        /* =====================================================
+           نافذة ملاحظات المريض
+        ===================================================== */
+        #notesModal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.45);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .notes-modal-box {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow:
+                0 10px 40px rgba(0,0,0,0.18);
+            animation: notesModalShow 0.2s ease;
+        }
+        @keyframes notesModalShow {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .notes-modal-title {
+            color: #1F4E78;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f4f8;
+        }
+        .patient-info-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            padding: 14px;
+            margin-bottom: 18px;
+        }
+        .patient-info-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .patient-info-row:last-child {
+            margin-bottom: 0;
+        }
+        .patient-info-label {
+            font-weight: 700;
+            color: #34495e;
+        }
+        .patient-info-value {
+            color: #1F4E78;
+            font-weight: 600;
+        }
+        #actionNotesInput {
+            min-height: 160px;
+            resize: vertical;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+        .notes-modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .notes-modal-buttons button {
+            flex: 1;
+            margin-top: 0;
+        }
+        .notes-save-btn {
+            background-color: #1F4E78;
+            color: white;
+        }
+        .notes-save-btn:hover {
+            background-color: #163a5d;
+        }
+        .notes-cancel-btn {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        .notes-cancel-btn:hover {
+            background-color: #cbd5e1;
+        }
         @media (max-width: 900px) {
-
             .main-layout {
                 grid-template-columns: 1fr;
             }
-
             .header-banner img {
                 height: 70px;
                 right: 10px;
             }
-
             .header-banner h2 {
                 font-size: 1.25rem;
                 padding: 0 70px;
             }
-
         }
-
         @media (max-width: 600px) {
-
             .temp-row {
                 flex-direction: column;
             }
-
             .header-banner {
                 min-height: 100px;
             }
-
             .header-banner img {
                 display: none;
             }
-
             .header-banner h2 {
                 padding: 0;
                 font-size: 1.15rem;
             }
-
+            .notes-modal-box {
+                padding: 18px;
+            }
+            .notes-modal-buttons {
+                flex-direction: column;
+            }
         }
-
         @media print {
-
             body * {
                 visibility: hidden !important;
             }
-
             #ticket-card,
             #ticket-card * {
                 visibility: visible !important;
             }
-
             #ticket-card {
                 display: block !important;
-
                 position: absolute !important;
-
                 top: 0 !important;
                 right: 0 !important;
-
                 width: 72mm !important;
-
                 max-height: 120mm !important;
-
                 margin: 0 !important;
-
                 padding: 2mm !important;
-
                 background: white !important;
-
                 overflow: hidden !important;
             }
-
             @page {
                 size: 80mm auto;
                 margin: 0mm;
             }
-
         }
-
     </style>
-
 </head>
-
-
 <body>
-
 <div class="container">
-
     <div class="header-banner">
-
         <img
             src="{{ url_for('static', filename='logo.png') }}"
             alt="شعار المستشفى"
         >
-
         <h2>
             إدارة تجربة المريض — وحدة الدعم المساندة
         </h2>
-
     </div>
-
-
     <div class="main-layout">
-
-
+        <!-- =================================================
+             نموذج الإدخال
+        ================================================== -->
         <div class="form-container">
-
             <div class="card">
-
                 <h4 class="card-title">
                     لوحة إدخال البيانات
                 </h4>
-
-
                 <form
                     id="patientForm"
                     action="/"
                     method="POST"
                     onsubmit="return validateAndSubmitForm()"
                 >
-
                     <div class="mb-3">
-
                         <label>
                             اسم المريض
                         </label>
-
                         <input
                             type="text"
                             id="patient_name"
@@ -411,16 +437,11 @@
                             placeholder="اسم المريض"
                             required
                         >
-
                     </div>
-
-
                     <div class="mb-3">
-
                         <label>
                             رقم الهوية
                         </label>
-
                         <input
                             type="text"
                             id="national_id"
@@ -433,7 +454,6 @@
                             oninput="checkPatientIdentity(this.value)"
                             required
                         >
-
                         <small
                             id="id-warning"
                             style="
@@ -444,16 +464,11 @@
                                 font-weight:bold;
                             "
                         ></small>
-
                     </div>
-
-
                     <div class="mb-3">
-
                         <label for="patient_phone">
                             رقم الجوال:
                         </label>
-
                         <input
                             type="text"
                             id="patient_phone"
@@ -470,16 +485,11 @@
                             "
                             required
                         >
-
                     </div>
-
-
                     <div class="mb-3">
-
                         <label>
                             رقم الملف
                         </label>
-
                         <input
                             type="text"
                             id="file_number"
@@ -487,204 +497,149 @@
                             class="form-control"
                             placeholder="20XXXXXX"
                         >
-
                     </div>
-
-
                     <div class="mb-3">
-
                         <label>
                             الخدمة المطلوبة
                         </label>
-
                         <select
                             id="requested_service"
                             name="requested_service"
                             class="form-select"
                             required
                         >
-
                             <option value="" disabled selected>
                                 اختر الخدمة المطلوبة
                             </option>
-
                             <option value="طلب مقابلة طبيب">
                                 طلب مقابلة طبيب
                             </option>
-
                             <option value="طلب صرف دواء">
                                 طلب صرف دواء
                             </option>
-
                             <option value="موعد جديد عيادات">
                                 موعد جديد عيادات
                             </option>
-
                             <option value="اعادة موعد عيادات">
                                 اعادة موعد عيادات
                             </option>
-
                             <option value="موعد عيادة الصحة النفسية">
                                 موعد عيادة الصحة النفسية
                             </option>
-
                             <option value="اعادة موعد عيادة الصحة النفسية">
                                 اعادة موعد عيادة الصحة النفسية
                             </option>
-
                             <option value="عدم ظهور طلب تحليل في النظام">
                                 عدم ظهور طلب تحليل في النظام
                             </option>
-
                             <option value="عدم ظهور طلب الاشعة في النظام">
                                 عدم ظهور طلب الاشعة في النظام
                             </option>
-
                             <option value="عدم ظهور الادوية في النظام">
                                 عدم ظهور الادوية في النظام
                             </option>
-
                             <option value="طلب مرافقة جديد">
                                 طلب مرافقة جديد
                             </option>
-
                             <option value="اعادة طلب مرافقة">
                                 اعادة طلب مرافقة
                             </option>
-
                             <option value="شكوى ضد موظف">
                                 شكوى ضد موظف
                             </option>
-
                             <option value="شكوى من خدمة">
                                 شكوى من خدمة
                             </option>
-
                         </select>
-
                     </div>
-
-
                     <div class="mb-3">
-
                         <label>
                             القسم
                         </label>
-
                         <select
                             id="service_name"
                             name="service_name"
                             class="form-select"
                             required
                         >
-
                             <option value="" disabled selected>
                                 اختر القسم
                             </option>
-
                             <option value="اطباء الباطنة">
                                 اطباء الباطنة
                             </option>
-
                             <option value="تمريض الباطنة">
                                 تمريض الباطنة
                             </option>
-
                             <option value="اطباء الجراحة">
                                 اطباء الجراحة
                             </option>
-
                             <option value="تمريض الجراحة">
                                 تمريض الجراحة
                             </option>
-
                             <option value="اطباء العظام">
                                 اطباء العظام
                             </option>
-
                             <option value="تمريض العظام">
                                 تمريض العظام
                             </option>
-
                             <option value="اطباء المخ والاعصاب">
                                 اطباء المخ والاعصاب
                             </option>
-
                             <option value="تمريض المخ والاعصاب">
                                 تمريض المخ والاعصاب
                             </option>
-
                             <option value="صيدلية">
                                 صيدلية
                             </option>
-
                             <option value="الاشعة">
                                 الاشعة
                             </option>
-
                             <option value="المعلومات الصحية">
                                 المعلومات الصحية
                             </option>
-
                             <option value="مكتب الدخول">
                                 مكتب الدخول
                             </option>
-
                             <option value="الصحة الرقمية">
                                 الصحة الرقمية
                             </option>
-
                             <option value="إدارة المرافق">
                                 إدارة المرافق
                             </option>
-
                             <option value="الطب المنزلي">
                                 الطب المنزلي
                             </option>
-
                             <option value="الوفيات">
                                 الوفيات
                             </option>
-
                             <option value="الخدمة الاجتماعية">
                                 الخدمة الاجتماعية
                             </option>
-
                             <option value="العلاج الطبيعي">
                                 العلاج الطبيعي
                             </option>
-
                             <option value="اطباء النفسية">
                                 اطباء النفسية
                             </option>
-
                             <option value="تمريض النفسية">
                                 تمريض النفسية
                             </option>
-
                             <option value="الإمداد">
                                 الإمداد
                             </option>
-
                             <option value="المختبر">
                                 المختبر
                             </option>
-
                             <option value="إدارة القبول">
                                 إدارة القبول
                             </option>
-
                         </select>
-
                     </div>
-
-
                     <div class="mb-3">
-
                         <label>
                             اسم الموظف
                         </label>
-
                         <select
                             id="employee_select"
                             name="employee_name"
@@ -692,56 +647,40 @@
                             required
                             onchange="handleStaffSelectionType()"
                         >
-
                             <option value="" disabled selected>
                                 اختر اسم الموظف
                             </option>
-
                             <option value="ابراهيم بخاري">
                                 ابراهيم بخاري
                             </option>
-
                             <option value="صالح حنيف">
                                 صالح حنيف
                             </option>
-
                             <option value="احلام هوساوي">
                                 احلام هوساوي
                             </option>
-
                             <option value="معتوق سيف">
                                 معتوق سيف
                             </option>
-
                             <option value="تركي عبدالعزيز">
                                 تركي عبدالعزيز
                             </option>
-
                             <option value="سليم الشريف">
                                 سليم الشريف
                             </option>
-
                             <option value="فوزي بليلة">
                                 فوزي بليلة
                             </option>
-
                             <option value="رامي اللقماني">
                                 رامي اللقماني
                             </option>
-
                         </select>
-
                     </div>
-
-
                     <div class="temp-row">
-
                         <div class="col">
-
                             <label style="font-size:0.8rem;">
                                 نوع الكادر:
                             </label>
-
                             <select
                                 id="temp_type_select"
                                 class="form-select"
@@ -751,37 +690,27 @@
                                 "
                                 onchange="handleStaffSelectionType()"
                             >
-
                                 <option value="" selected>
                                     اختر
                                 </option>
-
                                 <option value="متطوع">
                                     متطوع
                                 </option>
-
                                 <option value="تمهير">
                                     تمهير
                                 </option>
-
                                 <option value="تدريب">
                                     تدريب
                                 </option>
-
                             </select>
-
                         </div>
-
-
                         <div
                             class="col"
                             style="flex:1.4;"
                         >
-
                             <label style="font-size:0.8rem;">
                                 الاسم
                             </label>
-
                             <input
                                 type="text"
                                 id="temp_name_input"
@@ -793,41 +722,30 @@
                                 "
                                 oninput="handleStaffSelectionType()"
                             >
-
                         </div>
-
                     </div>
-
-
                     <input
                         type="hidden"
                         id="record_date"
                         name="record_date"
                     >
-
                     <input
                         type="hidden"
                         id="record_time"
                         name="record_time"
                     >
-
                     <input
                         type="hidden"
                         id="final_employee_name"
                         name="final_employee_name"
                     >
-
                     <input
                         type="hidden"
                         id="ticket_number"
                         name="ticket_number"
                     >
-
-
                     <!-- أزرار التواصل -->
-
                     <div class="button-group">
-
                         <button
                             type="button"
                             id="whatsappButton"
@@ -838,10 +756,8 @@
                             "
                             onclick="sendWhatsApp()"
                         >
-                             واتساب
+                            واتساب
                         </button>
-
-
                         <button
                             type="button"
                             id="smsButton"
@@ -852,29 +768,22 @@
                             "
                             onclick="sendSMS()"
                         >
-                             SMS
+                            SMS
                         </button>
-
                     </div>
-
-
                     <button
                         type="button"
                         class="btn btn-print"
                         onclick="printTicket()"
                     >
-                         طباعة تذكرة
+                        طباعة تذكرة
                     </button>
-
-
                     <button
                         type="submit"
                         class="btn btn-primary"
                     >
                         حفظ السجل
                     </button>
-
-
                     <button
                         type="reset"
                         class="btn btn-secondary"
@@ -882,18 +791,14 @@
                     >
                         مسح الحقول
                     </button>
-
                 </form>
-
             </div>
-
         </div>
-
-
+        <!-- =================================================
+             جدول السجلات
+        ================================================== -->
         <div class="table-container">
-
             <div class="card">
-
                 <h4
                     class="card-title"
                     style="
@@ -903,8 +808,6 @@
                 >
                     آخر السجلات المسجلة
                 </h4>
-
-
                 <div
                     style="
                         background-color:#f8fafc;
@@ -914,7 +817,6 @@
                         border:1px solid #e2e8f0;
                     "
                 >
-
                     <div
                         style="
                             display:flex;
@@ -923,14 +825,12 @@
                             flex-wrap:wrap;
                         "
                     >
-
                         <div
                             style="
                                 flex:1;
                                 min-width:140px;
                             "
                         >
-
                             <label
                                 for="filter_id"
                                 style="
@@ -940,7 +840,6 @@
                             >
                                 رقم الهوية :
                             </label>
-
                             <input
                                 type="text"
                                 id="filter_id"
@@ -951,17 +850,13 @@
                                     font-size:0.9rem;
                                 "
                             >
-
                         </div>
-
-
                         <div
                             style="
                                 flex:1;
                                 min-width:130px;
                             "
                         >
-
                             <label
                                 for="filter_start"
                                 style="
@@ -971,7 +866,6 @@
                             >
                                 من تاريخ:
                             </label>
-
                             <input
                                 type="date"
                                 id="filter_start"
@@ -981,17 +875,13 @@
                                     font-size:0.9rem;
                                 "
                             >
-
                         </div>
-
-
                         <div
                             style="
                                 flex:1;
                                 min-width:130px;
                             "
                         >
-
                             <label
                                 for="filter_end"
                                 style="
@@ -1001,7 +891,6 @@
                             >
                                 إلى تاريخ:
                             </label>
-
                             <input
                                 type="date"
                                 id="filter_end"
@@ -1011,12 +900,8 @@
                                     font-size:0.9rem;
                                 "
                             >
-
                         </div>
-
-
                         <div class="filter-buttons">
-
                             <button
                                 type="button"
                                 class="btn"
@@ -1031,8 +916,6 @@
                             >
                                 بحث
                             </button>
-
-
                             <button
                                 type="button"
                                 class="btn"
@@ -1047,34 +930,24 @@
                             >
                                 مسح البحث
                             </button>
-
                         </div>
-
-
                         <div>
-
                             <a
                                 href="{{ url_for('export_excel') }}"
                                 class="btn-success"
                             >
                                 تحميل إلى Excel
                             </a>
-
                         </div>
-
                     </div>
-
                 </div>
-
-
+                <!-- =================================================
+                     جدول المرضى
+                ================================================== -->
                 <div class="table-responsive">
-
                     <table id="recordsTable">
-
                         <thead>
-
                             <tr>
-
                                 <th>#</th>
                                 <th>الاسم</th>
                                 <th>الهوية</th>
@@ -1084,45 +957,44 @@
                                 <th>الموظف / القائم بالخدمة</th>
                                 <th>التاريخ</th>
                                 <th>الوقت</th>
-
                             </tr>
-
                         </thead>
-
-
                         <tbody>
-
                             {% for record in records | reverse %}
-
                             <tr>
-
                                 <td>
                                     <strong class="row-num">
                                         {{ loop.index }}
                                     </strong>
                                 </td>
-
+                                <!-- اسم المريض قابل للضغط -->
                                 <td>
-                                    {{ record.get(
-                                        'patient_name',
-                                        record.get('name', '-')
-                                    ) }}
+                                    <span
+                                        class="patient-name-link"
+                                        data-record-id="{{ record.get('id', '') }}"
+                                        data-patient-name="{{ record.get('patient_name', record.get('name', '-')) | e }}"
+                                        data-national-id="{{ record.get('national_id', record.get('idNumber', '-')) | e }}"
+                                        data-action-notes="{{ record.get('action_notes', '') | e }}"
+                                        onclick="openNotesModal(this)"
+                                    >
+                                        {{ record.get(
+                                            'patient_name',
+                                            record.get('name', '-')
+                                        ) }}
+                                    </span>
                                 </td>
-
                                 <td>
                                     {{ record.get(
                                         'national_id',
                                         record.get('idNumber', '-')
                                     ) }}
                                 </td>
-
                                 <td>
                                     {{ record.get(
                                         'file_number',
                                         '-'
                                     ) }}
                                 </td>
-
                                 <td>
                                     {{ record.get(
                                         'requested_service',
@@ -1132,7 +1004,6 @@
                                         )
                                     ) }}
                                 </td>
-
                                 <td>
                                     {{ record.get(
                                         'service_name',
@@ -1145,7 +1016,6 @@
                                         )
                                     ) }}
                                 </td>
-
                                 <td>
                                     {{ record.get(
                                         'employee_name',
@@ -1155,7 +1025,6 @@
                                         )
                                     ) }}
                                 </td>
-
                                 <td class="record-date">
                                     {{ record.get(
                                         'record_date',
@@ -1165,7 +1034,6 @@
                                         )
                                     ) }}
                                 </td>
-
                                 <td class="record-time">
                                     {{ record.get(
                                         'record_time',
@@ -1175,39 +1043,27 @@
                                         )
                                     ) }}
                                 </td>
-
                             </tr>
-
                             {% else %}
-
                             <tr>
-
                                 <td
                                     colspan="9"
                                     class="text-muted"
                                 >
                                     لا توجد سجلات مسجلة حديثاً.
                                 </td>
-
                             </tr>
-
                             {% endfor %}
-
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
-
-
+<!-- =========================================================
+     بطاقة التذكرة
+========================================================== -->
 <div
     id="ticket-card"
     style="
@@ -1215,7 +1071,6 @@
         text-align:center;
     "
 >
-
     <h3
         style="
             margin:0;
@@ -1225,8 +1080,6 @@
     >
         إدارة تجربة المريض
     </h3>
-
-
     <p
         style="
             font-size:8px;
@@ -1236,18 +1089,13 @@
     >
         وحدة الدعم المساندة
     </p>
-
-
     <hr
         style="
             border:0.5px dashed #aaa;
             margin:3px 0;
         "
     >
-
-
     <div style="margin:3px 0;">
-
         <span
             style="
                 font-size:10px;
@@ -1257,8 +1105,6 @@
         >
             رقم الدور :
         </span>
-
-
         <span
             id="t-number"
             style="
@@ -1269,10 +1115,7 @@
         >
             A-1
         </span>
-
     </div>
-
-
     <div
         style="
             text-align:right;
@@ -1281,79 +1124,52 @@
             line-height:1.2;
         "
     >
-
         <p style="margin:1px 0;">
-
             <strong>
                 المريض:
             </strong>
-
             <span id="t-patient">
                 --
             </span>
-
         </p>
-
-
         <p style="margin:1px 0;">
-
             <strong>
                 الخدمة:
             </strong>
-
             <span id="t-req-service">
                 --
             </span>
-
         </p>
-
-
         <p style="margin:1px 0;">
-
             <strong>
                 القسم:
             </strong>
-
             <span id="t-service">
                 --
             </span>
-
         </p>
-
-
         <p style="margin:1px 0;">
-
             <strong>
                 التاريخ:
             </strong>
-
             <span id="t-date">
                 --
             </span>
-
             |
-
             <strong>
                 الوقت:
             </strong>
-
             <span id="t-time">
                 --
             </span>
-
         </p>
-
     </div>
-
-
     <hr
         style="
             border:0.5px dashed #aaa;
             margin:3px 0 2px 0;
         "
     >
-
-
     <p
         style="
             font-size:7px;
@@ -1363,650 +1179,631 @@
     >
         يرجى الانتظار لحين نداء الرقم
     </p>
-
 </div>
-
-
+<!-- =========================================================
+     نافذة ملاحظات المريض
+========================================================== -->
+<div
+    id="notesModal"
+    onclick="closeNotesModalOutside(event)"
+>
+    <div
+        class="notes-modal-box"
+        onclick="event.stopPropagation()"
+    >
+        <h3 class="notes-modal-title">
+            ملاحظات الإجراء المتخذ
+        </h3>
+        <div class="patient-info-box">
+            <div class="patient-info-row">
+                <span class="patient-info-label">
+                    اسم المريض:
+                </span>
+                <span
+                    id="notesPatientName"
+                    class="patient-info-value"
+                >
+                    --
+                </span>
+            </div>
+            <div class="patient-info-row">
+                <span class="patient-info-label">
+                    رقم الهوية:
+                </span>
+                <span
+                    id="notesNationalId"
+                    class="patient-info-value"
+                >
+                    --
+                </span>
+            </div>
+        </div>
+        <div>
+            <label
+                for="actionNotesInput"
+            >
+                تفاصيل الإجراء المتخذ:
+            </label>
+            <textarea
+                id="actionNotesInput"
+                class="form-control"
+                placeholder="اكتب تفاصيل الإجراء المتخذ للمريض هنا..."
+            ></textarea>
+        </div>
+        <div class="notes-modal-buttons">
+            <button
+                type="button"
+                class="btn notes-save-btn"
+                id="saveNotesButton"
+                onclick="savePatientNote()"
+            >
+                حفظ الملاحظة
+            </button>
+            <button
+                type="button"
+                class="btn notes-cancel-btn"
+                onclick="closeNotesModal()"
+            >
+                إلغاء
+            </button>
+        </div>
+    </div>
+</div>
 <script>
-
-
 /* =========================================================
    المتغيرات الأساسية
 ========================================================= */
-
 const registeredPatients = {};
-
 const TWELVE_HOURS_MS =
     12 * 60 * 60 * 1000;
-
-
+/* =========================================================
+   متغيرات نافذة الملاحظات
+========================================================= */
+let currentNoteRecordId = "";
+let currentNoteElement = null;
 /* =========================================================
    عند تحميل الصفحة
 ========================================================= */
-
 document.addEventListener(
     "DOMContentLoaded",
     function () {
-
         setLiveDateTime();
-
         collectRegisteredPatients();
-
         filterCurrentShiftByDefault();
-
         handleStaffSelectionType();
-
     }
 );
-
-
 /* =========================================================
    جمع أرقام الهويات
 ========================================================= */
-
 function collectRegisteredPatients() {
-
     const rows =
         document.querySelectorAll(
             "#recordsTable tbody tr"
         );
-
-
     rows.forEach(function (row) {
-
         const cols =
             row.querySelectorAll("td");
-
-
         if (cols.length >= 9) {
-
             const id =
                 cols[2].innerText.trim();
-
-
             const name =
                 cols[1].innerText.trim();
-
-
             if (
                 id &&
                 id !== "-"
             ) {
-
                 registeredPatients[id] =
                     name;
-
             }
-
         }
-
     });
-
 }
-
-
+/* =========================================================
+   فتح نافذة الملاحظات
+========================================================= */
+function openNotesModal(element) {
+    const recordId =
+        element.getAttribute(
+            "data-record-id"
+        );
+    const patientName =
+        element.getAttribute(
+            "data-patient-name"
+        ) || "-";
+    const nationalId =
+        element.getAttribute(
+            "data-national-id"
+        ) || "-";
+    const actionNotes =
+        element.getAttribute(
+            "data-action-notes"
+        ) || "";
+    if (!recordId) {
+        alert(
+            "لا يمكن فتح الملاحظات لأن رقم السجل غير موجود."
+        );
+        return;
+    }
+    currentNoteRecordId =
+        recordId;
+    currentNoteElement =
+        element;
+    document.getElementById(
+        "notesPatientName"
+    ).innerText =
+        patientName;
+    document.getElementById(
+        "notesNationalId"
+    ).innerText =
+        nationalId;
+    document.getElementById(
+        "actionNotesInput"
+    ).value =
+        actionNotes;
+    document.getElementById(
+        "notesModal"
+    ).style.display =
+        "flex";
+    setTimeout(
+        function () {
+            document.getElementById(
+                "actionNotesInput"
+            ).focus();
+        },
+        100
+    );
+}
+/* =========================================================
+   إغلاق نافذة الملاحظات
+========================================================= */
+function closeNotesModal() {
+    document.getElementById(
+        "notesModal"
+    ).style.display =
+        "none";
+    currentNoteRecordId =
+        "";
+    currentNoteElement =
+        null;
+}
+/* =========================================================
+   إغلاق النافذة عند الضغط خارجها
+========================================================= */
+function closeNotesModalOutside(event) {
+    if (
+        event.target.id ===
+        "notesModal"
+    ) {
+        closeNotesModal();
+    }
+}
+/* =========================================================
+   حفظ ملاحظة المريض
+========================================================= */
+async function savePatientNote() {
+    const notesInput =
+        document.getElementById(
+            "actionNotesInput"
+        );
+    const saveButton =
+        document.getElementById(
+            "saveNotesButton"
+        );
+    const notes =
+        notesInput.value.trim();
+    if (!currentNoteRecordId) {
+        alert(
+            "لم يتم تحديد سجل المريض."
+        );
+        return;
+    }
+    if (!notes) {
+        alert(
+            "يرجى كتابة تفاصيل الإجراء المتخذ."
+        );
+        notesInput.focus();
+        return;
+    }
+    saveButton.disabled = true;
+    const oldButtonText =
+        saveButton.innerText;
+    saveButton.innerText =
+        "جاري الحفظ...";
+    try {
+        const response =
+            await fetch(
+                "/save-note",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body:
+                        JSON.stringify({
+                            record_id:
+                                currentNoteRecordId,
+                            action_notes:
+                                notes
+                        })
+                }
+            );
+        const result =
+            await response.json();
+        if (result.success) {
+            /*
+             * تحديث الملاحظة داخل الصفحة مباشرة
+             * بدون الحاجة لإعادة تحميل الصفحة.
+             */
+            if (currentNoteElement) {
+                currentNoteElement.setAttribute(
+                    "data-action-notes",
+                    notes
+                );
+            }
+            alert(
+                "تم حفظ تفاصيل الإجراء المتخذ بنجاح."
+            );
+            closeNotesModal();
+        } else {
+            alert(
+                "لم يتم حفظ الملاحظة:\n\n" +
+                result.message
+            );
+        }
+    } catch (error) {
+        console.error(
+            "Save note error:",
+            error
+        );
+        alert(
+            "حدث خطأ أثناء حفظ الملاحظة.\n\n" +
+            "تأكدي أن الخادم يعمل وأن المسار /save-note موجود."
+        );
+    } finally {
+        saveButton.disabled = false;
+        saveButton.innerText =
+            oldButtonText;
+    }
+}
 /* =========================================================
    الموظف والكادر المؤقت
 ========================================================= */
-
 function handleStaffSelectionType() {
-
     const employeeSelect =
         document.getElementById(
             "employee_select"
         );
-
-
     const tempTypeSelect =
         document.getElementById(
             "temp_type_select"
         );
-
-
     const tempNameInput =
         document.getElementById(
             "temp_name_input"
         );
-
-
     const finalEmployeeName =
         document.getElementById(
             "final_employee_name"
         );
-
-
     if (
         !employeeSelect ||
         !tempTypeSelect ||
         !tempNameInput
     ) {
-
         return;
-
     }
-
-
     const hasEmployee =
         employeeSelect.value !== "";
-
-
     const hasTempType =
         tempTypeSelect.value !== "";
-
-
     const hasTempName =
         tempNameInput.value.trim() !== "";
-
-
     if (hasEmployee) {
-
         tempTypeSelect.value = "";
-
         tempNameInput.value = "";
-
         tempTypeSelect.disabled = true;
-
         tempNameInput.disabled = true;
-
         tempTypeSelect.style.backgroundColor =
             "#e9ecef";
-
         tempNameInput.style.backgroundColor =
             "#e9ecef";
-
         employeeSelect.disabled = false;
-
         employeeSelect.style.backgroundColor =
             "#fff";
-
         if (finalEmployeeName) {
-
             finalEmployeeName.value =
                 employeeSelect.value;
-
         }
-
         return;
-
     }
-
-
     if (
         hasTempType ||
         hasTempName
     ) {
-
         employeeSelect.value = "";
-
         employeeSelect.disabled = true;
-
         employeeSelect.style.backgroundColor =
             "#e9ecef";
-
         tempTypeSelect.disabled = false;
-
         tempNameInput.disabled = false;
-
         tempTypeSelect.style.backgroundColor =
             "#fff";
-
         tempNameInput.style.backgroundColor =
             "#fff";
-
-
         if (
             hasTempType &&
             hasTempName
         ) {
-
             if (finalEmployeeName) {
-
                 finalEmployeeName.value =
                     tempTypeSelect.value +
                     " - " +
                     tempNameInput.value.trim();
-
             }
-
         }
-
         return;
-
     }
-
-
     employeeSelect.disabled = false;
-
     tempTypeSelect.disabled = false;
-
     tempNameInput.disabled = false;
-
     employeeSelect.style.backgroundColor =
         "#fff";
-
     tempTypeSelect.style.backgroundColor =
         "#fff";
-
     tempNameInput.style.backgroundColor =
         "#fff";
-
-
     if (finalEmployeeName) {
-
         finalEmployeeName.value = "";
-
     }
-
 }
-
-
 /* =========================================================
    التحقق من النموذج
 ========================================================= */
-
 function validateAndSubmitForm() {
-
     setLiveDateTime();
-
-
     if (!validatePhoneInput()) {
-
         return false;
-
     }
-
-
     const employeeSelect =
         document.getElementById(
             "employee_select"
         );
-
-
     const tempTypeSelect =
         document.getElementById(
             "temp_type_select"
         );
-
-
     const tempNameInput =
         document.getElementById(
             "temp_name_input"
         );
-
-
     const isEmployeeSelected =
         employeeSelect &&
         employeeSelect.value !== "";
-
-
     const hasTempType =
         tempTypeSelect &&
         tempTypeSelect.value !== "";
-
-
     const hasTempName =
         tempNameInput &&
         tempNameInput.value.trim() !== "";
-
-
     const isTempComplete =
         hasTempType &&
         hasTempName;
-
-
     if (
         !isEmployeeSelected &&
         !isTempComplete
     ) {
-
         alert(
             "يرجى اختيار اسم الموظف الأساسي أو تعبئة حقول الكادر المؤقت."
         );
-
         return false;
-
     }
-
-
     if (
         (hasTempType && !hasTempName) ||
         (!hasTempType && hasTempName)
     ) {
-
         alert(
             "يرجى إكمال حقول الكادر المؤقت: اختر نوع الكادر وأدخل الاسم معاً."
         );
-
         return false;
-
     }
-
-
     const finalEmployeeName =
         document.getElementById(
             "final_employee_name"
         );
-
-
     if (finalEmployeeName) {
-
         if (isEmployeeSelected) {
-
             finalEmployeeName.value =
                 employeeSelect.value;
-
         } else {
-
             finalEmployeeName.value =
                 tempTypeSelect.value +
                 " - " +
                 tempNameInput.value.trim();
-
         }
-
     }
-
-
     let dynamicHidden =
         document.getElementById(
             "dynamic_hidden_emp"
         );
-
-
     if (isTempComplete) {
-
         if (!dynamicHidden) {
-
             dynamicHidden =
                 document.createElement("input");
-
             dynamicHidden.type =
                 "hidden";
-
             dynamicHidden.id =
                 "dynamic_hidden_emp";
-
             dynamicHidden.name =
                 "employee_name";
-
             document
                 .getElementById("patientForm")
                 .appendChild(dynamicHidden);
-
         }
-
-
         dynamicHidden.value =
             tempTypeSelect.value +
             " - " +
             tempNameInput.value.trim();
-
-
         employeeSelect.removeAttribute(
             "name"
         );
-
         employeeSelect.removeAttribute(
             "required"
         );
-
     } else {
-
         if (dynamicHidden) {
-
             dynamicHidden.remove();
-
         }
-
-
         employeeSelect.setAttribute(
             "name",
             "employee_name"
         );
-
         employeeSelect.setAttribute(
             "required",
             "required"
         );
-
     }
-
-
     return true;
-
 }
-
-
 /* =========================================================
    إعادة النموذج
 ========================================================= */
-
 function resetFormCustom() {
-
     setTimeout(function () {
-
         const employeeSelect =
             document.getElementById(
                 "employee_select"
             );
-
-
         const tempTypeSelect =
             document.getElementById(
                 "temp_type_select"
             );
-
-
         const tempNameInput =
             document.getElementById(
                 "temp_name_input"
             );
-
-
         const finalEmployeeName =
             document.getElementById(
                 "final_employee_name"
             );
-
-
         const dynamicHidden =
             document.getElementById(
                 "dynamic_hidden_emp"
             );
-
-
         const ticketInput =
             document.getElementById(
                 "ticket_number"
             );
-
-
         if (dynamicHidden) {
-
             dynamicHidden.remove();
-
         }
-
-
         employeeSelect.setAttribute(
             "name",
             "employee_name"
         );
-
-
         employeeSelect.setAttribute(
             "required",
             "required"
         );
-
-
         employeeSelect.disabled = false;
-
         tempTypeSelect.disabled = false;
-
         tempNameInput.disabled = false;
-
-
         employeeSelect.style.backgroundColor =
             "#fff";
-
         tempTypeSelect.style.backgroundColor =
             "#fff";
-
         tempNameInput.style.backgroundColor =
             "#fff";
-
-
         if (finalEmployeeName) {
-
             finalEmployeeName.value = "";
-
         }
-
-
         if (ticketInput) {
-
             ticketInput.value = "";
-
         }
-
-
         const warning =
             document.getElementById(
                 "id-warning"
             );
-
-
         if (warning) {
-
             warning.style.display =
                 "none";
-
         }
-
     }, 50);
-
 }
-
-
 /* =========================================================
    التاريخ والوقت
 ========================================================= */
-
 function setLiveDateTime() {
-
     const now =
         new Date();
-
-
     const year =
         now.getFullYear();
-
-
     const month =
         String(
             now.getMonth() + 1
         ).padStart(2, "0");
-
-
     const day =
         String(
             now.getDate()
         ).padStart(2, "0");
-
-
     const hours =
         String(
             now.getHours()
         ).padStart(2, "0");
-
-
     const minutes =
         String(
             now.getMinutes()
         ).padStart(2, "0");
-
-
     const currentDate =
         year +
         "-" +
         month +
         "-" +
         day;
-
-
     const currentTime =
         hours +
         ":" +
         minutes;
-
-
     const dateInput =
         document.getElementById(
             "record_date"
         );
-
-
     const timeInput =
         document.getElementById(
             "record_time"
         );
-
-
     if (dateInput) {
-
         dateInput.value =
             currentDate;
-
     }
-
-
     if (timeInput) {
-
         timeInput.value =
             currentTime;
-
     }
-
 }
-
-
 /* =========================================================
    توليد رقم التذكرة
 ========================================================= */
-
 function getOrCreateTicketNumber() {
-
     const ticketInput =
         document.getElementById(
             "ticket_number"
         );
-
-
     if (
         ticketInput &&
         ticketInput.value.trim() !== ""
     ) {
-
         return ticketInput.value.trim();
-
     }
-
-
     const now =
         new Date();
-
-
     const hours =
         now.getHours();
-
-
     const prefix =
         hours >= 12
             ? "P"
             : "A";
-
-
     const localDateKey =
         now.getFullYear() +
         "-" +
@@ -2017,67 +1814,42 @@ function getOrCreateTicketNumber() {
         String(
             now.getDate()
         ).padStart(2, "0");
-
-
     const dailyKey =
         "queue_num_" +
         localDateKey +
         "_" +
         prefix;
-
-
     let currentNum =
         localStorage.getItem(
             dailyKey
         );
-
-
     if (!currentNum) {
-
         currentNum = 1;
-
     } else {
-
         currentNum =
             parseInt(
                 currentNum,
                 10
             ) + 1;
-
     }
-
-
     localStorage.setItem(
         dailyKey,
         currentNum
     );
-
-
     const ticketNumber =
         prefix +
         "-" +
         currentNum;
-
-
     if (ticketInput) {
-
         ticketInput.value =
             ticketNumber;
-
     }
-
-
     return ticketNumber;
-
 }
-
-
 /* =========================================================
    بيانات المريض الحالية
 ========================================================= */
-
 function getPatientData() {
-
     const phone =
         document
             .getElementById(
@@ -2085,8 +1857,6 @@ function getPatientData() {
             )
             .value
             .trim();
-
-
     const name =
         document
             .getElementById(
@@ -2094,120 +1864,69 @@ function getPatientData() {
             )
             .value
             .trim();
-
-
     const requestedService =
         document
             .getElementById(
                 "requested_service"
             )
             .value;
-
-
     const serviceName =
         document
             .getElementById(
                 "service_name"
             )
             .value;
-
-
     if (!name) {
-
         alert(
             "يرجى إدخال اسم المريض أولاً."
         );
-
         return null;
-
     }
-
-
     if (!phone) {
-
         alert(
             "الرجاء إدخال رقم الجوال أولاً."
         );
-
         return null;
-
     }
-
-
     if (!validatePhoneInput()) {
-
         return null;
-
     }
-
-
     if (!requestedService) {
-
         alert(
             "يرجى اختيار الخدمة المطلوبة أولاً."
         );
-
         return null;
-
     }
-
-
     if (!serviceName) {
-
         alert(
             "يرجى اختيار القسم أولاً."
         );
-
         return null;
-
     }
-
-
     const ticketNumber =
         getOrCreateTicketNumber();
-
-
     return {
-
         phone: phone,
-
         patient_name: name,
-
         ticket_number: ticketNumber,
-
         requested_service:
             requestedService,
-
         service_name:
             serviceName
-
     };
-
 }
-
-
 /* =========================================================
    واتساب بدون Twilio
 ========================================================= */
-
 function sendWhatsApp() {
-
     const data =
         getPatientData();
-
-
     if (!data) {
-
         return;
-
     }
-
-
     const whatsappPhone =
         "966" +
         data.phone.substring(1);
-
-
     const message =
         "عزيزي المريض، تم تسجيل طلبك بنجاح.\n\n" +
         "رقم التذكرة: " +
@@ -2220,40 +1939,25 @@ function sendWhatsApp() {
         data.service_name +
         "\n\n" +
         "شكراً لثقتك بنا.";
-
-
     const whatsappURL =
         "https://wa.me/" +
         whatsappPhone +
         "?text=" +
         encodeURIComponent(message);
-
-
     window.open(
         whatsappURL,
         "_blank"
     );
-
 }
-
-
 /* =========================================================
    SMS بدون Twilio
 ========================================================= */
-
 function sendSMS() {
-
     const data =
         getPatientData();
-
-
     if (!data) {
-
         return;
-
     }
-
-
     const message =
         "عزيزي المريض، تم تسجيل طلبك بنجاح. " +
         "رقم التذكرة: " +
@@ -2263,117 +1967,66 @@ function sendSMS() {
         ". القسم: " +
         data.service_name +
         ". شكراً لثقتك بنا.";
-
-
     const smsURL =
         "sms:" +
         data.phone +
         "?body=" +
         encodeURIComponent(message);
-
-
     window.location.href =
         smsURL;
-
 }
-
-
 /* =========================================================
    التحقق من رقم الجوال
 ========================================================= */
-
 function validatePhoneInput() {
-
     const phoneField =
         document.getElementById(
             "patient_phone"
         );
-
-
     if (!phoneField) {
-
         return true;
-
     }
-
-
     const phoneValue =
         phoneField.value.trim();
-
-
     const phoneRegex =
         /^05[0-9]{8}$/;
-
-
     if (!phoneRegex.test(phoneValue)) {
-
         alert(
             "خطأ: يجب أن يتكون رقم الجوال من 10 أرقام ويبدأ بـ 05."
         );
-
-
         phoneField.focus();
-
         return false;
-
     }
-
-
     return true;
-
 }
-
-
 /* =========================================================
    طباعة التذكرة
 ========================================================= */
-
 function printTicket() {
-
     setLiveDateTime();
-
-
     const patientNameInput =
         document.getElementById(
             "patient_name"
         );
-
-
     const patientName =
         patientNameInput
             ? patientNameInput.value.trim()
             : "";
-
-
     if (!patientName) {
-
         alert(
             "يرجى إدخال اسم المريض على الأقل قبل طباعة التذكرة."
         );
-
-
         if (patientNameInput) {
-
             patientNameInput.focus();
-
         }
-
-
         return;
-
     }
-
-
     const ticketNumber =
         getOrCreateTicketNumber();
-
-
     const reqServiceSelect =
         document.getElementById(
             "requested_service"
         );
-
-
     const reqServiceName =
         reqServiceSelect &&
         reqServiceSelect.selectedIndex >= 0
@@ -2381,14 +2034,10 @@ function printTicket() {
                 reqServiceSelect.selectedIndex
             ].text
             : "-";
-
-
     const serviceSelect =
         document.getElementById(
             "service_name"
         );
-
-
     const serviceName =
         serviceSelect &&
         serviceSelect.selectedIndex >= 0
@@ -2396,67 +2045,44 @@ function printTicket() {
                 serviceSelect.selectedIndex
             ].text
             : "-";
-
-
     const recordDate =
         document.getElementById(
             "record_date"
         ).value;
-
-
     const recordTime =
         document.getElementById(
             "record_time"
         ).value;
-
-
     document.getElementById(
         "t-patient"
     ).innerText =
         patientName;
-
-
     document.getElementById(
         "t-req-service"
     ).innerText =
         reqServiceName || "-";
-
-
     document.getElementById(
         "t-service"
     ).innerText =
         serviceName || "-";
-
-
     document.getElementById(
         "t-date"
     ).innerText =
         recordDate || "-";
-
-
     document.getElementById(
         "t-time"
     ).innerText =
         recordTime || "-";
-
-
     document.getElementById(
         "t-number"
     ).innerText =
         ticketNumber;
-
-
     window.print();
-
 }
-
-
 /* =========================================================
    فحص الهوية
 ========================================================= */
-
 function checkPatientIdentity(idValue) {
-
     idValue =
         idValue
             .replace(
@@ -2467,133 +2093,86 @@ function checkPatientIdentity(idValue) {
                 0,
                 10
             );
-
-
     const nationalId =
         document.getElementById(
             "national_id"
         );
-
-
     if (nationalId) {
-
         nationalId.value =
             idValue;
-
     }
-
-
     const warningEl =
         document.getElementById(
             "id-warning"
         );
-
-
     if (idValue.length === 10) {
-
         if (
             registeredPatients[idValue]
         ) {
-
             warningEl.style.display =
                 "block";
-
-
             warningEl.innerText =
                 "تنبيه: رقم الهوية هذا مسجل مسبقاً باسم: " +
                 registeredPatients[idValue];
-
         } else {
-
             warningEl.style.display =
                 "none";
-
         }
-
     } else {
-
         warningEl.style.display =
             "none";
-
     }
-
 }
-
-
 /* =========================================================
    DateTime للسجلات
 ========================================================= */
-
 function getRecordDateTime(
     dateText,
     timeText
 ) {
-
     if (
         !dateText ||
         dateText === "-" ||
         !timeText ||
         timeText === "-"
     ) {
-
         return null;
-
     }
-
-
     const dateParts =
         dateText.split("-");
-
-
     const timeParts =
         timeText.split(":");
-
-
     if (
         dateParts.length !== 3 ||
         timeParts.length < 2
     ) {
-
         return null;
-
     }
-
-
     const year =
         parseInt(
             dateParts[0],
             10
         );
-
-
     const month =
         parseInt(
             dateParts[1],
             10
         ) - 1;
-
-
     const day =
         parseInt(
             dateParts[2],
             10
         );
-
-
     const hour =
         parseInt(
             timeParts[0],
             10
         );
-
-
     const minute =
         parseInt(
             timeParts[1],
             10
         );
-
-
     if (
         isNaN(year) ||
         isNaN(month) ||
@@ -2601,12 +2180,8 @@ function getRecordDateTime(
         isNaN(hour) ||
         isNaN(minute)
     ) {
-
         return null;
-
     }
-
-
     return new Date(
         year,
         month,
@@ -2616,143 +2191,84 @@ function getRecordDateTime(
         0,
         0
     );
-
 }
-
-
 /* =========================================================
    آخر 12 ساعة
 ========================================================= */
-
 function isRecordWithin12Hours(row) {
-
     const dateCell =
         row.querySelector(
             ".record-date"
         );
-
-
     const timeCell =
         row.querySelector(
             ".record-time"
         );
-
-
     if (
         !dateCell ||
         !timeCell
     ) {
-
         return false;
-
     }
-
-
     const dateText =
         dateCell.innerText.trim();
-
-
     const timeText =
         timeCell.innerText.trim();
-
-
     const recordDate =
         getRecordDateTime(
             dateText,
             timeText
         );
-
-
     if (!recordDate) {
-
         return false;
-
     }
-
-
     const now =
         new Date();
-
-
     const difference =
         now.getTime() -
         recordDate.getTime();
-
-
     return (
         difference >= 0 &&
         difference <= TWELVE_HOURS_MS
     );
-
 }
-
-
 /* =========================================================
    العرض الافتراضي
 ========================================================= */
-
 function filterCurrentShiftByDefault() {
-
     const rows =
         document.querySelectorAll(
             "#recordsTable tbody tr"
         );
-
-
     let visibleCount = 1;
-
-
     rows.forEach(function (row) {
-
         const cols =
             row.querySelectorAll("td");
-
-
         if (cols.length < 9) {
-
             return;
-
         }
-
-
         if (
             isRecordWithin12Hours(row)
         ) {
-
             row.style.display = "";
-
-
             const numCell =
                 row.querySelector(
                     ".row-num"
                 );
-
-
             if (numCell) {
-
                 numCell.innerText =
                     visibleCount++;
-
             }
-
         } else {
-
             row.style.display =
                 "none";
-
         }
-
     });
-
 }
-
-
 /* =========================================================
    البحث
 ========================================================= */
-
 function applyFilters() {
-
     const idFilter =
         document
             .getElementById(
@@ -2761,213 +2277,128 @@ function applyFilters() {
             .value
             .trim()
             .toLowerCase();
-
-
     const startFilter =
         document
             .getElementById(
                 "filter_start"
             )
             .value;
-
-
     const endFilter =
         document
             .getElementById(
                 "filter_end"
             )
             .value;
-
-
     const hasSearch =
         idFilter !== "" ||
         startFilter !== "" ||
         endFilter !== "";
-
-
     const rows =
         document.querySelectorAll(
             "#recordsTable tbody tr"
         );
-
-
     let visibleCount = 1;
-
-
     rows.forEach(function (row) {
-
         const cols =
             row.querySelectorAll("td");
-
-
         if (cols.length < 9) {
-
             return;
-
         }
-
-
         const idText =
             cols[2]
                 .innerText
                 .trim()
                 .toLowerCase();
-
-
         const dateText =
             cols[7]
                 .innerText
                 .trim();
-
-
         const matchesId =
             idFilter === "" ||
             idText.includes(
                 idFilter
             );
-
-
         let matchesDate = true;
-
-
         if (
             startFilter &&
             dateText < startFilter
         ) {
-
             matchesDate = false;
-
         }
-
-
         if (
             endFilter &&
             dateText > endFilter
         ) {
-
             matchesDate = false;
-
         }
-
-
         let shouldShow = false;
-
-
         if (hasSearch) {
-
             shouldShow =
                 matchesId &&
                 matchesDate;
-
         } else {
-
             shouldShow =
                 isRecordWithin12Hours(row);
-
         }
-
-
         if (shouldShow) {
-
             row.style.display = "";
-
-
             const numCell =
                 row.querySelector(
                     ".row-num"
                 );
-
-
             if (numCell) {
-
                 numCell.innerText =
                     visibleCount++;
-
             }
-
         } else {
-
             row.style.display =
                 "none";
-
         }
-
     });
-
 }
-
-
 /* =========================================================
    مسح البحث
 ========================================================= */
-
 function clearFilters() {
-
     document.getElementById(
         "filter_id"
     ).value = "";
-
-
     document.getElementById(
         "filter_start"
     ).value = "";
-
-
     document.getElementById(
         "filter_end"
     ).value = "";
-
-
     filterCurrentShiftByDefault();
-
 }
-
-
 /* =========================================================
    تحديث تلقائي
 ========================================================= */
-
 setInterval(
     function () {
-
         const idFilter =
             document.getElementById(
                 "filter_id"
             ).value.trim();
-
-
         const startFilter =
             document.getElementById(
                 "filter_start"
             ).value;
-
-
         const endFilter =
             document.getElementById(
                 "filter_end"
             ).value;
-
-
         if (
             idFilter !== "" ||
             startFilter !== "" ||
             endFilter !== ""
         ) {
-
             return;
-
         }
-
-
         filterCurrentShiftByDefault();
-
     },
     60 * 1000
 );
-
-
 </script>
-
 </body>
-
 </html>
