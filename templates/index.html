@@ -251,7 +251,10 @@
                         <input type="text" id="national_id" name="national_id" class="form-control" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required>
                         <small id="id-warning" style="color: #e53e3e; font-size: 0.75rem; display: none; margin-top: 3px; font-weight: bold;"></small>
                     </div>
-
+                    <div class="mb-3">
+    <label for="patient_phone">رقم الجوال:</label>
+    <input type="text" id="patient_phone" name="patient_phone" class="form-control" placeholder="9665xxxxxxxx+" required>
+</div>
                     <div class="mb-3">
                         <label>رقم الملف </label>
                         <input type="text" id="file_number" name="file_number" class="form-control" placeholder="20XXXXXX">
