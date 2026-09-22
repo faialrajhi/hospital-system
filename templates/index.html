@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة تجربة المريض - وحدة الدعم المساندة</title>
-    <!-- استيراد خط Tajawal المناسب للمستشفيات -->
+    <!-- استيراد خط Tajawal -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -143,6 +143,13 @@
         .btn-whatsapp:hover {
             background-color: #1ebe57;
         }
+        .btn-print {
+            background-color: #4a5568;
+            color: white;
+        }
+        .btn-print:hover {
+            background-color: #2d3748;
+        }
         .btn-secondary {
             background-color: #e2e8f0;
             color: #475569;
@@ -163,6 +170,18 @@
         }
         .btn-success:hover {
             background-color: #1b5e20;
+        }
+        /* تصميم صف الأزرار المتجاورة */
+        .button-group-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .button-group-row .btn {
+            margin-top: 0;
+            flex: 1;
+            font-size: 0.9rem;
+            padding: 10px 5px;
         }
         .table-responsive {
             overflow-x: auto;
@@ -221,6 +240,26 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             direction: rtl;
             position: relative;
+        }
+
+        /* تنسيق خاص عند طباعة التذكرة الحرارية */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-ticket, #printable-ticket * {
+                visibility: visible;
+            }
+            #printable-ticket {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                display: block !important;
+                text-align: center;
+                direction: rtl;
+                padding: 10px;
+            }
         }
     </style>
 </head>
@@ -343,8 +382,14 @@
                     <input type="hidden" id="record_time" name="record_time">
                     <input type="hidden" id="final_employee_name" name="final_employee_name">
 
-                    <button type="button" class="btn btn-sms" onclick="sendSmsTicket()">إرسال تذكرة عبر (SMS)</button>
-                    <button type="button" class="btn btn-whatsapp" onclick="sendWhatsAppTicket()">إرسال تذكرة عبر (WhatsApp)</button>
+                    <!-- أزرار الإرسال متجاورة في نفس السطر -->
+                    <div class="button-group-row">
+                        <button type="button" class="btn btn-sms" onclick="sendSmsTicket()">إرسال SMS</button>
+                        <button type="button" class="btn btn-whatsapp" onclick="sendWhatsAppTicket()">إرسال WhatsApp</button>
+                    </div>
+
+                    <!-- زر طباعة تذكرة الدور -->
+                    <button type="button" class="btn btn-print" onclick="printQueueTicket()">🖨️ طباعة تذكرة الدور</button>
                     
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary" onclick="resetFormCustom()">مسح الحقول</button>
@@ -425,6 +470,24 @@
     </div>
 </div>
 
+<!-- عنصر مخفي مخصص لطباعة تذكرة الدور -->
+<div id="printable-ticket" style="display: none;">
+    <div style="font-family: 'Tajawal', sans-serif; width: 280px; margin: 0 auto; text-align: center; padding: 10px;">
+        <h3 style="margin-bottom: 5px; font-size: 1.2rem;">وحدة الدعم المساندة</h3>
+        <p style="font-size: 0.8rem; margin-bottom: 10px;">إدارة تجربة المريض</p>
+        <hr style="border: dashed 1px #000; margin: 5px 0;">
+        <p style="font-size: 0.85rem; margin-top: 5px;">رقم الدور:</p>
+        <h1 id="print-ticket-num" style="font-size: 2.5rem; margin: 5px 0; font-weight: bold;">A-1</h1>
+        <hr style="border: dashed 1px #000; margin: 5px 0;">
+        <div style="text-align: right; font-size: 0.85rem; margin-top: 8px;">
+            <p><strong>المريض:</strong> <span id="print-patient-name">-</span></p>
+            <p><strong>القسم:</strong> <span id="print-service-name">-</span></p>
+            <p><strong>الوقت:</strong> <span id="print-time">-</span></p>
+        </div>
+        <p style="font-size: 0.75rem; margin-top: 15px;">شكراً لتعاونكم، يجدر انتظار النداء الآلي.</p>
+    </div>
+</div>
+
 <!-- نافذة الإجراء المتخذ المنبثقة (Modal) -->
 <div id="notesModal" class="modal-overlay">
     <div class="modal-content">
@@ -467,11 +530,8 @@
                 }
             }
         });
-
-        filterCurrentShiftByDefault();
     });
 
-    // تعيين التاريخ والوقت الحاليين تلقائياً في الحقول المخفية
     function setLiveDateTime() {
         const now = new Date();
         const year = now.getFullYear();
@@ -488,7 +548,6 @@
         if (timeField) timeField.value = `${hours}:${minutes}:${seconds}`;
     }
 
-    // دالة توليد رقم الدور المتسلسل (A/P)
     function generateQueueNumber() {
         const now = new Date();
         const hours = now.getHours();
@@ -506,7 +565,6 @@
         return prefix + "-" + currentNum;
     }
 
-    // التحقق من رقم الهوية وتنبيه المستخدم إذا مكرر مسبقاً
     function checkPatientIdentity(idValue) {
         const warningEl = document.getElementById('id-warning');
         if (!warningEl) return;
@@ -525,7 +583,6 @@
         }
     }
 
-    // تصفية السجلات بناءً على التاريخ ورقم الهوية
     function applyFilters() {
         const filterId = document.getElementById('filter_id').value.trim();
         const startDate = document.getElementById('filter_start').value;
@@ -558,15 +615,13 @@
         });
     }
 
-    // مسح الفلاتر وإعادة عرض الجدول بالشكل الافتراضي
     function clearFilters() {
         document.getElementById('filter_id').value = '';
         document.getElementById('filter_start').value = '';
         document.getElementById('filter_end').value = '';
-        filterCurrentShiftByDefault();
+        applyFilters();
     }
 
-    // إرسال عبر الواتساب مباشرة بالصيغة المطلوبة
     function sendWhatsAppTicket() {
         const phone = document.getElementById('patient_phone').value.trim();
         const patientName = document.getElementById('patient_name').value.trim();
@@ -580,7 +635,7 @@
         }
 
         if (!phone) {
-            alert('يرجى إدخال رقم الجوال أولاً.');
+            alert('يرجى إدخال رقم جوال المريض أولاً.');
             document.getElementById('patient_phone').focus();
             return;
         }
@@ -594,7 +649,6 @@
         window.open(whatsappUrl, '_blank');
     }
 
-    // إرسال عبر SMS
     function sendSmsTicket() {
         const patientName = document.getElementById('patient_name').value.trim();
         const phone = document.getElementById('patient_phone').value.trim();
@@ -644,7 +698,30 @@
         });
     }
 
-    // دوال نافذة الإجراء المتخذ
+    // دالة طباعة تذكرة الدور
+    function printQueueTicket() {
+        const patientName = document.getElementById('patient_name').value.trim();
+        const serviceSelect = document.getElementById('service_name');
+        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-';
+
+        if (!patientName) {
+            alert('يرجى إدخال اسم المريض قبل طباعة التذكرة.');
+            document.getElementById('patient_name').focus();
+            return;
+        }
+
+        const ticketNumber = generateQueueNumber();
+        const now = new Date();
+        const timeStr = now.toLocaleDateString('ar-SA') + ' - ' + now.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+
+        document.getElementById('print-ticket-num').innerText = ticketNumber;
+        document.getElementById('print-patient-name').innerText = patientName;
+        document.getElementById('print-service-name').innerText = serviceName;
+        document.getElementById('print-time').innerText = timeStr;
+
+        window.print();
+    }
+
     function openNotesModal(patientName, nationalId) {
         document.getElementById('modal-patient-name').innerText = patientName;
         document.getElementById('modal-patient-id').value = nationalId;
@@ -737,67 +814,18 @@
         const tempTypeSelect = document.getElementById('temp_type_select');
         const tempNameInput = document.getElementById('temp_name_input');
 
-        const isTempFilled = (tempTypeSelect.value !== "" && tempNameInput.value.trim() !== "");
-        const isEmployeeSelected = (employeeSelect.value !== "");
-
-        if (!isTempFilled && !isEmployeeSelected) {
-            alert("يرجى اختيار اسم الموظف الأساسي أو تعبئة حقول الكادر المؤقت (نوع الكادر والاسم).");
+        if (!employeeSelect.value && (tempTypeSelect.value === "" || tempNameInput.value.trim() === "")) {
+            alert('يرجى اختيار اسم الموظف أو تحديد نوع الكادر المؤقت وإدخال اسمه.');
             return false;
         }
-
-        if ((tempTypeSelect.value !== "" && tempNameInput.value.trim() === "") || 
-            (tempTypeSelect.value === "" && tempNameInput.value.trim() !== "")) {
-            alert("يرجى إكمال حقول الكادر المؤقت (اختر نوع الكادر وأدخل الاسم معاً) أو تركها فارغة واختيار موظف أساسي.");
-            return false;
-        }
-
-        localStorage.removeItem('hospital_patient_form_data');
         return true;
     }
 
     function resetFormCustom() {
-        document.getElementById('employee_select').setAttribute('name', 'employee_name');
-        document.getElementById('employee_select').setAttribute('required', 'required');
-        const hid = document.getElementById('dynamic_hidden_emp');
-        if(hid) hid.remove();
         localStorage.removeItem('hospital_patient_form_data');
-    }
-
-    function filterCurrentShiftByDefault() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const todayStr = year + '-' + month + '-' + day;
-        
-        const currentHour = now.getHours();
-        const isMorningShift = (currentHour >= 0 && currentHour < 12);
-
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
-        let visibleCount = 1;
-
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length >= 9) {
-                const dateText = cols[7].innerText.trim();
-                const timeText = cols.length > 8 ? cols[8].innerText.trim() : '';
-
-                if (dateText === todayStr && timeText) {
-                    const hour = parseInt(timeText.split(':')[0]);
-                    const recordIsMorning = (hour >= 0 && hour < 12);
-
-                    if (recordIsMorning === isMorningShift) {
-                        row.style.display = "";
-                        const numCell = row.querySelector('.row-num');
-                        if (numCell) numCell.innerText = visibleCount++;
-                    } else {
-                        row.style.display = "none";
-                    }
-                } else {
-                    row.style.display = "none";
-                }
-            }
-        });
+        setTimeout(() => {
+            setLiveDateTime();
+        }, 100);
     }
 </script>
 </body>
