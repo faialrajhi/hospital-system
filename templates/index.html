@@ -691,6 +691,57 @@
 
         window.print();
     }
+    function sendWhatsApp() {
+    const phoneInput = document.getElementById('phone'); // تأكد من مطابقة اسم الـ ID لديك في النموذج
+    const nameInput = document.getElementById('patientName');
+    const serviceInput = document.getElementById('service');
+
+    if (!phoneInput || !phoneInput.value.trim()) {
+        alert("الرجاء إدخال رقم الجوال أولاً.");
+        return;
+    }
+
+    const phone = phoneInput.value.trim();
+    const name = nameInput ? nameInput.value.trim() : "المريض";
+    const service = serviceInput ? serviceInput.value.trim() : "الخدمة الطبية";
+
+    const message = `مرحباً بك يا ${name}، نود إفادتك بأن طلب خدمتك (${service}) في وحدة الدعم المساندة قيد المعالجة. شكراً لتواصلك معنا.`;
+    const encodedMessage = encodeURIComponent(message);
+    
+    // فتح محادثة الواتساب مباشرة مع الرقم والنص الجاهز
+    const whatsappURL = `https://wa.me/${phone}?text=${encodedMessage}`;
+    window.open(whatsappURL, '_blank');
+}
+    function sendSMS() {
+    const phoneInput = document.getElementById('phone');
+    const nameInput = document.getElementById('patientName');
+    const serviceInput = document.getElementById('service');
+
+    if (!phoneInput || !phoneInput.value.trim()) {
+        alert("الرجاء إدخال رقم الجوال أولاً.");
+        return;
+    }
+
+    const phone = phoneInput.value.trim();
+    const name = nameInput ? nameInput.value.trim() : "المريض";
+    const service = serviceInput ? serviceInput.value.trim() : "الخدمة";
+
+    const message = `مرحباً ${name}، تم تسجيل طلبك للخدمة (${service}) بنجاح في وحدة الدعم المساندة.`;
+    
+    // استخدام بروتوكول sms لفتح تطبيق الرسائل الافتراضي في الجهاز
+    const smsURL = `sms:${phone}?body=${encodeURIComponent(message)}`;
+    window.location.href = smsURL;
+}
+    function checkAndRegisterPatient(idNumber) {
+    let records = JSON.parse(localStorage.getItem('patient_records')) || [];
+    const existing = records.find(p => p.idNumber === idNumber);
+    
+    if (existing) {
+        alert("تنبيه: رقم الهوية مسجل مسبقاً في النظام لهذا المريض.");
+        return true; // موجود مسبقاً
+    }
+    return false; // غير موجود
+}
 </script>
 
 </body>
