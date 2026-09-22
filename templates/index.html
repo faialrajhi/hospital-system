@@ -783,6 +783,16 @@ function handleStaffSelectionType() {
         tempNameInput.style.cursor = "text";
     }
 }
+        // دالة تحديد رقم الجوال من ١٠ ارقام
+const phoneInput = document.getElementById('phone').value.trim();
+
+// التحقق من أن رقم الجوال يتكون من 10 أرقام بالضبط وأنها أرقام فقط
+const phoneRegex = /^[0-9]{10}$/;
+
+if (!phoneRegex.test(phoneInput)) {
+    alert("خطأ: يجب أن يتكون رقم الجوال من 10 أرقام فقط (مثال: 05xxxxxxxx).");
+    return; // إيقاف تنفيذ العملية وعدم الحفظ
+}
 </script>
 
 </body>
