@@ -364,10 +364,6 @@
 
 <div class="container">
 
-    <!-- =====================================================
-         الهيدر
-    ====================================================== -->
-
     <div class="header-banner">
 
         <img
@@ -385,10 +381,6 @@
     <div class="main-layout">
 
 
-        <!-- =================================================
-             نموذج الإدخال
-        ================================================== -->
-
         <div class="form-container">
 
             <div class="card">
@@ -404,9 +396,6 @@
                     method="POST"
                     onsubmit="return validateAndSubmitForm()"
                 >
-
-
-                    <!-- اسم المريض -->
 
                     <div class="mb-3">
 
@@ -425,8 +414,6 @@
 
                     </div>
 
-
-                    <!-- رقم الهوية -->
 
                     <div class="mb-3">
 
@@ -461,8 +448,6 @@
                     </div>
 
 
-                    <!-- رقم الجوال -->
-
                     <div class="mb-3">
 
                         <label for="patient_phone">
@@ -489,8 +474,6 @@
                     </div>
 
 
-                    <!-- رقم الملف -->
-
                     <div class="mb-3">
 
                         <label>
@@ -508,8 +491,6 @@
                     </div>
 
 
-                    <!-- الخدمة المطلوبة -->
-
                     <div class="mb-3">
 
                         <label>
@@ -523,11 +504,7 @@
                             required
                         >
 
-                            <option
-                                value=""
-                                disabled
-                                selected
-                            >
+                            <option value="" disabled selected>
                                 اختر الخدمة المطلوبة
                             </option>
 
@@ -588,8 +565,6 @@
                     </div>
 
 
-                    <!-- القسم -->
-
                     <div class="mb-3">
 
                         <label>
@@ -603,11 +578,7 @@
                             required
                         >
 
-                            <option
-                                value=""
-                                disabled
-                                selected
-                            >
+                            <option value="" disabled selected>
                                 اختر القسم
                             </option>
 
@@ -708,8 +679,6 @@
                     </div>
 
 
-                    <!-- الموظف الأساسي -->
-
                     <div class="mb-3">
 
                         <label>
@@ -724,11 +693,7 @@
                             onchange="handleStaffSelectionType()"
                         >
 
-                            <option
-                                value=""
-                                disabled
-                                selected
-                            >
+                            <option value="" disabled selected>
                                 اختر اسم الموظف
                             </option>
 
@@ -769,8 +734,6 @@
                     </div>
 
 
-                    <!-- الكادر المؤقت -->
-
                     <div class="temp-row">
 
                         <div class="col">
@@ -789,10 +752,7 @@
                                 onchange="handleStaffSelectionType()"
                             >
 
-                                <option
-                                    value=""
-                                    selected
-                                >
+                                <option value="" selected>
                                     اختر
                                 </option>
 
@@ -839,8 +799,6 @@
                     </div>
 
 
-                    <!-- التاريخ والوقت -->
-
                     <input
                         type="hidden"
                         id="record_date"
@@ -859,9 +817,6 @@
                         name="final_employee_name"
                     >
 
-
-                    <!-- رقم التذكرة المخفي -->
-
                     <input
                         type="hidden"
                         id="ticket_number"
@@ -869,9 +824,7 @@
                     >
 
 
-                    <!-- =================================================
-                         أزرار التواصل
-                    ================================================== -->
+                    <!-- أزرار التواصل -->
 
                     <div class="button-group">
 
@@ -905,8 +858,6 @@
                     </div>
 
 
-                    <!-- الطباعة -->
-
                     <button
                         type="button"
                         class="btn btn-print"
@@ -916,8 +867,6 @@
                     </button>
 
 
-                    <!-- الحفظ -->
-
                     <button
                         type="submit"
                         class="btn btn-primary"
@@ -925,8 +874,6 @@
                         حفظ السجل
                     </button>
 
-
-                    <!-- المسح -->
 
                     <button
                         type="reset"
@@ -943,10 +890,6 @@
         </div>
 
 
-        <!-- =================================================
-             جدول السجلات
-        ================================================== -->
-
         <div class="table-container">
 
             <div class="card">
@@ -961,8 +904,6 @@
                     آخر السجلات المسجلة
                 </h4>
 
-
-                <!-- البحث -->
 
                 <div
                     style="
@@ -1126,8 +1067,6 @@
                 </div>
 
 
-                <!-- الجدول -->
-
                 <div class="table-responsive">
 
                     <table id="recordsTable">
@@ -1268,10 +1207,6 @@
 
 </div>
 
-
-<!-- =========================================================
-     بطاقة التذكرة
-========================================================== -->
 
 <div
     id="ticket-card"
@@ -2038,7 +1973,6 @@ function setLiveDateTime() {
 
 /* =========================================================
    توليد رقم التذكرة
-   نفس الرقم يستخدم للطباعة + SMS + WhatsApp
 ========================================================= */
 
 function getOrCreateTicketNumber() {
@@ -2253,16 +2187,10 @@ function getPatientData() {
 
 
 /* =========================================================
-   إرسال WhatsApp عبر Flask + Twilio
+   واتساب بدون Twilio
 ========================================================= */
 
-async function sendWhatsApp() {
-
-    const button =
-        document.getElementById(
-            "whatsappButton"
-        );
-
+function sendWhatsApp() {
 
     const data =
         getPatientData();
@@ -2275,89 +2203,45 @@ async function sendWhatsApp() {
     }
 
 
-    button.disabled = true;
-
-    const oldText =
-        button.innerText;
-
-    button.innerText =
-        "جاري الإرسال...";
+    const whatsappPhone =
+        "966" +
+        data.phone.substring(1);
 
 
-    try {
-
-        const response =
-            await fetch(
-                "/send-whatsapp",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(data)
-                }
-            );
+    const message =
+        "عزيزي المريض، تم تسجيل طلبك بنجاح.\n\n" +
+        "رقم التذكرة: " +
+        data.ticket_number +
+        "\n" +
+        "الخدمة المطلوبة: " +
+        data.requested_service +
+        "\n" +
+        "القسم: " +
+        data.service_name +
+        "\n\n" +
+        "شكراً لثقتك بنا.";
 
 
-        const result =
-            await response.json();
+    const whatsappURL =
+        "https://wa.me/" +
+        whatsappPhone +
+        "?text=" +
+        encodeURIComponent(message);
 
 
-        if (result.success) {
-
-            alert(
-                "✅ تم إرسال رسالة WhatsApp بنجاح."
-            );
-
-        } else {
-
-            alert(
-                "❌ لم يتم إرسال WhatsApp:\n\n" +
-                result.message
-            );
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "WhatsApp error:",
-            error
-        );
-
-
-        alert(
-            "❌ حدث خطأ أثناء الاتصال بالخادم.\n\n" +
-            "تأكدي أن Render يعمل وأن المسار /send-whatsapp موجود."
-        );
-
-    } finally {
-
-        button.disabled = false;
-
-        button.innerText =
-            oldText;
-
-    }
+    window.open(
+        whatsappURL,
+        "_blank"
+    );
 
 }
 
 
 /* =========================================================
-   إرسال SMS عبر Flask + Twilio
+   SMS بدون Twilio
 ========================================================= */
 
-async function sendSMS() {
-
-    const button =
-        document.getElementById(
-            "smsButton"
-        );
-
+function sendSMS() {
 
     const data =
         getPatientData();
@@ -2370,74 +2254,26 @@ async function sendSMS() {
     }
 
 
-    button.disabled = true;
-
-    const oldText =
-        button.innerText;
-
-    button.innerText =
-        "جاري الإرسال...";
-
-
-    try {
-
-        const response =
-            await fetch(
-                "/send-sms",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(data)
-                }
-            );
+    const message =
+        "عزيزي المريض، تم تسجيل طلبك بنجاح. " +
+        "رقم التذكرة: " +
+        data.ticket_number +
+        ". الخدمة: " +
+        data.requested_service +
+        ". القسم: " +
+        data.service_name +
+        ". شكراً لثقتك بنا.";
 
 
-        const result =
-            await response.json();
+    const smsURL =
+        "sms:" +
+        data.phone +
+        "?body=" +
+        encodeURIComponent(message);
 
 
-        if (result.success) {
-
-            alert(
-                "✅ تم إرسال SMS بنجاح."
-            );
-
-        } else {
-
-            alert(
-                "❌ لم يتم إرسال SMS:\n\n" +
-                result.message
-            );
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "SMS error:",
-            error
-        );
-
-
-        alert(
-            "❌ حدث خطأ أثناء الاتصال بالخادم.\n\n" +
-            "تأكدي أن Render يعمل وأن المسار /send-sms موجود."
-        );
-
-    } finally {
-
-        button.disabled = false;
-
-        button.innerText =
-            oldText;
-
-    }
+    window.location.href =
+        smsURL;
 
 }
 
