@@ -793,6 +793,37 @@ if (!phoneRegex.test(phoneInput)) {
     alert("خطأ: يجب أن يتكون رقم الجوال من 10 أرقام فقط (مثال: 05xxxxxxxx).");
     return; // إيقاف تنفيذ العملية وعدم الحفظ
 }
+    function loadRecords() {
+    let records = JSON.parse(localStorage.getItem('patient_records')) || [];
+    const tbody = document.querySelector('#recordsTable tbody');
+    if (!tbody) return; // تأكد أن الجدول موجود بالصفحة
+    tbody.innerHTML = '';
+
+    const now = new Date().getTime(); // الوقت الحالي بالمللي ثانية
+    const twelveHoursInMs = 12 * 60 * 60 * 12; // أو 12 * 60 * 60 * 1000 (حسب طريقتك لحساب الوقت)
+
+    records.forEach(record => {
+        // افترض أنكِ تخزنين وقت الإضافة باسم (record.timestamp) عند تسجيل المريض
+        const recordTime = record.timestamp || now; 
+        const timeDifference = now - recordTime;
+
+        // الشروط: 
+        // 1. إذا مر عليها أقل من 12 ساعة -> تظهر في الجدول الرئيسي تلقائياً
+        // 2. أو إذا كانت مطابقة لبحث المستخدم بالتاريخ (إن وجد)
+        
+        let isWithin12Hours = timeDifference <= (12 * 60 * 60 * 1000); 
+
+        if (isWithin12Hours) {
+            // كود إضافة الصف للجدول الرئيسي
+            const row = `<tr>
+                <td>${record.name || '-'}</td>
+                <td>${record.phone || '-'}</td>
+                <!-- باقي أعمدة الجدول -->
+            </tr>`;
+            tbody.innerHTML += row;
+        }
+    });
+}
 </script>
 
 </body>
