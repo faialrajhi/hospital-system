@@ -309,39 +309,39 @@
                             <option value="إدارة القبول">إدارة القبول</option>
                         </select>
                     </div>
+<!-- قائمة الموظفين الثابتين الأساسية -->
+    <div class="mb-3">
+        <label>اسم الموظف</label>
+        <select id="employee_select" name="employee_name" class="form-select" required onchange="handleStaffSelectionType()">
+            <option value="" disabled selected>اختر اسم الموظف</option>
+            <option value="ابراهيم بخاري">ابراهيم بخاري</option>
+            <option value="صالح حنيف">صالح حنيف</option>
+            <option value="احلام هوساوي">احلام هوساوي</option>
+            <option value="معتوق سيف">معتوق سيف</option>
+            <option value="تركي عبدالعزيز">تركي عبدالعزيز</option>
+            <option value="سليم الشريف">سليم الشريف</option>
+            <option value="فوزي بليلة">فوزي بليلة</option>
+            <option value="رامي اللقماني">رامي اللقماني</option>
+        </select>
+    </div>
 
-                    <!-- قائمة الموظفين الثابتين الأساسية -->
-                    <div class="mb-3">
-                        <label>اسم الموظف</label>
-                        <select id="employee_select" name="employee_name" class="form-select" required onchange="handleStaffSelectionType()">
-                            <option value="" disabled selected>اختر اسم الموظف</option>
-                            <option value="ابراهيم بخاري">ابراهيم بخاري</option>
-                            <option value="صالح حنيف">صالح حنيف</option>
-                            <option value="احلام هوساوي">احلام هوساوي</option>
-                            <option value="معتوق سيف">معتوق سيف</option>
-                            <option value="تركي عبدالعزيز">تركي عبدالعزيز</option>
-                            <option value="سليم الشريف">سليم الشريف</option>
-                            <option value="فوزي بليلة">فوزي بليلة</option>
-                            <option value="رامي اللقماني">رامي اللقماني</option>
-                        </select>
-                    </div>
-
-                    <!-- صف أفقي يضم نوع الكادر المؤقت واسم المتطوع/المتدرب بجانب بعضهما -->
-                    <div class="temp-row">
-                        <div class="col">
-                            <label style="font-size: 0.8rem;">نوع الكادر:</label>
-                            <select id="temp_type_select" class="form-select" style="font-size: 0.9rem; padding: 9px 8px;" onchange="handleStaffSelectionType()">
-                                <option value="" selected>اختر</option>
-                                <option value="متطوع">متطوع</option>
-                                <option value="تمهير">تمهير</option>
-                                <option value="تدريب">تدريب</option>
-                            </select>
-                        </div>
-                        <div class="col" style="flex: 1.4;">
-                            <label style="font-size: 0.8rem;">الاسم</label>
-                            <input type="text" id="temp_name_input" class="form-control" placeholder="ادخل الاسم" style="font-size: 0.9rem; padding: 9px 8px;" oninput="handleStaffSelectionType()">
-                        </div>
-                    </div>
+    <!-- صف أفقي يضم نوع الكادر المؤقت واسم المتطوع/المتدرب بجانب بعضهما -->
+    <div class="temp-row">
+        <div class="col">
+            <label style="font-size: 0.8rem;">نوع الكادر:</label>
+            <select id="temp_type_select" class="form-select" style="font-size: 0.9rem; padding: 9px 8px;" onchange="handleStaffSelectionType()">
+                <option value="" selected>اختر</option>
+                <option value="متطوع">متطوع</option>
+                <option value="تمهير">تمهير</option>
+                <option value="تدريب">تدريب</option>
+            </select>
+        </div>
+        <div class="col" style="flex: 1.4;">
+            <label style="font-size: 0.8rem;">الاسم</label>
+            <input type="text" id="temp_name_input" class="form-control" placeholder="ادخل الاسم" style="font-size: 0.9rem; padding: 9px 8px;" oninput="handleStaffSelectionType()">
+        </div>
+    </div>
+                   
 
                     <!-- الحقول المخفية للتاريخ والوقت -->
                     <input type="hidden" id="record_date" name="record_date">
@@ -738,6 +738,38 @@
         return true; // موجود مسبقاً
     }
     return false; // غير موجود
+}
+    // دالة للتبديل بين تعطيل خانة الموظف أو المتطوع بناءً على المدخلات
+function handleStaffToggle() {
+    const employeeInput = document.getElementById('employeeName'); // تأكد من مطابقة الـ ID لحقل الموظف لديك
+    const volunteerInput = document.getElementById('volunteerName'); // تأكد من مطابقة الـ ID لحقل المتطوع/المتدرب لديك
+
+    if (!employeeInput || !volunteerInput) return;
+
+    // إذا كتب المستخدم في خانة الموظف، نقوم بتعطيل خانة المتطوع وتحويل لونها للرمادي
+    if (employeeInput.value.trim() !== "") {
+        volunteerInput.value = ""; // مسح القيمة إذا وجدت
+        volunteerInput.disabled = true;
+        volunteerInput.style.backgroundColor = "#e9ecef"; // لون رمادي
+        volunteerInput.style.cursor = "not-allowed";
+    } 
+    // وإذا كتب في خانة المتطوع، نقوم بتعطيل خانة الموظف وتحويل لونها للرمادي
+    else if (volunteerInput.value.trim() !== "") {
+        employeeInput.value = ""; // مسح القيمة إذا وجدت
+        employeeInput.disabled = true;
+        employeeInput.style.backgroundColor = "#e9ecef"; // لون رمادي
+        employeeInput.style.cursor = "not-allowed";
+    } 
+    // إذا كانت الحقول فارغة، تظل كلتا الخانتين مفعلتين
+    else {
+        employeeInput.disabled = false;
+        employeeInput.style.backgroundColor = "#fff";
+        employeeInput.style.cursor = "text";
+
+        volunteerInput.disabled = false;
+        volunteerInput.style.backgroundColor = "#fff";
+        volunteerInput.style.cursor = "text";
+    }
 }
 </script>
 
