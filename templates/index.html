@@ -338,6 +338,20 @@
         .notes-cancel-btn:hover {
             background-color: #cbd5e1;
         }
+        /* =====================================================
+           ملاحظة عنوان السجل
+        ===================================================== */
+        .records-title-row {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .records-hint {
+            color: #999;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
         @media (max-width: 900px) {
             .main-layout {
                 grid-template-columns: 1fr;
@@ -370,6 +384,11 @@
             }
             .notes-modal-buttons {
                 flex-direction: column;
+            }
+            .records-title-row {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 4px;
             }
         }
         @media print {
@@ -508,7 +527,11 @@
                             class="form-select"
                             required
                         >
-                            <option value="" disabled selected>
+                            <option
+                                value=""
+                                disabled
+                                selected
+                            >
                                 اختر الخدمة المطلوبة
                             </option>
                             <option value="طلب مقابلة طبيب">
@@ -562,7 +585,11 @@
                             class="form-select"
                             required
                         >
-                            <option value="" disabled selected>
+                            <option
+                                value=""
+                                disabled
+                                selected
+                            >
                                 اختر القسم
                             </option>
                             <option value="اطباء الباطنة">
@@ -636,6 +663,7 @@
                             </option>
                         </select>
                     </div>
+                    <!-- اسم الموظف -->
                     <div class="mb-3">
                         <label>
                             اسم الموظف
@@ -645,9 +673,12 @@
                             name="employee_name"
                             class="form-select"
                             required
-                            onchange="handleStaffSelectionType()"
+                            onchange="handleEmployeeChange()"
                         >
-                            <option value="" disabled selected>
+                            <option
+                                value=""
+                                selected
+                            >
                                 اختر اسم الموظف
                             </option>
                             <option value="ابراهيم بخاري">
@@ -676,6 +707,7 @@
                             </option>
                         </select>
                     </div>
+                    <!-- نوع الكادر -->
                     <div class="temp-row">
                         <div class="col">
                             <label style="font-size:0.8rem;">
@@ -688,9 +720,12 @@
                                     font-size:0.9rem;
                                     padding:9px 8px;
                                 "
-                                onchange="handleStaffSelectionType()"
+                                onchange="handleTempTypeChange()"
                             >
-                                <option value="" selected>
+                                <option
+                                    value=""
+                                    selected
+                                >
                                     اختر
                                 </option>
                                 <option value="متطوع">
@@ -720,7 +755,7 @@
                                     font-size:0.9rem;
                                     padding:9px 8px;
                                 "
-                                oninput="handleStaffSelectionType()"
+                                oninput="handleTempNameChange()"
                             >
                         </div>
                     </div>
@@ -806,7 +841,12 @@
                         margin-bottom:15px;
                     "
                 >
-                    آخر السجلات المسجلة
+                    <span class="records-title-row">
+                        <span>السجل</span>
+                        <span class="records-hint">
+                            - انقر على اسم المريض لإضافة الإجراء المتخذ
+                        </span>
+                    </span>
                 </h4>
                 <div
                     style="
@@ -1219,9 +1259,7 @@
             </div>
         </div>
         <div>
-            <label
-                for="actionNotesInput"
-            >
+            <label for="actionNotesInput">
                 تفاصيل الإجراء المتخذ:
             </label>
             <textarea
@@ -1432,10 +1470,6 @@ async function savePatientNote() {
         const result =
             await response.json();
         if (result.success) {
-            /*
-             * تحديث الملاحظة داخل الصفحة مباشرة
-             * بدون الحاجة لإعادة تحميل الصفحة.
-             */
             if (currentNoteElement) {
                 currentNoteElement.setAttribute(
                     "data-action-notes",
@@ -1468,9 +1502,35 @@ async function savePatientNote() {
     }
 }
 /* =========================================================
-   الموظف والكادر المؤقت
+   إعادة تفعيل كل الحقول
 ========================================================= */
-function handleStaffSelectionType() {
+function enableAllStaffFields() {
+    const employeeSelect =
+        document.getElementById(
+            "employee_select"
+        );
+    const tempTypeSelect =
+        document.getElementById(
+            "temp_type_select"
+        );
+    const tempNameInput =
+        document.getElementById(
+            "temp_name_input"
+        );
+    employeeSelect.disabled = false;
+    tempTypeSelect.disabled = false;
+    tempNameInput.disabled = false;
+    employeeSelect.style.backgroundColor =
+        "#fff";
+    tempTypeSelect.style.backgroundColor =
+        "#fff";
+    tempNameInput.style.backgroundColor =
+        "#fff";
+}
+/* =========================================================
+   اختيار اسم الموظف
+========================================================= */
+function handleEmployeeChange() {
     const employeeSelect =
         document.getElementById(
             "employee_select"
@@ -1488,19 +1548,13 @@ function handleStaffSelectionType() {
             "final_employee_name"
         );
     if (
-        !employeeSelect ||
-        !tempTypeSelect ||
-        !tempNameInput
+        employeeSelect.value !== ""
     ) {
-        return;
-    }
-    const hasEmployee =
-        employeeSelect.value !== "";
-    const hasTempType =
-        tempTypeSelect.value !== "";
-    const hasTempName =
-        tempNameInput.value.trim() !== "";
-    if (hasEmployee) {
+        /*
+         * عند اختيار موظف:
+         * نمسح الكادر المؤقت
+         * ونعطّل حقوله.
+         */
         tempTypeSelect.value = "";
         tempNameInput.value = "";
         tempTypeSelect.disabled = true;
@@ -1516,12 +1570,41 @@ function handleStaffSelectionType() {
             finalEmployeeName.value =
                 employeeSelect.value;
         }
-        return;
+    } else {
+        enableAllStaffFields();
+        if (finalEmployeeName) {
+            finalEmployeeName.value =
+                "";
+        }
     }
+}
+/* =========================================================
+   اختيار نوع الكادر
+========================================================= */
+function handleTempTypeChange() {
+    const employeeSelect =
+        document.getElementById(
+            "employee_select"
+        );
+    const tempTypeSelect =
+        document.getElementById(
+            "temp_type_select"
+        );
+    const tempNameInput =
+        document.getElementById(
+            "temp_name_input"
+        );
+    const finalEmployeeName =
+        document.getElementById(
+            "final_employee_name"
+        );
     if (
-        hasTempType ||
-        hasTempName
+        tempTypeSelect.value !== ""
     ) {
+        /*
+         * بمجرد اختيار نوع الكادر:
+         * نلغي اسم الموظف تلقائياً.
+         */
         employeeSelect.value = "";
         employeeSelect.disabled = true;
         employeeSelect.style.backgroundColor =
@@ -1533,30 +1616,154 @@ function handleStaffSelectionType() {
         tempNameInput.style.backgroundColor =
             "#fff";
         if (
-            hasTempType &&
-            hasTempName
+            tempNameInput.value.trim() !== ""
         ) {
-            if (finalEmployeeName) {
-                finalEmployeeName.value =
-                    tempTypeSelect.value +
-                    " - " +
-                    tempNameInput.value.trim();
-            }
+            finalEmployeeName.value =
+                tempTypeSelect.value +
+                " - " +
+                tempNameInput.value.trim();
+        } else {
+            finalEmployeeName.value =
+                "";
         }
+    } else {
+        /*
+         * إذا رجع المستخدم للخيار "اختر":
+         * نعيد اسم الموظف للعمل.
+         */
+        enableAllStaffFields();
+        if (finalEmployeeName) {
+            finalEmployeeName.value =
+                "";
+        }
+    }
+}
+/* =========================================================
+   إدخال اسم الكادر المؤقت
+========================================================= */
+function handleTempNameChange() {
+    const employeeSelect =
+        document.getElementById(
+            "employee_select"
+        );
+    const tempTypeSelect =
+        document.getElementById(
+            "temp_type_select"
+        );
+    const tempNameInput =
+        document.getElementById(
+            "temp_name_input"
+        );
+    const finalEmployeeName =
+        document.getElementById(
+            "final_employee_name"
+        );
+    if (
+        tempNameInput.value.trim() !== ""
+    ) {
+        /*
+         * بمجرد كتابة اسم الكادر المؤقت:
+         * نلغي اسم الموظف الأساسي.
+         */
+        employeeSelect.value = "";
+        employeeSelect.disabled = true;
+        employeeSelect.style.backgroundColor =
+            "#e9ecef";
+        tempTypeSelect.disabled = false;
+        tempNameInput.disabled = false;
+        tempTypeSelect.style.backgroundColor =
+            "#fff";
+        tempNameInput.style.backgroundColor =
+            "#fff";
+        if (
+            tempTypeSelect.value !== ""
+        ) {
+            finalEmployeeName.value =
+                tempTypeSelect.value +
+                " - " +
+                tempNameInput.value.trim();
+        } else {
+            finalEmployeeName.value =
+                "";
+        }
+    } else {
+        /*
+         * إذا تم حذف اسم الكادر المؤقت:
+         * نرجع اسم الموظف للاختيار.
+         */
+        if (
+            tempTypeSelect.value === ""
+        ) {
+            enableAllStaffFields();
+        }
+        if (finalEmployeeName) {
+            finalEmployeeName.value =
+                "";
+        }
+    }
+}
+/* =========================================================
+   دالة موحدة للحالة
+========================================================= */
+function handleStaffSelectionType() {
+    const employeeSelect =
+        document.getElementById(
+            "employee_select"
+        );
+    const tempTypeSelect =
+        document.getElementById(
+            "temp_type_select"
+        );
+    const tempNameInput =
+        document.getElementById(
+            "temp_name_input"
+        );
+    if (!employeeSelect ||
+        !tempTypeSelect ||
+        !tempNameInput) {
         return;
     }
-    employeeSelect.disabled = false;
-    tempTypeSelect.disabled = false;
-    tempNameInput.disabled = false;
-    employeeSelect.style.backgroundColor =
-        "#fff";
-    tempTypeSelect.style.backgroundColor =
-        "#fff";
-    tempNameInput.style.backgroundColor =
-        "#fff";
-    if (finalEmployeeName) {
-        finalEmployeeName.value = "";
+    /*
+     * عند وجود موظف:
+     * نضمن تعطيل الكادر المؤقت.
+     */
+    if (
+        employeeSelect.value !== ""
+    ) {
+        tempTypeSelect.value = "";
+        tempNameInput.value = "";
+        tempTypeSelect.disabled = true;
+        tempNameInput.disabled = true;
+        tempTypeSelect.style.backgroundColor =
+            "#e9ecef";
+        tempNameInput.style.backgroundColor =
+            "#e9ecef";
+        employeeSelect.disabled = false;
+        employeeSelect.style.backgroundColor =
+            "#fff";
+        return;
     }
+    /*
+     * عند وجود نوع كادر أو اسم:
+     * نضمن تعطيل اسم الموظف.
+     */
+    if (
+        tempTypeSelect.value !== "" ||
+        tempNameInput.value.trim() !== ""
+    ) {
+        employeeSelect.value = "";
+        employeeSelect.disabled = true;
+        employeeSelect.style.backgroundColor =
+            "#e9ecef";
+        tempTypeSelect.disabled = false;
+        tempNameInput.disabled = false;
+        tempTypeSelect.style.backgroundColor =
+            "#fff";
+        tempNameInput.style.backgroundColor =
+            "#fff";
+        return;
+    }
+    enableAllStaffFields();
 }
 /* =========================================================
    التحقق من النموذج
@@ -1698,6 +1905,7 @@ function resetFormCustom() {
         if (dynamicHidden) {
             dynamicHidden.remove();
         }
+        employeeSelect.value = "";
         employeeSelect.setAttribute(
             "name",
             "employee_name"
@@ -1707,7 +1915,9 @@ function resetFormCustom() {
             "required"
         );
         employeeSelect.disabled = false;
+        tempTypeSelect.value = "";
         tempTypeSelect.disabled = false;
+        tempNameInput.value = "";
         tempNameInput.disabled = false;
         employeeSelect.style.backgroundColor =
             "#fff";
@@ -1908,7 +2118,8 @@ function getPatientData() {
     return {
         phone: phone,
         patient_name: name,
-        ticket_number: ticketNumber,
+        ticket_number:
+            ticketNumber,
         requested_service:
             requestedService,
         service_name:
@@ -2402,3 +2613,7 @@ setInterval(
 </script>
 </body>
 </html>
+
+هذا يحل مشكلة الاختيار بالطريقة اللي قصدتيها: إذا اخترتِ اسم موظف ثم قررتِ تستخدمين نوع الكادر، مجرد اختيار نوع الكادر يلغي اسم الموظف تلقائيًا، والعكس كذلك.
+
+وبالنسبة للملاحظة: الكود عندك يحفظها في Supabase عبر /save-note، لذلك لازم يكون عمود action_notes موجود في patient_records مثل ما سوّينا قبل.
