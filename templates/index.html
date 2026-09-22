@@ -1,253 +1,721 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة تجربة المريض - الدعم المساند</title>
-    <!-- استيراد خط Tajawal لتصميم طبي احترافي -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome للأيقونات -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-        }
-        .navbar {
-            background: linear-gradient(135deg, #0d6efd, #0dcaf0);
-        }
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .btn-custom {
-            border-radius: 8px;
-        }
-        /* تنسيق خاص للطباعة */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            #printableTicket, #printableTicket * {
-                visibility: visible;
-            }
-            #printableTicket {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
+<!DOCTYPE html> 
+<html lang="ar" dir="rtl"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>إدارة تجربة المريض - وحدة الدعم المساندة</title> 
+    <!-- استيراد خط Tajawal المناسب للمستشفيات --> 
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet"> 
+    <style> 
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Tajawal', sans-serif !important; 
+        } 
+        body { 
+            background-color: #f4f7f9; 
+            color: #2c3e50; 
+            padding: 20px; 
+        } 
+        .container { 
+            width: 100%; 
+            max-width: 1350px; 
+            margin: 0 auto; 
+        } 
+        .header-banner { 
+            background: linear-gradient(135deg, #1F4E78 0%, #163a5d 100%); 
+            color: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            text-align: center; 
+            margin-bottom: 25px; 
+            box-shadow: 0 4px 15px rgba(31,78,120,0.15); 
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        } 
+        .header-banner img { 
+            height: 190px; 
+            width: auto; 
+            position: absolute; 
+            right: 25px; 
+            border-radius: 8px; 
+        } 
+        .header-banner h2 { 
+            font-size: 1.7rem; 
+            font-weight: 700; 
+            letter-spacing: 0.5px; 
+        } 
+        .main-layout { 
+            display: flex; 
+            gap: 20px; 
+            flex-wrap: wrap; 
+        } 
+        .card { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 25px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+            margin-bottom: 20px; 
+            border: 1px solid #eef2f5; 
+        } 
+        .form-container { 
+            flex: 1; 
+            min-width: 280px; 
+            max-width: 380px; 
+        } 
+        .table-container { 
+            flex: 2.5; 
+            min-width: 550px; 
+        } 
+        .card-title { 
+            color: #1F4E78; 
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px; 
+            border-bottom: 2px solid #f0f4f8; 
+            text-align: center; 
+        } 
+        .mb-3 { 
+            margin-bottom: 15px; 
+        } 
+        .temp-row { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 15px; 
+        } 
+        .temp-row .col { 
+            flex: 1; 
+        } 
+        label { 
+            display: block; 
+            margin-bottom: 6px; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            color: #34495e; 
+        } 
+        .form-control, .form-select { 
+            width: 100%; 
+            padding: 10px 12px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
+            font-size: 0.95rem; 
+            outline: none; 
+            transition: all 0.2s ease; 
+            background-color: #fff; 
+        } 
+        .form-control:focus, .form-select:focus { 
+            border-color: #1F4E78; 
+            box-shadow: 0 0 0 3px rgba(31, 78, 120, 0.12); 
+        } 
+        .btn { 
+            width: 100%; 
+            padding: 11px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1rem; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            margin-top: 8px; 
+        } 
+        .btn-primary { 
+            background-color: #1F4E78; 
+            color: white; 
+        } 
+        .btn-primary:hover { 
+            background-color: #163a5d; 
+        } 
+        .btn-sms { 
+            background-color: #2b6cb0; 
+            color: white; 
+        } 
+        .btn-sms:hover { 
+            background-color: #2c5282; 
+        } 
+        .btn-whatsapp { 
+            background-color: #25D366; 
+            color: white; 
+        } 
+        .btn-whatsapp:hover { 
+            background-color: #1ebe57; 
+        } 
+        .btn-secondary { 
+            background-color: #e2e8f0; 
+            color: #475569; 
+        } 
+        .btn-secondary:hover { 
+            background-color: #cbd5e1; 
+        } 
+        .btn-success { 
+            background-color: #2e7d32; 
+            color: white; 
+            text-decoration: none; 
+            display: inline-block; 
+            padding: 7px 12px; 
+            border-radius: 6px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            text-align: center; 
+        } 
+        .btn-success:hover { 
+            background-color: #1b5e20; 
+        } 
+        .table-responsive { 
+            overflow-x: auto; 
+        } 
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            text-align: center; 
+            font-size: 0.9rem; 
+            white-space: nowrap; 
+        } 
+        th, td { 
+            padding: 12px 10px; 
+            border-bottom: 1px solid #edf2f7; 
+        } 
+        th { 
+            background-color: #1F4E78; 
+            color: white; 
+            font-weight: 700; 
+        } 
+        tr:hover { 
+            background-color: #f8fafc; 
+        } 
+        .text-muted { 
+            color: #888; 
+            padding: 20px; 
+            white-space: normal; 
+        } 
+        .patient-name-link { 
+            color: #1F4E78; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-decoration: underline; 
+        } 
+        .patient-name-link:hover { 
+            color: #163a5d; 
+        } 
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.5); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 2000; 
+        } 
+        .modal-content { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            width: 100%; 
+            max-width: 450px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
+            direction: rtl; 
+            position: relative; 
+        } 
+    </style> 
+</head> 
+<body> 
 
-    <!-- الشريط العلوي -->
-    <nav class="navbar navbar-dark shadow-sm mb-4">
-        <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1 fw-bold"><i class="fa-solid fa-hospital-user ms-2"></i> وحدة الدعم المساندة - تجربة المريض</span>
-            <span class="text-white small"><i class="fa-regular fa-clock ms-1"></i> النظام نشط</span>
-        </div>
-    </nav>
+<div class="container"> 
+    <div class="header-banner"> 
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="شعار المستشفى"> 
+        <h2>إدارة تجربة المريض — وحدة الدعم المساندة</h2> 
+    </div> 
 
-    <div class="container py-3">
-        
-        <!-- لوحة التحكم / أدوات البحث والتصفية -->
-        <div class="card p-4 mb-4">
-            <div class="row g-3 align-items-center">
-                <div class="col-md-4">
-                    <label class="form-label fw-bold small">بحث برقم الهوية أو الاسم:</label>
-                    <input type="text" id="searchInput" class="form-control" placeholder="اكتب للبحث...">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold small">فلترة الفترات:</label>
-                    <!-- ميزة الـ 12 ساعة والفلترة الزمنية -->
-                    <select id="timeFilter" class="form-select">
-                        <option value="all">جميع السجلات</option>
-                        <option value="12hours">خلال الـ 12 ساعة الماضية</option>
-                        <option value="24hours">خلال الـ 24 ساعة الماضية</option>
-                    </select>
-                </div>
-                <div class="col-md-5 text-md-end mt-4">
-                    <button class="btn btn-success btn-custom" onclick="exportToExcel()"><i class="fa-solid fa-file-excel ms-1"></i> تصدير لـ Excel</button>
-                    <button class="btn btn-primary btn-custom" data-bs-toggle="modal" data-bs-target="#newTicketModal"><i class="fa-solid fa-plus ms-1"></i> إضافة بلاغ / تذكرة جديدة</button>
-                </div>
-            </div>
-        </div>
+    <div class="main-layout"> 
+        <div class="form-container"> 
+            <div class="card"> 
+                <h4 class="card-title">لوحة إدخال البيانات</h4> 
+                <form id="patientForm" action="/" method="POST" onsubmit="return validateAndSubmitForm()"> 
+                    <div class="mb-3"> 
+                        <label>اسم المريض</label> 
+                        <input type="text" id="patient_name" name="patient_name" class="form-control save-input" placeholder="اسم المريض" required> 
+                    </div> 
 
-        <!-- جدول عرض السجلات -->
-        <div class="card p-3">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>رقم التذكرة</th>
-                            <th>اسم المريض</th>
-                            <th>رقم الهوية</th>
-                            <th>نوع الطلب / الشكوى</th>
-                            <th>وقت التسجيل</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات السريعة (واتساب / SMS)</th>
-                            <th>طباعة</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ticketsTableBody">
-                        <!-- بيانات تجريبية توضيحية -->
-                        <tr>
-                            <td>#1001</td>
-                            <td><a href="#" data-bs-toggle="modal" data-bs-target="#actionModal" onclick="loadPatientDetails('محمد أحمد', '#1001')">محمد أحمد</a></td>
-                            <td>1092837465</td>
-                            <td>تأخر موعد العيادة</td>
-                            <td>2026-09-22 10:30 AM</td>
-                            <td><span class="badge bg-warning text-dark">قيد الإجراء</span></td>
-                            <td>
-                                <!-- زري الـ SMS والواتساب جنباً إلى جنب -->
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-sm btn-success" onclick="sendWhatsApp('966500000000', 'تذكرة رقم #1001')"><i class="fa-brands fa-whatsapp"></i> واتساب</button>
-                                    <button class="btn btn-sm btn-primary" onclick="sendSMS('966500000000', 'تذكرة رقم #1001')"><i class="fa-solid fa-sms"></i> SMS</button>
-                                </div>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-secondary" onclick="printTicket('#1001', 'محمد أحمد', 'تأخر موعد العيادة')"><i class="fa-solid fa-print"></i> طباعة</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                    <div class="mb-3"> 
+                        <label>رقم الهوية</label> 
+                        <input type="text" id="national_id" name="national_id" class="form-control save-input" placeholder="10xxxxxxxx" maxlength="10" pattern="[0-9]{10}" title="يجب أن تتكون الهوية من 10 أرقام فقط" oninput="checkPatientIdentity(this.value)" required> 
+                        <small id="id-warning" style="color: #e53e3e; font-size: 0.75rem; display: none; margin-top: 3px; font-weight: bold;"></small> 
+                    </div> 
 
-    </div>
+                    <div class="mb-3"> 
+                        <label>رقم الملف</label> 
+                        <input type="text" id="file_number" name="file_number" class="form-control save-input" placeholder="20XXXXXX"> 
+                    </div> 
 
-    <!-- نافذة منبثقة لإضافة تذكرة جديدة -->
-    <div class="modal fade" id="newTicketModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">إضافة بلاغ أو تذكرة جديدة</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="ticketForm">
-                        <div class="mb-3">
-                            <label class="form-label">اسم المريض</label>
-                            <input type="text" class="form-control" id="patientName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">رقم الهوية</label>
-                            <input type="text" class="form-control" id="patientId" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">رقم الجوال</label>
-                            <input type="text" class="form-control" id="patientPhone" placeholder="966xxxxxxxxx" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">تفاصيل الطلب / الشكوى</label>
-                            <textarea class="form-control" id="ticketDetails" rows="3" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 btn-custom">حفظ وإرسال</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <div class="mb-3"> 
+                        <label>رقم جوال المريض</label> 
+                        <input type="tel" id="patient_phone" name="patient_phone" class="form-control save-input" placeholder="05xxxxxxxx" maxlength="10"> 
+                    </div> 
 
-    <!-- نافذة منبثقة للإجراء المتخذ -->
-    <div class="modal fade" id="actionModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">تسجيل الإجراء المتخذ للمريض</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="modalPatientInfo" class="text-muted fw-bold"></p>
-                    <div class="mb-3">
-                        <label class="form-label">الإجراء المتخذ:</label>
-                        <textarea class="form-control" id="actionTakenText" rows="3" placeholder="اكتب الإجراء الذي تم اتباعه..."></textarea>
-                    </div>
-                    <button type="button" class="btn btn-success w-100 btn-custom" onclick="saveAction()">حفظ الإجراء</button>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <div class="mb-3"> 
+                        <label>الخدمة المطلوبة</label> 
+                        <select id="requested_service" name="requested_service" class="form-select save-input" required> 
+                            <option value="" disabled selected>اختر الخدمة المطلوبة</option> 
+                            <option value="طلب مقابلة طبيب">طلب مقابلة طبيب</option> 
+                            <option value="طلب صرف دواء">طلب صرف دواء</option> 
+                            <option value="موعد جديد عيادات">موعد جديد عيادات</option> 
+                            <option value="اعادة موعد عيادات">اعادة موعد عيادات</option> 
+                            <option value="موعد عيادة الصحة النفسية">موعد عيادة الصحة النفسية</option> 
+                            <option value="اعادة موعد عيادة الصحة النفسية">اعادة موعد عيادة الصحة النفسية</option> 
+                            <option value="عدم ظهور طلب تحليل في النظام">عدم ظهور طلب تحليل في النظام</option> 
+                            <option value="عدم ظهور طلب الاشعة في النظام">عدم ظهور طلب الاشعة في النظام</option> 
+                            <option value="عدم ظهور الادوية في النظام">عدم ظهور الادوية في النظام</option> 
+                            <option value="طلب مرافقة جديد">طلب مرافقة جديد</option> 
+                            <option value="اعادة طلب مرافقة">اعادة طلب مرافقة</option> 
+                            <option value="شكوى ضد موظف">شكوى ضد موظف</option> 
+                            <option value="شكوى من خدمة">شكوى من خدمة</option> 
+                        </select> 
+                    </div> 
 
-    <!-- قسم مخفي للطباعة -->
-    <div id="printableTicket" class="d-none p-5">
-        <div class="text-center mb-4">
-            <h2>وزارة الصحة - نظام تجربة المريض</h2>
-            <h4>إيصال مراجعة تذكرة دعم مساند</h4>
-            <hr>
-        </div>
-        <p><strong>رقم التذكرة:</strong> <span id="printTktNo"></span></p>
-        <p><strong>اسم المريض:</strong> <span id="printName"></span></p>
-        <p><strong>نوع الطلب:</strong> <span id="printDesc"></span></p>
-        <p><strong>وقت الاصدار:</strong> <span id="printTime"></span></p>
-        <br><br>
-        <div class="text-end">
-            <p>توقيع الموظف المختص: ........................</p>
-        </div>
-    </div>
+                    <div class="mb-3"> 
+                        <label>القسم</label> 
+                        <select id="service_name" name="service_name" class="form-select save-input" required> 
+                            <option value="" disabled selected>اختر القسم</option> 
+                            <option value="اطباء الباطنة">اطباء الباطنة</option> 
+                            <option value="تمريض الباطنة">تمريض الباطنة</option> 
+                            <option value="اطباء الجراحة">اطباء الجراحة</option> 
+                            <option value="تمريض الجراحة">تمريض الجراحة</option> 
+                            <option value="اطباء العظام">اطباء العظام</option> 
+                            <option value="تمريض العظام">تمريض العظام</option> 
+                            <option value="اطباء المخ والاعصاب">اطباء المخ والاعصاب</option> 
+                            <option value="تمريض المخ والاعصاب">تمريض المخ والاعصاب</option> 
+                            <option value="صيدلية">صيدلية</option> 
+                            <option value="الاشعة">الاشعة</option> 
+                            <option value="المعلومات الصحية">المعلومات الصحية</option> 
+                            <option value="مكتب الدخول">مكتب الدخول</option> 
+                            <option value="الصحة الرقمية">الصحة الرقمية</option> 
+                            <option value="إدارة المرافق">إدارة المرافق</option> 
+                            <option value="الطب المنزلي">الطب المنزلي</option> 
+                            <option value="الوفيات">الوفيات</option> 
+                            <option value="الخدمة الاجتماعية">الخدمة الاجتماعية</option> 
+                            <option value="العلاج الطبيعي">العلاج الطبيعي</option> 
+                            <option value="اطباء النفسية">اطباء النفسية</option> 
+                            <option value="تمريض النفسية">تمريض النفسية</option> 
+                            <option value="الإمداد">الإمداد</option> 
+                            <option value="المختبر">المختبر</option> 
+                            <option value="إدارة القبول">إدارة القبول</option> 
+                        </select> 
+                    </div> 
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // دالة إرسال الـ WhatsApp
-        function sendWhatsApp(phone, message) {
-            const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-        }
+                    <div class="mb-3"> 
+                        <label>اسم الموظف</label> 
+                        <select id="employee_select" name="employee_name" class="form-select save-input" onchange="handleStaffSelectionType()"> 
+                            <option value="" disabled selected>اختر اسم الموظف</option> 
+                            <option value="ابراهيم بخاري">ابراهيم بخاري</option> 
+                            <option value="صالح حنيف">صالح حنيف</option> 
+                            <option value="احلام هوساوي">احلام هوساوي</option> 
+                            <option value="معتوق سيف">معتوق سيف</option> 
+                            <option value="تركي عبدالعزيز">تركي عبدالعزيز</option> 
+                            <option value="سليم الشريف">سليم الشريف</option> 
+                            <option value="فوزي بليلة">فوزي بليلة</option> 
+                            <option value="رامي اللقماني">رامي اللقماني</option> 
+                        </select> 
+                    </div> 
 
-        // دالة إرسال الـ SMS
-        function sendSMS(phone, message) {
-            const url = `sms:${phone}?body=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-        }
+                    <div class="temp-row"> 
+                        <div class="col"> 
+                            <label style="font-size: 0.8rem;">نوع الكادر:</label> 
+                            <select id="temp_type_select" class="form-select save-input" style="font-size: 0.9rem; padding: 9px 8px;" onchange="handleStaffSelectionType()"> 
+                                <option value="" selected>اختر</option> 
+                                <option value="متطوع">متطوع</option> 
+                                <option value="تمهير">تمهير</option> 
+                                <option value="تدريب">تدريب</option> 
+                            </select> 
+                        </div> 
+                        <div class="col" style="flex: 1.4;"> 
+                            <label style="font-size: 0.8rem;">الاسم</label> 
+                            <input type="text" id="temp_name_input" class="form-control save-input" placeholder="ادخل الاسم" style="font-size: 0.9rem; padding: 9px 8px;" oninput="handleStaffSelectionType()"> 
+                        </div> 
+                    </div> 
 
-        // دالة طباعة التذكرة
-        function printTicket(tktNo, name, desc) {
-            document.getElementById('printTktNo').innerText = tktNo;
-            document.getElementById('printName').innerText = name;
-            document.getElementById('printDesc').innerText = desc;
-            document.getElementById('printTime').innerText = new Date().toLocaleString();
-            
-            window.print();
-        }
+                    <input type="hidden" id="record_date" name="record_date"> 
+                    <input type="hidden" id="record_time" name="record_time"> 
+                    <input type="hidden" id="final_employee_name" name="final_employee_name"> 
 
-        // تحميل تفاصيل المريض في نافذة الإجراء
-        function loadPatientDetails(name, tktId) {
-            document.getElementById('modalPatientInfo').innerText = `المريض: ${name} (تذكرة: ${tktId})`;
-        }
+                    <button type="button" class="btn btn-sms" onclick="sendSmsTicket()">إرسال تذكرة عبر (SMS)</button> 
+                    <button type="button" class="btn btn-whatsapp" onclick="sendWhatsAppTicket()">إرسال تذكرة عبر (WhatsApp)</button> 
+                     
+                    <button type="submit" class="btn btn-primary">حفظ السجل</button> 
+                    <button type="reset" class="btn btn-secondary" onclick="resetFormCustom()">مسح الحقول</button> 
+                </form> 
+            </div> 
+        </div> 
 
-        function saveAction() {
-            alert('تم حفظ الإجراء بنجاح!');
-            var myModal = bootstrap.Modal.getInstance(document.getElementById('actionModal'));
-            myModal.hide();
-        }
+        <div class="table-container"> 
+            <div class="card"> 
+                <h4 class="card-title" style="text-align: right; margin-bottom: 15px;">السجل - <span style="font-size: 0.85rem; color: #555;">انقر على اسم المريض لإضافة الإجراء المتخذ</span></h4> 
+                 
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;"> 
+                    <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;"> 
+                        <div style="flex: 1; min-width: 140px;"> 
+                            <label for="filter_id" style="font-size: 0.85rem; margin-bottom: 4px;">رقم الهوية (بحث شامل):</label> 
+                            <input type="text" id="filter_id" class="form-control" placeholder="ابحث بالهوية..." style="padding: 6px 10px; font-size: 0.9rem;"> 
+                        </div> 
+                        <div style="flex: 1; min-width: 130px;"> 
+                            <label for="filter_start" style="font-size: 0.85rem; margin-bottom: 4px;">من تاريخ:</label> 
+                            <input type="date" id="filter_start" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;"> 
+                        </div> 
+                        <div style="flex: 1; min-width: 130px;"> 
+                            <label for="filter_end" style="font-size: 0.85rem; margin-bottom: 4px;">إلى تاريخ :</label> 
+                            <input type="date" id="filter_end" class="form-control" style="padding: 6px 10px; font-size: 0.9rem;"> 
+                        </div> 
+                        <div style="display: flex; gap: 6px; margin-top: 0;"> 
+                            <button type="button" class="btn" style="background-color: #1F4E78; color: white; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="applyFilters()">بحث</button> 
+                            <button type="button" class="btn" style="background-color: #e2e8f0; color: #475569; padding: 7px 12px; font-size: 0.85rem; width: auto; border-radius: 6px; cursor: pointer; margin-top: 0;" onclick="clearFilters()">مسح البحث</button> 
+                        </div> 
+                        <div> 
+                            <a href="{{ url_for('export_excel') }}" class="btn-success" style="padding: 7px 12px; font-size: 0.85rem; border-radius: 6px; margin-top: 0; display: inline-block;">تحميل إلى Excel</a> 
+                        </div> 
+                    </div> 
+                </div> 
+                 
+                <div class="table-responsive"> 
+                    <table id="recordsTable"> 
+                        <thead> 
+                            <tr> 
+                                <th>#</th> 
+                                <th>الاسم</th> 
+                                <th>الهوية</th> 
+                                <th>رقم الملف</th> 
+                                <th>الخدمة المطلوبة</th> 
+                                <th>القسم</th> 
+                                <th>الموظف / القائم بالخدمة</th> 
+                                <th>التاريخ</th> 
+                                <th>الوقت</th> 
+                            </tr> 
+                        </thead> 
+                        <tbody> 
+                            {% for record in records | reverse %} 
+                            <tr data-index="{{ loop.revindex }}"> 
+                                <td><strong class="row-num">{{ loop.index }}</strong></td> 
+                                <td> 
+                                    <span class="patient-name-link" onclick="openNotesModal('{{ record.get('patient_name', '-') }}', '{{ record.get('national_id', '-') }}')" title="انقر لإضافة أو عرض الإجراء المتخذ للمريض"> 
+                                        {{ record.get('patient_name', '-') }} 
+                                    </span> 
+                                </td> 
+                                <td>{{ record.get('national_id', '-') }}</td> 
+                                <td>{{ record.get('file_number', '-') }}</td> 
+                                <td>{{ record.get('requested_service', '-') }}</td> 
+                                <td>{{ record.get('service_name', record.get('service', '-')) }}</td> 
+                                <td>{{ record.get('employee_name', '-') }}</td> 
+                                <td>{{ record.get('record_date', '-') }}</td> 
+                                <td>{{ record.get('record_time', '-') }}</td> 
+                            </tr> 
+                            {% else %} 
+                            <tr> 
+                                <td colspan="9" class="text-muted">لا توجد سجلات مسجلة حديثاً.</td> 
+                            </tr> 
+                            {% endfor %} 
+                        </tbody> 
+                    </table> 
+                </div> 
+            </div> 
+        </div> 
+    </div> 
+</div> 
 
-        // تصدير إلى Excel (محاكاة بسيطة لجداول البيانات)
-        function exportToExcel() {
-            let table = document.querySelector(".table");
-            let html = table.outerHTML;
-            let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
-            let downloadLink = document.createElement("a");
-            downloadLink.href = url;
-            downloadLink.download = 'tickets_report.xls';
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        }
+<!-- نافذة الإجراء المتخذ المنبثقة (Modal) --> 
+<div id="notesModal" class="modal-overlay"> 
+    <div class="modal-content"> 
+        <h4 style="color: #1F4E78; margin-bottom: 10px; font-size: 1.15rem;">الإجراء المتخذ للمريض: <span id="modal-patient-name" style="color: #2c3e50;"></span></h4> 
+        <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">رقم الهوية: <span id="modal-patient-id-display"></span></p> 
+        <input type="hidden" id="modal-patient-id"> 
+         
+        <div class="mb-3"> 
+            <label style="font-size: 0.85rem; margin-bottom: 5px; color: #1F4E78;">تفاصيل الإجراء المتخذ:</label> 
+            <textarea id="patient-notes-input" class="form-control" rows="5" placeholder="اكتب الإجراء المتخذ مع المريض هنا..."></textarea> 
+        </div> 
 
-        // تفعيل فلتر الـ 12 ساعة والبحث
-        document.getElementById('timeFilter').addEventListener('change', function() {
-            const filterValue = this.value;
-            // يمكنك هنا ربط القيمة بمسار في Flask أو تصفية الجدول محلياً حسب التاريخ
-            console.log("تم تغيير الفلتر إلى: ", filterValue);
-        });
-    </script>
-</body>
-</html>
+        <div style="display: flex; gap: 10px;"> 
+            <button type="button" class="btn btn-primary" onclick="savePatientNotes()" style="margin-top: 0;">حفظ الإجراء</button> 
+            <button type="button" class="btn btn-secondary" onclick="closeNotesModal()" style="margin-top: 0;">إغلاق</button> 
+        </div> 
+    </div> 
+</div> 
+
+<script> 
+    const registeredPatients = {}; 
+     
+    document.addEventListener("DOMContentLoaded", function() { 
+        setLiveDateTime(); 
+        loadSavedFormData(); 
+
+        document.querySelectorAll('.save-input').forEach(input => { 
+            input.addEventListener('input', saveFormDataToLocal); 
+            input.addEventListener('change', saveFormDataToLocal); 
+        }); 
+         
+        const rows = document.querySelectorAll("#recordsTable tbody tr"); 
+        rows.forEach(row => { 
+            const cols = row.querySelectorAll("td"); 
+            if (cols.length >= 4) { 
+                const id = cols[2].innerText.trim(); 
+                const name = cols[1].innerText.trim(); 
+                if (id && id !== '-') { 
+                    registeredPatients[id] = name; 
+                } 
+            } 
+        }); 
+
+        filterCurrentShiftByDefault(); 
+    }); 
+
+    // تعيين التاريخ والوقت الحاليين تلقائياً في الحقول المخفية 
+    function setLiveDateTime() { 
+        const now = new Date(); 
+        const year = now.getFullYear(); 
+        const month = String(now.getMonth() + 1).padStart(2, '0'); 
+        const day = String(now.getDate()).padStart(2, '0'); 
+        const hours = String(now.getHours()).padStart(2, '0'); 
+        const minutes = String(now.getMinutes()).padStart(2, '0'); 
+        const seconds = String(now.getSeconds()).padStart(2, '0'); 
+
+        const dateField = document.getElementById('record_date'); 
+        const timeField = document.getElementById('record_time'); 
+
+        if (dateField) dateField.value = `${year}-${month}-${day}`; 
+        if (timeField) timeField.value = `${hours}:${minutes}:${seconds}`; 
+    } 
+
+    // دالة توليد رقم الدور المتسلسل (A/P) 
+    function generateQueueNumber() { 
+        const now = new Date(); 
+        const hours = now.getHours(); 
+        const prefix = hours >= 12 ? 'P' : 'A';  
+        let dateStr = now.toISOString().split('T')[0]; 
+        let dailyKey = 'queue_num_' + dateStr + '_' + prefix; 
+        let currentNum = localStorage.getItem(dailyKey); 
+         
+        if (!currentNum) { 
+            currentNum = 1; 
+        } else { 
+            currentNum = parseInt(currentNum) + 1; 
+        } 
+        localStorage.setItem(dailyKey, currentNum); 
+        return prefix + "-" + currentNum; 
+    } 
+
+    // التحقق من رقم الهوية وتنبيه المستخدم إذا مكرر مسبقاً 
+    function checkPatientIdentity(idValue) { 
+        const warningEl = document.getElementById('id-warning'); 
+        if (!warningEl) return; 
+
+        if (idValue.length === 10) { 
+            if (registeredPatients[idValue]) { 
+                warningEl.style.display = 'block'; 
+                warningEl.innerText = `تنبيه: هذا المريض مسجل مسبقاً باسم (${registeredPatients[idValue]})`; 
+            } else { 
+                warningEl.style.display = 'none'; 
+                warningEl.innerText = ''; 
+            } 
+        } else { 
+            warningEl.style.display = 'none'; 
+            warningEl.innerText = ''; 
+        } 
+    } 
+
+    // تصفية السجلات بناءً على التاريخ ورقم الهوية 
+    function applyFilters() { 
+        const filterId = document.getElementById('filter_id').value.trim(); 
+        const startDate = document.getElementById('filter_start').value; 
+        const endDate = document.getElementById('filter_end').value; 
+
+        const rows = document.querySelectorAll("#recordsTable tbody tr"); 
+        let visibleCount = 1; 
+
+        rows.forEach(row => { 
+            const cols = row.querySelectorAll("td"); 
+            if (cols.length >= 9) { 
+                const name = cols[1].innerText.trim(); 
+                const id = cols[2].innerText.trim(); 
+                const dateText = cols[7].innerText.trim(); 
+
+                let matchesId = !filterId || id.includes(filterId) || name.includes(filterId); 
+                let matchesDate = true; 
+
+                if (startDate && dateText < startDate) matchesDate = false; 
+                if (endDate && dateText > endDate) matchesDate = false; 
+
+                if (matchesId && matchesDate) { 
+                    row.style.display = ""; 
+                    const numCell = row.querySelector('.row-num'); 
+                    if (numCell) numCell.innerText = visibleCount++; 
+                } else { 
+                    row.style.display = "none"; 
+                } 
+            } 
+        }); 
+    } 
+
+    // مسح الفلاتر وإعادة عرض الجدول بالشكل الافتراضي 
+    function clearFilters() { 
+        document.getElementById('filter_id').value = ''; 
+        document.getElementById('filter_start').value = ''; 
+        document.getElementById('filter_end').value = ''; 
+        filterCurrentShiftByDefault(); 
+    } 
+
+    // إرسال عبر الواتساب مباشرة بالصيغة المطلوبة 
+    function sendWhatsAppTicket() { 
+        const phone = document.getElementById('patient_phone').value.trim(); 
+        const patientName = document.getElementById('patient_name').value.trim(); 
+        const serviceSelect = document.getElementById('service_name'); 
+        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-'; 
+
+        if (!patientName) { 
+            alert('يرجى إدخال اسم المريض أولاً.'); 
+            document.getElementById('patient_name').focus(); 
+            return; 
+        } 
+
+        if (!phone) { 
+            alert('يرجى إدخال رقم الجوال أولاً.'); 
+            document.getElementById('patient_phone').focus(); 
+            return; 
+        } 
+
+        let formattedPhone = phone.startsWith('0') ? '966' + phone.slice(1) : phone; 
+        const ticketNumber = generateQueueNumber(); 
+
+        const message = `مرحبًا ${patientName}\nتم إصدار تذكرتك في وحدة الدعم المساندة:\n\nرقم الدور: *${ticketNumber}*\nالقسم: ${serviceName}\n\nيرجى الانتظار لحين نداء رقمك شكراً لتعاونكم.`; 
+         
+        const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`; 
+        window.open(whatsappUrl, '_blank'); 
+    } 
+
+    // إرسال عبر SMS 
+    function sendSmsTicket() { 
+        const patientName = document.getElementById('patient_name').value.trim(); 
+        const phone = document.getElementById('patient_phone').value.trim(); 
+        const serviceSelect = document.getElementById('service_name'); 
+        const serviceName = serviceSelect && serviceSelect.selectedIndex >= 0 ? serviceSelect.options[serviceSelect.selectedIndex].text : '-'; 
+
+        if (!patientName) { 
+            alert('يرجى إدخال اسم المريض أولاً.'); 
+            return; 
+        } 
+
+        if (!phone || phone.length < 10) { 
+            alert('يرجى إدخال رقم جوال صحيح يتكون من 10 أرقام.'); 
+            return; 
+        } 
+
+        const ticketNumber = generateQueueNumber(); 
+
+        fetch('/send-sms', { 
+            method: 'POST', 
+            headers: { 
+                'Content-Type': 'application/json', 
+            }, 
+            body: JSON.stringify({ 
+                phone: phone, 
+                name: patientName, 
+                ticket: ticketNumber, 
+                service: serviceName 
+            }) 
+        }) 
+        .then(response => { 
+            if (!response.ok) { 
+                throw new Error('خدمة الرسائل غير متوفرة حالياً في السيرفر.'); 
+            } 
+            return response.json(); 
+        }) 
+        .then(data => { 
+            if (data.success) { 
+                alert('تم إرسال رسالة الـ SMS بنجاح إلى المريض!'); 
+            } else { 
+                alert('فشل إرسال الرسالة: ' + (data.message || 'خطأ من الخادم')); 
+            } 
+        }) 
+        .catch(error => { 
+            console.error('Error:', error); 
+            alert('عذراً، خدمة الرسائل النصية (SMS) غير مفعلة حالياً على الخادم. يمكنك الاعتماد على إرسال الواتساب.'); 
+        }); 
+    } 
+
+    // دوال نافذة الإجراء المتخذ 
+    function openNotesModal(patientName, nationalId) { 
+        document.getElementById('modal-patient-name').innerText = patientName; 
+        document.getElementById('modal-patient-id').value = nationalId; 
+        document.getElementById('modal-patient-id-display').innerText = nationalId; 
+         
+        const savedNote = localStorage.getItem('patient_action_' + nationalId) || ''; 
+        document.getElementById('patient-notes-input').value = savedNote; 
+         
+        document.getElementById('notesModal').style.display = 'flex'; 
+    } 
+
+    function closeNotesModal() { 
+        document.getElementById('notesModal').style.display = 'none'; 
+    } 
+
+    function savePatientNotes() { 
+        const nationalId = document.getElementById('modal-patient-id').value; 
+        const noteText = document.getElementById('patient-notes-input').value; 
+         
+        if (nationalId) { 
+            localStorage.setItem('patient_action_' + nationalId, noteText); 
+            alert('تم حفظ الإجراء المتخذ بنجاح!'); 
+            closeNotesModal(); 
+        } else { 
+            alert('رقم هوية المريض غير متوفر.'); 
+        } 
+    } 
+
+    function saveFormDataToLocal() { 
+        const formData = {}; 
+        document.querySelectorAll('.save-input').forEach(input => { 
+            formData[input.id] = input.value; 
+        }); 
+        localStorage.setItem('hospital_patient_form_data', JSON.stringify(formData)); 
+    } 
+
+    function loadSavedFormData() { 
+        const savedData = localStorage.getItem('hospital_patient_form_data'); 
+        if (savedData) { 
+            try { 
+                const formData = JSON.parse(savedData); 
+                for (const id in formData) { 
+                    const input = document.getElementById(id); 
+                    if (input) { 
+                        input.value = formData[id]; 
+                    } 
+                } 
+                handleStaffSelectionType(); 
+            } catch (e) { 
+                console.error("Error loading saved form data", e); 
+            } 
+        } 
+    } 
+
+    function handleStaffSelectionType() { 
+        const employeeSelect = document.getElementById('employee_select'); 
+        const tempTypeSelect = document.getElementById('temp_type_select'); 
+        const tempNameInput = document.getElementById('temp_name_input'); 
+
+        let hid = document.getElementById('dynamic_hidden_emp'); 
+        if(!hid) { 
+            hid = document.createElement('input'); 
+            hid.type = 'hidden'; 
+            hid.id = 'dynamic_hidden_emp'; 
+            hid.name = 'employee_name'; 
+            document.getElementById('patientForm').appendChild(hid); 
+        } 
+
+        if (tempTypeSelect.value !== "" || tempNameInput.value.trim() !== "") { 
+            employeeSelect.value = ""; 
+            employeeSelect.removeAttribute('required'); 
+            hid.value = tempTypeSelect.value + " - " + tempNameInput.value.trim(); 
+        } else if (employeeSelect.value !== "") { 
+            tempTypeSelec
