@@ -692,7 +692,6 @@
     const phoneInput = document.getElementById('phone'); // تأكد من مطابقة اسم الـ ID لديك في النموذج
     const nameInput = document.getElementById('patientName');
     const serviceInput = document.getElementById('service');
-
     if (!phoneInput || !phoneInput.value.trim()) {
         alert("الرجاء إدخال رقم الجوال أولاً.");
         return;
@@ -824,7 +823,148 @@ if (!phoneRegex.test(phoneInput)) {
         }
     });
 }
-</script>
+    function sendWhatsApp() {
+        const phoneInput = document.getElementById('patient_phone') || document.getElementById('phone');
+        const nameInput = document.getElementById('patient_name') || document.getElementById('patientName');
+        const serviceInput = document.getElementById('requested_service') || document.getElementById('service');
+        
+        if (!phoneInput || !phoneInput.value.trim()) {
+            alert("الرجاء إدخال رقم الجوال أولاً.");
+            return;
+        }
 
+        const phone = phoneInput.value.trim();
+        const name = nameInput ? nameInput.value.trim() : "المريض";
+        const service = serviceInput ? serviceInput.value.trim() : "الخدمة الطبية";
+
+        const message = `مرحباً بك يا ${name}، نود إفادتك بأن طلب خدمتك (${service}) في وحدة الدعم المساندة قيد المعالجة. شكراً لتواصلك معنا.`;
+        const encodedMessage = encodeURIComponent(message);
+        
+        const whatsappURL = `https://wa.me/${phone}?text=${encodedMessage}`;
+        window.open(whatsappURL, '_blank');
+    }
+
+    function sendSMS() {
+        const phoneInput = document.getElementById('patient_phone') || document.getElementById('phone');
+        const nameInput = document.getElementById('patient_name') || document.getElementById('patientName');
+        const serviceInput = document.getElementById('requested_service') || document.getElementById('service');
+
+        if (!phoneInput || !phoneInput.value.trim()) {
+            alert("الرجاء إدخال رقم الجوال أولاً.");
+            return;
+        }
+
+        const phone = phoneInput.value.trim();
+        const name = nameInput ? nameInput.value.trim() : "المريض";
+        const service = serviceInput ? serviceInput.value.trim() : "الخدمة";
+
+        const message = `مرحباً ${name}، تم تسجيل طلبك للخدمة (${service}) بنجاح في وحدة الدعم المساندة.`;
+        const smsURL = `sms:${phone}?body=${encodeURIComponent(message)}`;
+        window.location.href = smsURL;
+    }
+
+    function checkAndRegisterPatient(idNumber) {
+        let records = JSON.parse(localStorage.getItem('patient_records')) || [];
+        const existing = records.find(p => p.idNumber === idNumber);
+        
+        if (existing) {
+            alert("تنبيه: رقم الهوية مسجل مسبقاً في النظام لهذا المريض.");
+            return true; // موجود مسبقاً
+        }
+        return false; // غير موجود
+    }
+
+    // دالة للتبديل بين تعطيل خانة الموظف أو المتطوع بناءً على المدخلات
+    function handleStaffSelectionType() {
+        const employeeSelect = document.getElementById('employee_select');
+        const tempTypeSelect = document.getElementById('temp_type_select');
+        const tempNameInput = document.getElementById('temp_name_input');
+
+        if (!employeeSelect || !tempTypeSelect || !tempNameInput) return;
+
+        // 1. إذا اختار المستخدم موظفاً أساسياً من القائمة
+        if (employeeSelect.value !== "") {
+            tempTypeSelect.value = "";
+            tempTypeSelect.disabled = true;
+            tempTypeSelect.style.backgroundColor = "#e9ecef";
+            tempTypeSelect.style.cursor = "not-allowed";
+
+            tempNameInput.value = "";
+            tempNameInput.disabled = true;
+            tempNameInput.style.backgroundColor = "#e9ecef";
+            tempNameInput.style.cursor = "not-allowed";
+        } 
+        // 2. إذا اختار نوع الكادر أو كتب في الاسم (المؤقت)
+        else if (tempTypeSelect.value !== "" || tempNameInput.value.trim() !== "") {
+            employeeSelect.value = "";
+            employeeSelect.disabled = true;
+            employeeSelect.style.backgroundColor = "#e9ecef";
+            employeeSelect.style.cursor = "not-allowed";
+        } 
+        // 3. إذا كانت الخانات فارغة بالكامل -> إعادة التفعيل
+        else {
+            employeeSelect.disabled = false;
+            employeeSelect.style.backgroundColor = "#fff";
+            employeeSelect.style.cursor = "pointer";
+
+            tempTypeSelect.disabled = false;
+            tempTypeSelect.style.backgroundColor = "#fff";
+            tempTypeSelect.style.cursor = "pointer";
+
+            tempNameInput.disabled = false;
+            tempNameInput.style.backgroundColor = "#fff";
+            tempNameInput.style.cursor = "text";
+        }
+    }
+
+    function validatePhoneInput() {
+        const phoneField = document.getElementById('patient_phone') || document.getElementById('phone');
+        if (!phoneField) return true;
+        
+        const phoneInputVal = phoneField.value.trim();
+        const phoneRegex = /^[0-9]{10}$/;
+
+        if (!phoneRegex.test(phoneInputVal)) {
+            alert("خطأ: يجب أن يتكون رقم الجوال من 10 أرقام فقط (مثال: 05xxxxxxxx).");
+            return false;
+        }
+        return true;
+    }
+
+    function loadRecords() {
+        let records = JSON.parse(localStorage.getItem('patient_records')) || [];
+        const tbody = document.querySelector('#recordsTable tbody');
+        if (!tbody) return; 
+        tbody.innerHTML = '';
+
+        const now = new Date().getTime(); 
+        const twelveHoursInMs = 12 * 60 * 60 * 1000; // تم التصحيح إلى 1000 مللي ثانية لحساب الـ 12 ساعة بدقة
+
+        records.forEach(record => {
+            const recordTime = record.timestamp || now; 
+            const timeDifference = now - recordTime;
+
+            let isWithin12Hours = timeDifference <= twelveHoursInMs; 
+
+            if (isWithin12Hours) {
+                const row = `<tr>
+                    <td>${record.date || '-'}</td>
+                    <td>${record.time || '-'}</td>
+                    <td>${record.idNumber || '-'}</td>
+                    <td>${record.name || '-'}</td>
+                    <td>${record.phone || '-'}</td>
+                    <td>${record.requestedService || '-'}</td>
+                    <td>${record.serviceName || '-'}</td>
+                    <td>${record.employeeName || '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" onclick="sendWhatsApp()">واتساب</button>
+                        <button class="btn btn-sm btn-info text-white" onclick="sendSMS()">SMS</button>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            }
+        });
+    }
+</script>
 </body>
 </html>
