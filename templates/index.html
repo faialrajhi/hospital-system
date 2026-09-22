@@ -740,35 +740,47 @@
     return false; // غير موجود
 }
     // دالة للتبديل بين تعطيل خانة الموظف أو المتطوع بناءً على المدخلات
-function handleStaffToggle() {
-    const employeeInput = document.getElementById('employeeName'); // تأكد من مطابقة الـ ID لحقل الموظف لديك
-    const volunteerInput = document.getElementById('volunteerName'); // تأكد من مطابقة الـ ID لحقل المتطوع/المتدرب لديك
+function handleStaffSelectionType() {
+    const employeeSelect = document.getElementById('employee_select');
+    const tempTypeSelect = document.getElementById('temp_type_select');
+    const tempNameInput = document.getElementById('temp_name_input');
 
-    if (!employeeInput || !volunteerInput) return;
+    if (!employeeSelect || !tempTypeSelect || !tempNameInput) return;
 
-    // إذا كتب المستخدم في خانة الموظف، نقوم بتعطيل خانة المتطوع وتحويل لونها للرمادي
-    if (employeeInput.value.trim() !== "") {
-        volunteerInput.value = ""; // مسح القيمة إذا وجدت
-        volunteerInput.disabled = true;
-        volunteerInput.style.backgroundColor = "#e9ecef"; // لون رمادي
-        volunteerInput.style.cursor = "not-allowed";
+    // 1. إذا اختار المستخدم موظفاً أساسياً من القائمة
+    if (employeeSelect.value !== "") {
+        // تصفير وقفل حقول الكادر المؤقت وتحويلها للرمادي
+        tempTypeSelect.value = "";
+        tempTypeSelect.disabled = true;
+        tempTypeSelect.style.backgroundColor = "#e9ecef";
+        tempTypeSelect.style.cursor = "not-allowed";
+
+        tempNameInput.value = "";
+        tempNameInput.disabled = true;
+        tempNameInput.style.backgroundColor = "#e9ecef";
+        tempNameInput.style.cursor = "not-allowed";
     } 
-    // وإذا كتب في خانة المتطوع، نقوم بتعطيل خانة الموظف وتحويل لونها للرمادي
-    else if (volunteerInput.value.trim() !== "") {
-        employeeInput.value = ""; // مسح القيمة إذا وجدت
-        employeeInput.disabled = true;
-        employeeInput.style.backgroundColor = "#e9ecef"; // لون رمادي
-        employeeInput.style.cursor = "not-allowed";
+    // 2. إذا اختار نوع الكادر أو كتب في الاسم (المؤقت)
+    else if (tempTypeSelect.value !== "" || tempNameInput.value.trim() !== "") {
+        // قفل وتصفير قائمة الموظفين الأساسيين وتحويلها للرمادي
+        employeeSelect.value = "";
+        employeeSelect.disabled = true;
+        employeeSelect.style.backgroundColor = "#e9ecef";
+        employeeSelect.style.cursor = "not-allowed";
     } 
-    // إذا كانت الحقول فارغة، تظل كلتا الخانتين مفعلتين
+    // 3. إذا كانت الخانات فارغة بالكامل -> إعادة التفعيل للأعضاء واللون الأبيض
     else {
-        employeeInput.disabled = false;
-        employeeInput.style.backgroundColor = "#fff";
-        employeeInput.style.cursor = "text";
+        employeeSelect.disabled = false;
+        employeeSelect.style.backgroundColor = "#fff";
+        employeeSelect.style.cursor = "pointer";
 
-        volunteerInput.disabled = false;
-        volunteerInput.style.backgroundColor = "#fff";
-        volunteerInput.style.cursor = "text";
+        tempTypeSelect.disabled = false;
+        tempTypeSelect.style.backgroundColor = "#fff";
+        tempTypeSelect.style.cursor = "pointer";
+
+        tempNameInput.disabled = false;
+        tempNameInput.style.backgroundColor = "#fff";
+        tempNameInput.style.cursor = "text";
     }
 }
 </script>
