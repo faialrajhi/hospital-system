@@ -215,6 +215,17 @@
                 margin: 0mm;
             }
         }
+        .button-group {
+    display: flex;
+    gap: 8px; /* المسافة بين الأزارير */
+    flex-wrap: wrap; /* لضمان التوافق مع الشاشات الصغيرة */
+    margin-top: 8px;
+}
+.button-group .btn {
+    flex: 1; /* لتوزيع الأزرار بالتساوي أو جعلها مرنة */
+    margin-top: 0 !important; /* إلغاء الهامش العُلوي الافتراضي للزر */
+    min-width: 100px; /* أقل عرض للزر ليبقى شكله منسقاً */
+}
     </style>
 </head>
 <body>
@@ -337,6 +348,17 @@
                     <button type="button" class="btn btn-print" onclick="printTicket()">طباعة تذكرة</button>
                     <button type="submit" class="btn btn-primary">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary" onclick="resetFormCustom()">مسح الحقول</button>
+               <div class="button-group">
+    <button type="button" class="btn btn-print" onclick="printTicket()">طباعة</button>
+    <!-- أزرار الواتساب و SMS التي قمتِ بإضافتها مسبقاً -->
+    <button type="button" class="btn" style="background-color: #25d366; color: white;" onclick="sendWhatsApp()">واتساب</button>
+    <button type="button" class="btn" style="background-color: #0284c7; color: white;" onclick="sendSMS()">SMS</button>
+</div>
+
+<div class="button-group" style="margin-top: 10px;">
+    <button type="submit" class="btn btn-primary">حفظ السجل</button>
+    <button type="reset" class="btn btn-secondary" onclick="resetFormCustom()">مسح</button>
+</div>
                 </form>
             </div>
         </div>
