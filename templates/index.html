@@ -98,7 +98,7 @@
             border-color: #1F4E78;
             box-shadow: 0 0 0 3px rgba(31, 78, 120, 0.12);
         }
-        /* الأزرار باللون الرمادي تماماً كما طلبتِ */
+        /* توحيد أزرار لوحة الإدخال باللون الرمادي الغامق */
         .btn {
             width: 100%;
             padding: 11px;
@@ -109,11 +109,11 @@
             cursor: pointer;
             transition: background 0.2s;
             margin-top: 8px;
-            background-color: #6c757d;
+            background-color: #495057;
             color: white;
         }
         .btn:hover {
-            background-color: #5a6268;
+            background-color: #343a40;
         }
         .btn-success {
             background-color: #1F4E78;
@@ -320,7 +320,7 @@
                     <button type="button" class="btn" onclick="window.print()">طباعة</button>
                     <button type="button" class="btn" onclick="sendToWhatsAppExternal()">إرسال إلى الواتساب</button>
                     <button type="submit" class="btn" onclick="setDateTimeAndSubmit()">حفظ السجل</button>
-                    <button type="reset" class="btn" style="background-color: #adb5bd;">مسح الحقول</button>
+                    <button type="reset" class="btn" style="background-color: #6c757d;">مسح الحقول</button>
                 </form>
             </div>
         </div>
@@ -347,7 +347,7 @@
                         </div>
                         <div class="filter-buttons">
                             <button type="button" class="btn" style="background-color:#1F4E78; padding:7px 12px; font-size:0.85rem; border-radius:6px; margin-top:0;" onclick="applyFilters()">بحث</button>
-                            <button type="button" class="btn" style="background-color:#6c757d; padding:7px 12px; font-size:0.85rem; border-radius:6px; margin-top:0;" onclick="clearFilters()">مسح البحث</button>
+                            <button type="button" class="btn" style="background-color:#495057; padding:7px 12px; font-size:0.85rem; border-radius:6px; margin-top:0;" onclick="clearFilters()">مسح البحث</button>
                         </div>
                         <div>
                             <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل إلى Excel</a>
@@ -426,7 +426,7 @@
         </div>
         <div class="notes-modal-buttons">
             <button type="button" class="btn" style="background-color:#1F4E78;" onclick="savePatientNote()">حفظ</button>
-            <button type="button" class="btn" style="background-color:#6c757d;" onclick="closeNotesModal()">إغلاق</button>
+            <button type="button" class="btn" style="background-color:#495057;" onclick="closeNotesModal()">إغلاق</button>
         </div>
     </div>
 </div>
