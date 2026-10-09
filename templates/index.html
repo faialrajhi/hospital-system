@@ -259,6 +259,14 @@
             flex: 1;
             margin-top: 0;
         }
+        .filter-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .filter-buttons button {
+            width: auto;
+            margin-top: 0;
+        }
         @media print {
             body * { visibility: hidden !important; }
             #ticket-card, #ticket-card * { visibility: visible !important; }
@@ -277,7 +285,6 @@
 <body>
 <div class="container">
     <div class="header-banner">
-        <!-- الشعار كما هو دون تغيير -->
         <img src="{{ url_for('static', filename='logo.png') }}" alt="شعار المستشفى">
         <h2>كرت البلاغ</h2>
     </div>
@@ -304,9 +311,11 @@
                         <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم البلاغ أو المريض" required>
                     </div>
 
-                    <!-- حقول مساعدة مخفية لضمان توافق البيانات مع السيرفر وقاعدة البيانات -->
+                    <!-- حقول مخفية لتوافق قاعدة البيانات -->
                     <input type="hidden" name="national_id" value="0000000000">
                     <input type="hidden" name="patient_phone" value="0500000000">
+                    <input type="hidden" id="record_date" name="record_date">
+                    <input type="hidden" id="record_time" name="record_time">
 
                     <div class="mb-3">
                         <label>الموضوع</label>
@@ -343,11 +352,10 @@
                         </select>
                     </div>
 
-                    <!-- الأزرار المطلوبة: نسخ، طباعة، مسح، إرسال للواتساب، وحفظ -->
                     <button type="button" class="btn btn-copy" onclick="copyFormDetails()">نسخ تفاصيل البلاغ</button>
                     <button type="button" class="btn btn-print" onclick="window.print()">طباعة</button>
                     <button type="button" class="btn btn-whatsapp" onclick="sendToWhatsAppExternal()">إرسال إلى الواتساب</button>
-                    <button type="submit" class="btn btn-primary">حفظ السجل</button>
+                    <button type="submit" class="btn btn-primary" onclick="setDateTimeAndSubmit()">حفظ السجل</button>
                     <button type="reset" class="btn btn-secondary">مسح الحقول</button>
                 </form>
             </div>
@@ -358,8 +366,29 @@
             <div class="card">
                 <h4 class="card-title" style="text-align:right; margin-bottom:15px;">السجلات</h4>
                 
-                <div style="text-align: left; margin-bottom: 15px;">
-                    <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل إلى Excel</a>
+                <!-- شريط البحث المفلتر بالتاريخ ورقم البلاغ -->
+                <div style="background-color:#f8fafc; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #e2e8f0;">
+                    <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:140px;">
+                            <label for="filter_ticket" style="font-size:0.85rem; margin-bottom:4px;">رقم البلاغ:</label>
+                            <input type="text" id="filter_ticket" class="form-control" placeholder="ابحث برقم البلاغ.." style="padding:6px 10px; font-size:0.9rem;">
+                        </div>
+                        <div style="flex:1; min-width:130px;">
+                            <label for="filter_start" style="font-size:0.85rem; margin-bottom:4px;">من تاريخ:</label>
+                            <input type="date" id="filter_start" class="form-control" style="padding:6px 10px; font-size:0.9rem;">
+                        </div>
+                        <div style="flex:1; min-width:130px;">
+                            <label for="filter_end" style="font-size:0.85rem; margin-bottom:4px;">إلى تاريخ:</label>
+                            <input type="date" id="filter_end" class="form-control" style="padding:6px 10px; font-size:0.9rem;">
+                        </div>
+                        <div class="filter-buttons">
+                            <button type="button" class="btn" style="background-color:#1F4E78; color:white; padding:7px 12px; font-size:0.85rem; border-radius:6px;" onclick="applyFilters()">بحث</button>
+                            <button type="button" class="btn" style="background-color:#e2e8f0; color:#475569; padding:7px 12px; font-size:0.85rem; border-radius:6px;" onclick="clearFilters()">مسح البحث</button>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل إلى Excel</a>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="table-responsive">
@@ -373,14 +402,15 @@
                                 <th>الموضوع</th>
                                 <th>القسم المعني</th>
                                 <th>الشخص المعني</th>
-                                <th>التاريخ والوقت</th>
+                                <th>التاريخ</th>
+                                <th>الوقت</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for record in records | reverse %}
                             <tr>
                                 <td><strong>{{ loop.index }}</strong></td>
-                                <td>{{ record.get('ticket_number', '-') }}</td>
+                                <td class="col-ticket">{{ record.get('ticket_number', '-') }}</td>
                                 <td>{{ record.get('file_number', '-') }}</td>
                                 <td>
                                     <span class="patient-name-link" onclick="openNotesModal('{{ record.get('patient_name', '-') }}', '{{ record.get('ticket_number', '-') }}')">
@@ -390,11 +420,12 @@
                                 <td>{{ record.get('requested_service', '-') }}</td>
                                 <td>{{ record.get('service_name', '-') }}</td>
                                 <td>{{ record.get('employee_name', '-') }}</td>
-                                <td>{{ record.get('record_date', '-') }} | {{ record.get('record_time', '-') }}</td>
+                                <td class="col-date">{{ record.get('record_date', '-') }}</td>
+                                <td>{{ record.get('record_time', '-') }}</td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="8" class="text-muted">لا توجد سجلات مضافة حالياً.</td>
+                                <td colspan="9" class="text-muted">لا توجد سجلات مضافة حالياً.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -437,6 +468,13 @@
 </div>
 
 <script>
+    function setDateTimeAndSubmit() {
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
+        const timeStr = now.toTimeString().split(' ')[0];
+        document.getElementById('record_date').value = dateStr;
+        document.getElementById('record_time').value = timeStr;
+    }
     function openNotesModal(name, id) {
         document.getElementById('notesPatientName').innerText = name;
         document.getElementById('notesNationalId').innerText = id;
@@ -470,6 +508,37 @@
         
         const message = `🚨 بلاغ جديد\nرقم البلاغ: ${tNum}\nاسم البلاغ: ${pName}\nالموضوع: ${reqServ}\nالقسم المعني: ${servName}`;
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
+    }
+    function applyFilters() {
+        const filterTicket = document.getElementById('filter_ticket').value.trim().toLowerCase();
+        const filterStart = document.getElementById('filter_start').value;
+        const filterEnd = document.getElementById('filter_end').value;
+        const rows = document.querySelectorAll('#recordsTable tbody tr');
+
+        rows.forEach(row => {
+            if (row.querySelector('.text-muted')) return;
+            const ticketCell = row.querySelector('.col-ticket').innerText.toLowerCase();
+            const dateCell = row.querySelector('.col-date').innerText;
+
+            let matchesTicket = !filterTicket || ticketCell.includes(filterTicket);
+            let matchesDate = true;
+
+            if (filterStart && dateCell < filterStart) matchesDate = false;
+            if (filterEnd && dateCell > filterEnd) matchesDate = false;
+
+            if (matchesTicket && matchesDate) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    function clearFilters() {
+        document.getElementById('filter_ticket').value = '';
+        document.getElementById('filter_start').value = '';
+        document.getElementById('filter_end').value = '';
+        const rows = document.querySelectorAll('#recordsTable tbody tr');
+        rows.forEach(row => row.style.display = '');
     }
 </script>
 </body>
