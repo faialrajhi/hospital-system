@@ -98,7 +98,7 @@
             border-color: #1F4E78;
             box-shadow: 0 0 0 3px rgba(31, 78, 120, 0.12);
         }
-        /* توحيد اللون الرمادي لجميع الأزرار */
+        /* توحيد اللون إلى السماوي الفاتح لكافة الأزرار */
         .btn {
             width: 100%;
             padding: 11px;
@@ -109,11 +109,12 @@
             cursor: pointer;
             transition: background 0.2s;
             margin-top: 8px;
-            background-color: #495057;
-            color: white;
+            background-color: #38bdf8;
+            color: #0f172a;
         }
         .btn:hover {
-            background-color: #343a40;
+            background-color: #0ea5e9;
+            color: #fff;
         }
         .btn-success {
             background-color: #1F4E78;
@@ -329,7 +330,7 @@
                             <input type="date" id="filter_end" class="form-control" style="padding:6px 10px; font-size:0.9rem;">
                         </div>
                         <div class="filter-buttons">
-                            <button type="button" class="btn" style="background-color:#1F4E78; padding:7px 12px; font-size:0.85rem; border-radius:6px; margin-top:0;" onclick="applyFilters()">بحث</button>
+                            <button type="button" class="btn" style="background-color:#1F4E78; color:#fff; padding:7px 12px; font-size:0.85rem; border-radius:6px; margin-top:0;" onclick="applyFilters()">بحث</button>
                             <button type="button" class="btn" style="padding:7px 12px; font-size:0.85rem; border-radius:6px; margin-top:0;" onclick="clearFilters()">مسح البحث</button>
                         </div>
                         <div>
@@ -402,7 +403,7 @@
             <textarea id="actionNotesInput" class="form-control" placeholder="اكتب تفاصيل الإجراء المتخذ هنا..."></textarea>
         </div>
         <div class="notes-modal-buttons">
-            <button type="button" class="btn" style="background-color:#1F4E78;" onclick="savePatientNote()">حفظ</button>
+            <button type="button" class="btn" style="background-color:#1F4E78; color:#fff;" onclick="savePatientNote()">حفظ</button>
             <button type="button" class="btn" onclick="closeNotesModal()">إغلاق</button>
         </div>
     </div>
