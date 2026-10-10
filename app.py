@@ -22,7 +22,7 @@ WHATSAPP_RECIPIENT = "966565142164"  # رقم الجوال المستلم لتج
 
 
 def send_whatsapp_notification(data):
-  """دالة ترسل إشعار البلاغ إلى واتساب عبر API ميتا في الخلفية"""
+  """دالة ترسل إشعار البلاغ إلى واتساب عبر API ميتا في الخلفية تلقائياً"""
   if (
       not WHATSAPP_TOKEN
       or "ضع_التوكن" in WHATSAPP_TOKEN
@@ -43,13 +43,12 @@ def send_whatsapp_notification(data):
 
   message_text = (
       f"🚨 *بلاغ جديد من نظام المستشفى*\n\n"
-      f"👤 *المريض:* {data.get('patient_name')}\n"
-      f"🆔 *الهوية:* {data.get('national_id')}\n"
+      f"🎟️ *رقم البلاغ:* {data.get('ticket_number', '-')}\n"
       f"📁 *رقم الملف:* {data.get('file_number', '-')}\n"
-      f"📱 *الجوال:* {data.get('patient_phone', '-')}\n"
-      f"⚙️ *الخدمة:* {data.get('requested_service')}\n"
-      f"🏥 *القسم:* {data.get('service_name')}\n"
-      f"👨‍⚕️ *الموظف المسؤول:* {data.get('employee_name')}\n"
+      f"👤 *اسم البلاغ:* {data.get('patient_name')}\n"
+      f"⚙️ *الموضوع:* {data.get('requested_service')}\n"
+      f"🏥 *القسم المعني:* {data.get('service_name')}\n"
+      f"👨‍⚕️ *الشخص المعني:* {data.get('employee_name')}\n"
       f"📅 *الوقت:* {data.get('record_date')} - {data.get('record_time')}"
   )
 
@@ -74,18 +73,20 @@ def send_whatsapp_notification(data):
 def index():
   if request.method == "POST":
     data = request.form
+    ticket_number = data.get("ticket_number")
     patient_name = data.get("patient_name")
-    national_id = data.get("national_id")
-    file_number = data.get("file_number")
-    patient_phone = data.get("patient_phone")
+    national_id = data.get("national_id", "0000000000")
+    file_number = data.get("file_number", "-")
+    patient_phone = data.get("patient_phone", "0500000000")
     requested_service = data.get("requested_service")
     service_name = data.get("service_name")
     employee_name = data.get("employee_name")
     record_date = data.get("record_date")
     record_time = data.get("record_time")
 
-    # حفظ بيانات المريض في Supabase
+    # حفظ بيانات البلاغ في Supabase
     record = {
+        "ticket_number": ticket_number,
         "patient_name": patient_name,
         "national_id": national_id,
         "file_number": file_number,
@@ -99,7 +100,7 @@ def index():
     try:
       supabase.table("patient_records").insert(record).execute()
 
-      # إرسال إشعار الواتساب تلقائياً بعد نجاح الحفظ في Supabase
+      # إرسال إشعار الواتساب تلقائياً من السيرفر بعد نجاح الحفظ
       send_whatsapp_notification(record)
 
       return redirect(url_for("index"))
@@ -149,7 +150,7 @@ def save_note():
     if not record_id:
       return (
           jsonify(
-              {"success": False, "message": "لم يتم تحديد سجل المريض."}
+              {"success": False, "message": "لم يتم تحديد سجل البلاغ."}
           ),
           400,
       )
