@@ -18,7 +18,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # =========================
 WHATSAPP_TOKEN = "4551928168459746"
 PHONE_NUMBER_ID = "1356121924253605"
-WHATSAPP_RECIPIENT = "9665xxxxxxxx"  # رقم الجوال المستلم لتجربة الإرسال
+WHATSAPP_RECIPIENT = "966565142164"  # رقم الجوال المستلم لتجربة الإرسال
 
 
 def send_whatsapp_notification(data):
