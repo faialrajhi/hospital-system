@@ -98,7 +98,6 @@
             border-color: #1F4E78;
             box-shadow: 0 0 0 3px rgba(31, 78, 120, 0.12);
         }
-        /* توحيد اللون إلى السماوي الفاتح لكافة الأزرار */
         .btn {
             width: 100%;
             padding: 11px;
@@ -302,8 +301,7 @@
                     </div>
 
                     <button type="button" class="btn" onclick="copyFormDetails()">نسخ تفاصيل البلاغ</button>
-                    <button type="button" class="btn" onclick="sendToWhatsAppExternal()">إرسال إلى الواتساب</button>
-                    <button type="submit" class="btn" onclick="setDateTimeAndSubmit()">حفظ السجل</button>
+                    <button type="submit" class="btn" onclick="setDateTimeAndSubmit()">حفظ السجل وإرسال الإشعار آلياً</button>
                     <button type="reset" class="btn">مسح الحقول</button>
                 </form>
             </div>
@@ -441,15 +439,6 @@
         navigator.clipboard.writeText(text).then(() => {
             alert('تم نسخ تفاصيل البلاغ بنجاح!');
         });
-    }
-    function sendToWhatsAppExternal() {
-        const tNum = document.getElementById('ticket_number').value;
-        const pName = document.getElementById('patient_name').value;
-        const reqServ = document.getElementById('requested_service').value;
-        const servName = document.getElementById('service_name').value;
-        
-        const message = `🚨 بلاغ جديد\nرقم البلاغ: ${tNum}\nاسم البلاغ: ${pName}\nالموضوع: ${reqServ}\nالقسم المعني: ${servName}`;
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
     }
     function applyFilters() {
         const filterTicket = document.getElementById('filter_ticket').value.trim().toLowerCase();
