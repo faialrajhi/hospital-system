@@ -22,13 +22,8 @@ WHATSAPP_RECIPIENT = "966565142164"  # رقم الجوال المستلم لتج
 
 
 def send_whatsapp_notification(data):
-  """دالة ترسل إشعار البلاغ إلى واتساب عبر API ميتا في الخلفية تلقائياً"""
-  if (
-      not WHATSAPP_TOKEN
-      or "ضع_التوكن" in WHATSAPP_TOKEN
-      or not PHONE_NUMBER_ID
-      or "ضع_معرف" in PHONE_NUMBER_ID
-  ):
+  """دالة ترسل إشعار البلاغ عبر قالب ميتا المعتمد لتجاوز قيود الأرقام التجريبية"""
+  if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
     print(
         "⚠️ تنبيه: لم يتم ضبط بيانات Meta WhatsApp API بعد. تم تخطي إرسال الواتساب"
         " مؤقتاً."
@@ -41,22 +36,17 @@ def send_whatsapp_notification(data):
       "Content-Type": "application/json",
   }
 
-  message_text = (
-      f"🚨 *بلاغ جديد من نظام المستشفى*\n\n"
-      f"🎟️ *رقم البلاغ:* {data.get('ticket_number', '-')}\n"
-      f"📁 *رقم الملف:* {data.get('file_number', '-')}\n"
-      f"👤 *اسم البلاغ:* {data.get('patient_name')}\n"
-      f"⚙️ *الموضوع:* {data.get('requested_service')}\n"
-      f"🏥 *القسم المعني:* {data.get('service_name')}\n"
-      f"👨‍⚕️ *الشخص المعني:* {data.get('employee_name')}\n"
-      f"📅 *الوقت:* {data.get('record_date')} - {data.get('record_time')}"
-  )
-
+  # استخدام قالب hello_world التجريبي المعتمد لضمان الوصول الفوري
   payload = {
       "messaging_product": "whatsapp",
       "to": WHATSAPP_RECIPIENT,
-      "type": "text",
-      "text": {"body": message_text},
+      "type": "template",
+      "template": {
+          "name": "hello_world",
+          "language": {
+              "code": "en_US"
+          }
+      }
   }
 
   try:
