@@ -42,19 +42,15 @@ def send_whatsapp_notification(data):
     rec_date = data.get("record_date", "")
     rec_time = data.get("record_time", "")
 
-    # استخدام رسالة تفصيلية (في حال فتح نافذة المحادثة أو استخدام القالب)
-    # ملاحظة: في حال استخدام قالب مخصص لاحقاً يتم تمريرها في الـ components
     message_text = (
         f"🚨 *إشعار بلاغ طبي جديد*\n\n"
         f"📌 *رقم البلاغ:* {ticket_num}\n"
-        f"👤 *اسم المريض:* {patient_name}\n"
+        f"👤 *اسم المبلغ:* {patient_name}\n"
         f"🛠 *الخدمة المطلوبة:* {service_name}\n"
         f"👨‍💻 *الموظف المسؤول:* {employee}\n"
         f"📅 *الوقت:* {rec_date} {rec_time}"
     )
 
-    # نظراً لأن الرقم التجريبي يتطلب قوالب للنصوص الحرة غير المسجلة، 
-    # سنقوم بإرسال النص كرسالة نصية مباشرة (تتطلب تفاعل سابق بـ hi من المستلم لتفتح نافذة 24 ساعة):
     payload = {
         "messaging_product": "whatsapp",
         "to": WHATSAPP_RECIPIENT,
@@ -92,7 +88,7 @@ def index():
         record_date = form_data.get("record_date")
         record_time = form_data.get("record_time")
 
-        # حفظ بيانات البلاغ في Supabase
+        # حفظ بيانات البلاغ في Supabase مع الحالة الافتتاحية open
         record = {
             "ticket_number": ticket_number,
             "patient_name": patient_name,
@@ -104,6 +100,7 @@ def index():
             "employee_name": employee_name,
             "record_date": record_date,
             "record_time": record_time,
+            "status": "open"
         }
         try:
             supabase.table("patient_records").insert(record).execute()
@@ -146,7 +143,7 @@ def export_excel():
 
 
 # =========================
-# حفظ ملاحظات الإجراء
+# حفظ ملاحظات الإجراء وتغيير الحالة
 # =========================
 @app.route("/save-note", methods=["POST"])
 def save_note():
@@ -154,6 +151,7 @@ def save_note():
         data = request.get_json()
         record_id = data.get("record_id")
         action_notes = data.get("action_notes", "").strip()
+        status = data.get("status", "open")
 
         if not record_id:
             return (
@@ -163,32 +161,25 @@ def save_note():
                 400,
             )
 
-        if not action_notes:
-            return (
-                jsonify(
-                    {
-                        "success": False,
-                        "message": "يرجى كتابة تفاصيل الإجراء المتخذ.",
-                    }
-                ),
-                400,
-            )
-
+        # تحديث الملاحظات والحالة معاً في قاعدة البيانات
         response = (
             supabase.table("patient_records")
-            .update({"action_notes": action_notes})
+            .update({
+                "action_notes": action_notes,
+                "status": status
+            })
             .eq("id", record_id)
             .execute()
         )
         return jsonify(
-            {"success": True, "message": "تم حفظ تفاصيل الإجراء المتخذ بنجاح."}
+            {"success": True, "message": "تم حفظ التغييرات وتحديث الحالة بنجاح."}
         )
     except Exception as e:
         print("Error saving patient note:", e)
         return (
             jsonify({
                 "success": False,
-                "message": f"حدث خطأ أثناء حفظ الملاحظة: {str(e)}",
+                "message": f"حدث خطأ أثناء حفظ البيانات: {str(e)}",
             }),
             500,
         )
