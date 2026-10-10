@@ -1,11 +1,11 @@
 import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 import requests
 from supabase import create_client, Client
 
 app = Flask(__name__)
 
-# دالة آمنة للاتصال بـ Supabase
+# إعدادات Supabase الآمنة
 def get_supabase():
     url = os.environ.get("SUPABASE_URL")
     key = os.environ.get("SUPABASE_KEY")
@@ -13,6 +13,7 @@ def get_supabase():
         return create_client(url, key)
     return None
 
+# دالة إرسال إشعار الواتساب
 def send_whatsapp_notification(ticket_number):
     token = os.environ.get("WHATSAPP_TOKEN")
     phone_id = os.environ.get("WHATSAPP_PHONE_ID")
@@ -48,8 +49,8 @@ def send_whatsapp_notification(ticket_number):
         return None
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+def home():
+    return "Hospital System Backend is Live and Running Successfully!"
 
 @app.route('/save_record', methods=['POST'])
 def save_record():
@@ -74,12 +75,12 @@ def save_record():
 
         response = supabase_client.table("patient_records").insert(record_data).execute()
         
-        # إرسال إشعار الواتساب
+        # إرسال إشعار الواتساب بعد الحفظ
         wa_response = send_whatsapp_notification(data.get('ticket_number'))
 
         return jsonify({
             "status": "success", 
-            "message": "تم حفظ البلاغ وإرسال الإشعار بنجاح",
+            "message": "تم حفظ البلاغ وإرسال الواتساب بنجاح",
             "whatsapp_response": wa_response
         }), 200
 
