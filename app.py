@@ -28,7 +28,7 @@ def send_whatsapp_notification(data):
         print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
         return
 
-    url = f"https://graph.facebook.com/v17.0/{PHONE_NUMBER_ID}/messages"
+    url = f"https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/messages"
     headers = {
         "Authorization": f"Bearer {WHATSAPP_TOKEN}",
         "Content-Type": "application/json",
