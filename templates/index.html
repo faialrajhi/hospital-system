@@ -313,7 +313,6 @@
                         </select>
                     </div>
 
-                    <button type="button" class="btn" onclick="copyFormDetails()">نسخ تفاصيل البلاغ</button>
                     <button type="submit" class="btn" onclick="setDateTimeAndSubmit()">حفظ السجل وإرسال الإشعار آلياً</button>
                 </form>
             </div>
@@ -489,19 +488,6 @@
         .catch(error => {
             console.error('Error:', error);
             alert('حدث خطأ أثناء الحفظ.');
-        });
-    }
-
-    function copyFormDetails() {
-        const tNum = document.getElementById('ticket_number').value.trim();
-        const fNum = document.getElementById('file_number').value.trim();
-        const pName = document.getElementById('patient_name').value.trim();
-        const reqServ = document.getElementById('requested_service').value.trim();
-        const servName = document.getElementById('service_name').value.trim();
-
-        const text = `رقم البلاغ/ ${tNum}\nاسم المستفيد / ${pName}\nرقم الملف/ ${fNum}\nالموضوع / ${reqServ}\nالقسم / ${servName}`;
-        navigator.clipboard.writeText(text).then(() => {
-            alert('تم نسخ تفاصيل البلاغ بنجاح!');
         });
     }
 
