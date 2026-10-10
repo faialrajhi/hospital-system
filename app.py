@@ -16,9 +16,9 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # =========================
 # Meta WhatsApp Cloud API Configuration
 # =========================
-WHATSAPP_TOKEN = "ضع_التوكن_هنا"
-PHONE_NUMBER_ID = "ضع_معرف_الهاتف_هنا"
-WHATSAPP_RECIPIENT = "رقم_قروب_واتساب_أو_رقم_المسؤول"  # مثال: 9665xxxxxxxx
+WHATSAPP_TOKEN = "4551928168459746"
+PHONE_NUMBER_ID = "1356121924253605"
+WHATSAPP_RECIPIENT = "9665xxxxxxxx"  # رقم الجوال المستلم لتجربة الإرسال
 
 
 def send_whatsapp_notification(data):
