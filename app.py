@@ -22,7 +22,7 @@ WHATSAPP_RECIPIENT = "966565142164"  # رقم الجوال المستلم لتج
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ عبر قالب ميتا المعتمد لتجاوز قيود الأرقام التجريبية"""
+    """دالة ترسل إشعار البلاغ متضمناً تفاصيل المريض والبلاغ عبر واتساب ميتا"""
     print("=== START WHATSAPP SENDING ===")
     if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
         print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
@@ -34,16 +34,33 @@ def send_whatsapp_notification(data):
         "Content-Type": "application/json",
     }
 
-    # استخدام قالب hello_world التجريبي المعتمد لضمان الوصول الفوري
+    # تجهيز نص رسالة البلاغ ليرسل كبيانات واضحة
+    ticket_num = data.get("ticket_number", "غير محدد")
+    patient_name = data.get("patient_name", "غير محدد")
+    service_name = data.get("requested_service") or data.get("service_name", "غير محدد")
+    employee = data.get("employee_name", "غير محدد")
+    rec_date = data.get("record_date", "")
+    rec_time = data.get("record_time", "")
+
+    # استخدام رسالة تفصيلية (في حال فتح نافذة المحادثة أو استخدام القالب)
+    # ملاحظة: في حال استخدام قالب مخصص لاحقاً يتم تمريرها في الـ components
+    message_text = (
+        f"🚨 *إشعار بلاغ طبي جديد*\n\n"
+        f"📌 *رقم البلاغ:* {ticket_num}\n"
+        f"👤 *اسم المريض:* {patient_name}\n"
+        f"🛠 *الخدمة المطلوبة:* {service_name}\n"
+        f"👨‍💻 *الموظف المسؤول:* {employee}\n"
+        f"📅 *الوقت:* {rec_date} {rec_time}"
+    )
+
+    # نظراً لأن الرقم التجريبي يتطلب قوالب للنصوص الحرة غير المسجلة، 
+    # سنقوم بإرسال النص كرسالة نصية مباشرة (تتطلب تفاعل سابق بـ hi من المستلم لتفتح نافذة 24 ساعة):
     payload = {
         "messaging_product": "whatsapp",
         "to": WHATSAPP_RECIPIENT,
-        "type": "template",
-        "template": {
-            "name": "hello_world",
-            "language": {
-                "code": "en_US"
-            }
+        "type": "text",
+        "text": {
+            "body": message_text
         }
     }
 
@@ -63,17 +80,17 @@ def send_whatsapp_notification(data):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        data = request.form
-        ticket_number = data.get("ticket_number")
-        patient_name = data.get("patient_name")
-        national_id = data.get("national_id", "0000000000")
-        file_number = data.get("file_number", "-")
-        patient_phone = data.get("patient_phone", "0500000000")
-        requested_service = data.get("requested_service")
-        service_name = data.get("service_name")
-        employee_name = data.get("employee_name")
-        record_date = data.get("record_date")
-        record_time = data.get("record_time")
+        form_data = request.form
+        ticket_number = form_data.get("ticket_number")
+        patient_name = form_data.get("patient_name")
+        national_id = form_data.get("national_id", "0000000000")
+        file_number = form_data.get("file_number", "-")
+        patient_phone = form_data.get("patient_phone", "0500000000")
+        requested_service = form_data.get("requested_service")
+        service_name = form_data.get("service_name")
+        employee_name = form_data.get("employee_name")
+        record_date = form_data.get("record_date")
+        record_time = form_data.get("record_time")
 
         # حفظ بيانات البلاغ في Supabase
         record = {
@@ -91,7 +108,7 @@ def index():
         try:
             supabase.table("patient_records").insert(record).execute()
 
-            # إرسال إشعار الواتساب تلقائياً من السيرفر بعد نجاح الحفظ
+            # إرسال إشعار الواتساب تفصيلياً من السيرفر بعد نجاح الحفظ
             send_whatsapp_notification(record)
 
             return redirect(url_for("index"))
