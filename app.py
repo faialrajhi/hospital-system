@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 import requests
 from supabase import create_client, Client
 
@@ -49,8 +49,8 @@ def send_whatsapp_notification(ticket_number):
         return None
 
 @app.route('/')
-def home():
-    return "Hospital System Backend is Live and Running Successfully!"
+def index():
+    return render_template('index.html')
 
 @app.route('/save_record', methods=['POST'])
 def save_record():
