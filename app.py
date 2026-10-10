@@ -1,193 +1,101 @@
-from datetime import datetime
 import os
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, render_template, request, jsonify
 import requests
-from supabase import Client, create_client
+from supabase import create_client, Client
 
 app = Flask(__name__)
 
-# =========================
-# Supabase Configuration
-# =========================
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "رابط_السوبابيس_هنا")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "مفتاح_السوبابيس_هنا")
+# إعدادات اتصال Supabase من متغيرات البيئة في Render
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# =========================
-# Meta WhatsApp Cloud API Configuration
-# =========================
-WHATSAPP_TOKEN = "4551928168459746"
-PHONE_NUMBER_ID = "1356121924253605"
-WHATSAPP_RECIPIENT = "966565142164"  # رقم الجوال المستلم لتجربة الإرسال
+# إعدادات Meta WhatsApp API
+WHATSAPP_TOKEN = os.environ.get("WHATSAPP_TOKEN")
+WHATSAPP_PHONE_ID = os.environ.get("WHATSAPP_PHONE_ID")
+WHATSAPP_RECIPIENT = os.environ.get("WHATSAPP_RECIPIENT", "966565142164")
 
+def send_whatsapp_notification(ticket_number):
+    if not WHATSAPP_TOKEN or not WHATSAPP_PHONE_ID:
+        print("WhatsApp credentials missing in environment variables.")
+        return None
 
-def send_whatsapp_notification(data):
-  """دالة ترسل إشعار البلاغ إلى واتساب عبر API ميتا في الخلفية تلقائياً"""
-  if (
-      not WHATSAPP_TOKEN
-      or "ضع_التوكن" in WHATSAPP_TOKEN
-      or not PHONE_NUMBER_ID
-      or "ضع_معرف" in PHONE_NUMBER_ID
-  ):
-    print(
-        "⚠️ تنبيه: لم يتم ضبط بيانات Meta WhatsApp API بعد. تم تخطي إرسال الواتساب"
-        " مؤقتاً."
-    )
-    return
-
-  url = f"https://graph.facebook.com/v17.0/{PHONE_NUMBER_ID}/messages"
-  headers = {
-      "Authorization": f"Bearer {WHATSAPP_TOKEN}",
-      "Content-Type": "application/json",
-  }
-
-  message_text = (
-      f"🚨 *بلاغ جديد من نظام المستشفى*\n\n"
-      f"🎟️ *رقم البلاغ:* {data.get('ticket_number', '-')}\n"
-      f"📁 *رقم الملف:* {data.get('file_number', '-')}\n"
-      f"👤 *اسم البلاغ:* {data.get('patient_name')}\n"
-      f"⚙️ *الموضوع:* {data.get('requested_service')}\n"
-      f"🏥 *القسم المعني:* {data.get('service_name')}\n"
-      f"👨‍⚕️ *الشخص المعني:* {data.get('employee_name')}\n"
-      f"📅 *الوقت:* {data.get('record_date')} - {data.get('record_time')}"
-  )
-
-  payload = {
-      "messaging_product": "whatsapp",
-      "to": WHATSAPP_RECIPIENT,
-      "type": "text",
-      "text": {"body": message_text},
-  }
-
-  try:
-    response = requests.post(url, headers=headers, json=payload, timeout=10)
-    print("WhatsApp API Response:", response.json())
-  except Exception as e:
-    print("Error sending WhatsApp notification:", e)
-
-
-# =========================
-# Main Page
-# =========================
-@app.route("/", methods=["GET", "POST"])
-def index():
-  if request.method == "POST":
-    data = request.form
-    ticket_number = data.get("ticket_number")
-    patient_name = data.get("patient_name")
-    national_id = data.get("national_id", "0000000000")
-    file_number = data.get("file_number", "-")
-    patient_phone = data.get("patient_phone", "0500000000")
-    requested_service = data.get("requested_service")
-    service_name = data.get("service_name")
-    employee_name = data.get("employee_name")
-    record_date = data.get("record_date")
-    record_time = data.get("record_time")
-
-    # حفظ بيانات البلاغ في Supabase
-    record = {
-        "ticket_number": ticket_number,
-        "patient_name": patient_name,
-        "national_id": national_id,
-        "file_number": file_number,
-        "patient_phone": patient_phone,
-        "requested_service": requested_service,
-        "service_name": service_name,
-        "employee_name": employee_name,
-        "record_date": record_date,
-        "record_time": record_time,
+    url = f"https://graph.facebook.com/v17.0/{WHATSAPP_PHONE_ID}/messages"
+    
+    headers = {
+        "Authorization": f"Bearer {WHATSAPP_TOKEN}",
+        "Content-Type": "application/json"
     }
+    
+    # استخدام القالب التجريبي المعتمد hello_world لضمان وصول الرسالة فوراً
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": WHATSAPP_RECIPIENT,
+        "type": "template",
+        "template": {
+            "name": "hello_world",
+            "language": {
+                "code": "en_US"
+            }
+        }
+    }
+    
     try:
-      supabase.table("patient_records").insert(record).execute()
-
-      # إرسال إشعار الواتساب تلقائياً من السيرفر بعد نجاح الحفظ
-      send_whatsapp_notification(record)
-
-      return redirect(url_for("index"))
+        response = requests.post(url, json=payload, headers=headers)
+        print("WhatsApp API Response:", response.json())
+        return response.json()
     except Exception as e:
-      print("Error saving record to Supabase:", e)
-      return (
-          jsonify({
-              "success": False,
-              "message": f"حدث خطأ أثناء حفظ البيانات: {str(e)}",
-          }),
-          500,
-      )
+        print("Error sending WhatsApp notification:", str(e))
+        return None
 
-  # =========================
-  # جلب السجلات
-  # =========================
-  try:
-    response = supabase.table("patient_records").select("*").execute()
-    records = response.data or []
-  except Exception as e:
-    print("Error fetching records from Supabase:", e)
-    records = []
-  return render_template("index.html", records=records)
+@app.route('/')
+def index():
+    return render_template('index.html')
 
+@app.route('/save_record', methods=['POST'])
+def save_record():
+    try:
+        data = request.form.to_dict()
+        
+        # استخراج البيانات المدخلة وتجهيزها للتخزين
+        ticket_number = data.get('ticket_number')
+        patient_name = data.get('patient_name')
+        file_number = data.get('file_number')
+        requested_service = data.get('requested_service')
+        service_name = data.get('service_name')
+        employee_name = data.get('employee_name')
+        record_date = data.get('record_date')
+        record_time = data.get('record_time')
+        action_notes = data.get('action_notes')
 
-# =========================
-# Export Excel
-# =========================
-@app.route("/export-excel", methods=["GET"])
-def export_excel():
-  return jsonify({
-      "success": True,
-      "message": "تم طلب تصدير السجلات إلى إكسل بنجاح.",
-  })
+        # حفظ البيانات في جدول patient_records مع العمود ticket_number
+        record_data = {
+            "ticket_number": ticket_number,
+            "patient_name": patient_name,
+            "file_number": file_number,
+            "requested_service": requested_service,
+            "service_name": service_name,
+            "employee_name": employee_name,
+            "record_date": record_date,
+            "record_time": record_time,
+            "action_notes": action_notes
+        }
 
+        response = supabase.table("patient_records").insert(record_data).execute()
+        
+        # إرسال إشعار الواتساب الآلي بعد نجاح الحفظ
+        wa_response = send_whatsapp_notification(ticket_number)
 
-# =========================
-# حفظ ملاحظات الإجراء
-# =========================
-@app.route("/save-note", methods=["POST"])
-def save_note():
-  try:
-    data = request.get_json()
-    record_id = data.get("record_id")
-    action_notes = data.get("action_notes", "").strip()
+        return jsonify({
+            "status": "success", 
+            "message": "تم حفظ البلاغ وإرسال إشعار الواتساب بنجاح",
+            "whatsapp_response": wa_response
+        }), 200
 
-    if not record_id:
-      return (
-          jsonify(
-              {"success": False, "message": "لم يتم تحديد سجل البلاغ."}
-          ),
-          400,
-      )
+    except Exception as e:
+        print("Error saving record to Supabase:", str(e))
+        return jsonify({"status": "error", "message": str(e)}), 500
 
-    if not action_notes:
-      return (
-          jsonify(
-              {
-                  "success": False,
-                  "message": "يرجى كتابة تفاصيل الإجراء المتخذ.",
-              }
-          ),
-          400,
-      )
-
-    response = (
-        supabase.table("patient_records")
-        .update({"action_notes": action_notes})
-        .eq("id", record_id)
-        .execute()
-    )
-    return jsonify(
-        {"success": True, "message": "تم حفظ تفاصيل الإجراء المتخذ بنجاح."}
-    )
-  except Exception as e:
-    print("Error saving patient note:", e)
-    return (
-        jsonify({
-            "success": False,
-            "message": f"حدث خطأ أثناء حفظ الملاحظة: {str(e)}",
-        }),
-        500,
-    )
-
-
-# =========================
-# Run App
-# =========================
-if __name__ == "__main__":
-  app.run(debug=True)
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
