@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كرت البلاغ - وحدة الدعم المساندة</title>
+    <title>بلاغات 937 - وحدة الدعم المساندة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -241,7 +241,7 @@
 <div class="container">
     <div class="header-banner">
         <img src="{{ url_for('static', filename='logo.png') }}" alt="شعار المستشفى">
-        <h2>كرت البلاغ</h2>
+        <h2>بلاغات 937</h2>
     </div>
 
     <div class="main-layout">
@@ -262,8 +262,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label>اسم البلاغ</label>
-                        <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم البلاغ أو المريض" required>
+                        <label>اسم المبلغ</label>
+                        <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المبلغ" required>
                     </div>
 
                     <!-- حقول مخفية لتوافق قاعدة البيانات -->
@@ -279,24 +279,18 @@
 
                     <div class="mb-3">
                         <label>القسم المعني</label>
-                        <select id="service_name" name="service_name" class="form-select" required>
-                            <option value="" disabled selected>اختر القسم المعني</option>
-                            <option value="اطباء الباطنة">اطباء الباطنة</option>
-                            <option value="تمريض الباطنة">تمريض الباطنة</option>
-                            <option value="صيدلية">صيدلية</option>
-                            <option value="الاشعة">الاشعة</option>
-                            <option value="المعلومات الصحية">المعلومات الصحية</option>
-                        </select>
+                        <input type="text" id="service_name" name="service_name" class="form-control" placeholder="اكتب القسم المعني..." required>
                     </div>
 
                     <div class="mb-3">
                         <label>الشخص المعني</label>
                         <select id="employee_select" name="employee_name" class="form-select" required>
-                            <option value="" selected>اختر الشخص المعني</option>
-                            <option value="ابراهيم بخاري">ابراهيم بخاري</option>
-                            <option value="صالح حنيف">صالح حنيف</option>
-                            <option value="احلام هوساوي">احلام هوساوي</option>
-                            <option value="معتوق سيف">معتوق سيف</option>
+                            <option value="" selected disabled>اختر الشخص المعني</option>
+                            <option value="عبدالله الزهراني">عبدالله الزهراني</option>
+                            <option value="احمد عيسى">احمد عيسى</option>
+                            <option value="ابتسام المغامسي">ابتسام المغامسي</option>
+                            <option value="نزهه السلولي">نزهه السلولي</option>
+                            <option value="خالد الزهراني">خالد الزهراني</option>
                         </select>
                     </div>
 
@@ -344,7 +338,7 @@
                                 <th>#</th>
                                 <th>رقم البلاغ</th>
                                 <th>رقم الملف</th>
-                                <th>اسم البلاغ</th>
+                                <th>اسم المبلغ</th>
                                 <th>الموضوع</th>
                                 <th>القسم المعني</th>
                                 <th>الشخص المعني</th>
@@ -388,7 +382,7 @@
         <h3 class="notes-modal-title">ملاحظات الإجراء المتخذ</h3>
         <div class="patient-info-box">
             <div class="patient-info-row">
-                <span class="patient-info-label">اسم البلاغ:</span>
+                <span class="patient-info-label">اسم المبلغ:</span>
                 <span id="notesPatientName" class="patient-info-value">--</span>
             </div>
             <div class="patient-info-row">
@@ -435,7 +429,7 @@
         const servName = document.getElementById('service_name').value;
         const empName = document.getElementById('employee_select').value;
 
-        const text = `📌 تفاصيل البلاغ:\n- رقم البلاغ: ${tNum}\n- رقم الملف: ${fNum}\n- اسم البلاغ: ${pName}\n- الموضوع: ${reqServ}\n- القسم المعني: ${servName}\n- الشخص المعني: ${empName}`;
+        const text = `📌 تفاصيل البلاغ:\n- رقم البلاغ: ${tNum}\n- رقم الملف: ${fNum}\n- اسم المبلغ: ${pName}\n- الموضوع: ${reqServ}\n- القسم المعني: ${servName}\n- الشخص المعني: ${empName}`;
         navigator.clipboard.writeText(text).then(() => {
             alert('تم نسخ تفاصيل البلاغ بنجاح!');
         });
