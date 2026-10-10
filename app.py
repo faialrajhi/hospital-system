@@ -22,7 +22,7 @@ WHATSAPP_RECIPIENT = "966565142164"  # رقم الجوال المستلم لتج
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ متضمناً تفاصيل المريض والبلاغ عبر واتساب ميتا"""
+    """دالة ترسل إشعار البلاغ متوافقاً تماماً مع التنسيق المطلوب عبر واتساب ميتا"""
     print("=== START WHATSAPP SENDING ===")
     if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
         print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
@@ -34,21 +34,20 @@ def send_whatsapp_notification(data):
         "Content-Type": "application/json",
     }
 
-    # تجهيز نص رسالة البلاغ ليرسل كبيانات واضحة
-    ticket_num = data.get("ticket_number", "غير محدد")
-    patient_name = data.get("patient_name", "غير محدد")
-    service_name = data.get("requested_service") or data.get("service_name", "غير محدد")
-    employee = data.get("employee_name", "غير محدد")
-    rec_date = data.get("record_date", "")
-    rec_time = data.get("record_time", "")
+    # استخراج البيانات من الحقول المدخلة
+    ticket_num = data.get("ticket_number", "-")
+    patient_name = data.get("patient_name", "-")
+    file_num = data.get("file_number", "-")
+    requested_service = data.get("requested_service", "-")
+    service_name = data.get("service_name", "-")
 
+    # صياغة النص بنفس التنسيق المطلوب تماماً
     message_text = (
-        f"🚨 *إشعار بلاغ طبي جديد*\n\n"
-        f"📌 *رقم البلاغ:* {ticket_num}\n"
-        f"👤 *اسم المبلغ:* {patient_name}\n"
-        f"🛠 *الخدمة المطلوبة:* {service_name}\n"
-        f"👨‍💻 *الموظف المسؤول:* {employee}\n"
-        f"📅 *الوقت:* {rec_date} {rec_time}"
+        f"رقم البلاغ/ {ticket_num}\n"
+        f"اسم المستفيد / {patient_name}\n"
+        f"رقم الملف/ {file_num}\n"
+        f"الموضوع / {requested_service}\n"
+        f"القسم / {service_name}"
     )
 
     payload = {
@@ -88,7 +87,7 @@ def index():
         record_date = form_data.get("record_date")
         record_time = form_data.get("record_time")
 
-        # حفظ بيانات البلاغ في Supabase مع تعيين الحالة الافتتاحية "new" (جديد)
+        # حفظ بيانات البلاغ في Supabase مع الحالة الافتتاحية "new"
         record = {
             "ticket_number": ticket_number,
             "patient_name": patient_name,
@@ -105,7 +104,7 @@ def index():
         try:
             supabase.table("patient_records").insert(record).execute()
 
-            # إرسال إشعار الواتساب تفصيلياً من السيرفر بعد نجاح الحفظ
+            # إرسال إشعار الواتساب بالتنسيق الجديد بعد نجاح الحفظ
             send_whatsapp_notification(record)
 
             return redirect(url_for("index"))
