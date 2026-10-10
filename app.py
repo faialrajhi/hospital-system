@@ -88,7 +88,7 @@ def index():
         record_date = form_data.get("record_date")
         record_time = form_data.get("record_time")
 
-        # حفظ بيانات البلاغ في Supabase مع الحالة الافتتاحية open
+        # حفظ بيانات البلاغ في Supabase مع تعيين الحالة الافتتاحية "new" (جديد)
         record = {
             "ticket_number": ticket_number,
             "patient_name": patient_name,
@@ -100,7 +100,7 @@ def index():
             "employee_name": employee_name,
             "record_date": record_date,
             "record_time": record_time,
-            "status": "open"
+            "status": "new"
         }
         try:
             supabase.table("patient_records").insert(record).execute()
@@ -151,7 +151,7 @@ def save_note():
         data = request.get_json()
         record_id = data.get("record_id")
         action_notes = data.get("action_notes", "").strip()
-        status = data.get("status", "open")
+        status = data.get("status", "new")
 
         if not record_id:
             return (
@@ -161,7 +161,7 @@ def save_note():
                 400,
             )
 
-        # تحديث الملاحظات والحالة معاً في قاعدة البيانات
+        # تحديث الملاحظات والحالة الجديدة معاً في جدول سوبابيس
         response = (
             supabase.table("patient_records")
             .update({
@@ -172,7 +172,7 @@ def save_note():
             .execute()
         )
         return jsonify(
-            {"success": True, "message": "تم حفظ التغييرات وتحديث الحالة بنجاح."}
+            {"success": True, "message": "تم تحديث حالة البلاغ والملاحظات بنجاح."}
         )
     except Exception as e:
         print("Error saving patient note:", e)
