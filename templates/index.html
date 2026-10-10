@@ -267,12 +267,12 @@
                     
                     <div class="mb-3">
                         <label>رقم البلاغ</label>
-                        <input type="text" id="ticket_number" name="ticket_number" class="form-control" placeholder="مثال: T-1001" required>
+                        <input type="text" id="ticket_number" name="ticket_number" class="form-control" placeholder="مثال: B 4892325" required>
                     </div>
 
                     <div class="mb-3">
                         <label>رقم الملف</label>
-                        <input type="text" id="file_number" name="file_number" class="form-control" placeholder="20XXXXXX">
+                        <input type="text" id="file_number" name="file_number" class="form-control" placeholder="مثال: 815575">
                     </div>
 
                     <div class="mb-3">
@@ -296,15 +296,13 @@
                         <input type="text" id="service_name" name="service_name" class="form-control" placeholder="اكتب القسم المعني..." required>
                     </div>
 
-                    <!-- خانة الشخص المعني (نص حر) -->
                     <div class="mb-3">
                         <label>الشخص المعني</label>
                         <input type="text" id="concerned_person" name="concerned_person" class="form-control" placeholder="اكتب اسم الشخص المعني..." required>
                     </div>
 
-                    <!-- خانة الموظف المسؤول (القائمة المنسدلة الثابتة) -->
                     <div class="mb-3">
-                        <label>الموظف </label>
+                        <label>الموظف المسؤول</label>
                         <select id="employee_select" name="employee_name" class="form-select" required>
                             <option value="" selected disabled>اختر الموظف المسؤول</option>
                             <option value="عبدالله الزهراني">عبدالله الزهراني</option>
@@ -317,7 +315,6 @@
 
                     <button type="button" class="btn" onclick="copyFormDetails()">نسخ تفاصيل البلاغ</button>
                     <button type="submit" class="btn" onclick="setDateTimeAndSubmit()">حفظ السجل وإرسال الإشعار آلياً</button>
-                    <button type="reset" class="btn">مسح الحقول</button>
                 </form>
             </div>
         </div>
@@ -394,7 +391,7 @@
                                 <td>{{ record.get('concerned_person', '-') }}</td>
                                 <td>{{ record.get('employee_name', '-') }}</td>
                                 <td class="col-date">{{ record.get('record_date', '-') }}</td>
-                                <td>{{ record.get('record_time', '-') }}</td>
+                                <td class="col-time">{{ record.get('record_time', '-') }}</td>
                             </tr>
                             {% else %}
                             <tr>
@@ -496,15 +493,13 @@
     }
 
     function copyFormDetails() {
-        const tNum = document.getElementById('ticket_number').value;
-        const fNum = document.getElementById('file_number').value;
-        const pName = document.getElementById('patient_name').value;
-        const reqServ = document.getElementById('requested_service').value;
-        const servName = document.getElementById('service_name').value;
-        const concPerson = document.getElementById('concerned_person').value;
-        const empName = document.getElementById('employee_select').value;
+        const tNum = document.getElementById('ticket_number').value.trim();
+        const fNum = document.getElementById('file_number').value.trim();
+        const pName = document.getElementById('patient_name').value.trim();
+        const reqServ = document.getElementById('requested_service').value.trim();
+        const servName = document.getElementById('service_name').value.trim();
 
-        const text = `رقم البلاغ/ ${tNum}\nاسم المستفيد / ${pName}\nرقم الملف/ ${fNum}\nالموضوع / ${reqServ}\nالقسم / ${servName}\nالشخص المعني: ${concPerson}\nالموظف المسؤول: ${empName}`;
+        const text = `رقم البلاغ/ ${tNum}\nاسم المستفيد / ${pName}\nرقم الملف/ ${fNum}\nالموضوع / ${reqServ}\nالقسم / ${servName}`;
         navigator.clipboard.writeText(text).then(() => {
             alert('تم نسخ تفاصيل البلاغ بنجاح!');
         });
