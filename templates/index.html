@@ -37,7 +37,7 @@
             min-height: 100px;
         }
         .header-banner img {
-            height: 250px;
+            height: 80px;
             width: auto;
             position: absolute;
             right: 25px;
@@ -48,15 +48,12 @@
             font-weight: 700;
             letter-spacing: 0.5px;
         }
-
-        /* تعديل توزيع الصفحة لمنع استطالة لوحة الإدخال */
         .main-layout {
             display: grid;
             grid-template-columns: 360px 1fr;
             gap: 20px;
             align-items: start;
         }
-
         .card {
             background: white;
             border-radius: 12px;
@@ -171,8 +168,6 @@
         .patient-name-link:hover {
             color: #163a5d;
         }
-
-        /* تنسيق خانة الموضوع والطلب لظهور سطرين فقط مع ثلاث نقاط (...) والتوسع عند الضغط */
         .topic-clamp {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -190,8 +185,6 @@
             -webkit-line-clamp: unset;
             max-width: 100%;
         }
-        
-        /* شارات الحالات الملونة في الجدول */
         .badge-status {
             padding: 4px 8px;
             border-radius: 20px;
@@ -284,7 +277,7 @@
     </div>
 
     <div class="main-layout">
-        <!-- لوحة إدخال البيانات (تم ضبط العرض لتظهر بشكل متناسق وغير مشدود) -->
+        <!-- لوحة إدخال البيانات -->
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البلاغ</h4>
@@ -414,7 +407,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for record in records | reverse %}
+                            <!-- تم استخدام records مباشرة بدون reverse لأن بايثون رتبها تنازلياً بالأحدث -->
+                            {% for record in records %}
                             {% set current_status = record.get('status', 'new') %}
                             <tr>
                                 <td>
@@ -435,7 +429,6 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <!-- نص الموضوع مختصر بسطرين ويظهر كاملاً عند الضغط عليه -->
                                     <div class="topic-clamp" onclick="toggleTopic(this)" title="اضغط لتوسيع/طي النص">
                                         {{ record.get('requested_service', '-') }}
                                     </div>
