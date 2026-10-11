@@ -18,11 +18,16 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # =========================
 WHATSAPP_TOKEN = "EAAYVhdiuLegBStKMrrKepioP6n95TvkQE9JLWK3ytxWm0iJs7Bsv9smWNlQWrwZBEXWhslFpZBmzrJRJOQXRRNH74zLYajkURvbpQsJTTuU1IaOODc8nQSAU0lL2v0GZArLAnGsoqH04uifqioJtFbWcoJ8xWOPBVDWxKG8gGpZCbVUKAXj50lS9jCzWVQZDZD"
 PHONE_NUMBER_ID = "1356121924253605"
-WHATSAPP_RECIPIENT = "966565142164"  # رقم الجوال المستلم لتجربة الإرسال
+
+# قائمة الأرقام المستلمة للإشعار
+WHATSAPP_RECIPIENTS = [
+    "966565142164",  # الرقم الأول
+    # أضيفي باقي الأرقام الخمسة هنا بمفتاح الدولة بدون +
+]
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ متوافقاً تماماً مع التنسيق المطلوب عبر واتساب ميتا"""
+    """دالة ترسل إشعار البلاغ متضمناً كافة التفاصيل بما فيها الشخص المعني والموظف المسؤول"""
     print("=== START WHATSAPP SENDING ===")
     if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
         print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
@@ -40,33 +45,39 @@ def send_whatsapp_notification(data):
     file_num = data.get("file_number", "-")
     requested_service = data.get("requested_service", "-")
     service_name = data.get("service_name", "-")
+    concerned_person = data.get("concerned_person", "-")
+    employee_name = data.get("employee_name", "-")
 
-    # صياغة النص بنفس التنسيق المطلوب تماماً
+    # صياغة النص بالتنسيق الجديد متضمناً الشخص المعني والموظف المسؤول
     message_text = (
         f"رقم البلاغ/ {ticket_num}\n"
         f"اسم المستفيد / {patient_name}\n"
         f"رقم الملف/ {file_num}\n"
         f"الموضوع / {requested_service}\n"
-        f"القسم / {service_name}"
+        f"القسم / {service_name}\n"
+        f"الشخص المعني / {concerned_person}\n"
+        f"الموظف المسؤول / {employee_name}"
     )
 
-    payload = {
-        "messaging_product": "whatsapp",
-        "to": WHATSAPP_RECIPIENT,
-        "type": "text",
-        "text": {
-            "body": message_text
+    # إرسال الرسالة لكل رقم في قائمة المستلمين
+    for recipient in WHATSAPP_RECIPIENTS:
+        payload = {
+            "messaging_product": "whatsapp",
+            "to": recipient,
+            "type": "text",
+            "text": {
+                "body": message_text
+            }
         }
-    }
 
-    try:
-        print(f"Sending request to Meta API for recipient: {WHATSAPP_RECIPIENT}")
-        response = requests.post(url, headers=headers, json=payload, timeout=10)
-        print("=== META API RAW RESPONSE ===")
-        print("Status Code:", response.status_code)
-        print("Response Body:", response.text)
-    except Exception as e:
-        print("❌ Exception caught while sending WhatsApp:", e)
+        try:
+            print(f"Sending request to Meta API for recipient: {recipient}")
+            response = requests.post(url, headers=headers, json=payload, timeout=10)
+            print(f"=== META API RAW RESPONSE FOR {recipient} ===")
+            print("Status Code:", response.status_code)
+            print("Response Body:", response.text)
+        except Exception as e:
+            print(f"❌ Exception caught while sending WhatsApp to {recipient}:", e)
 
 
 # =========================
@@ -83,11 +94,12 @@ def index():
         patient_phone = form_data.get("patient_phone", "0500000000")
         requested_service = form_data.get("requested_service")
         service_name = form_data.get("service_name")
-        employee_name = form_data.get("employee_name")
+        concerned_person = form_data.get("concerned_person", "-")
+        employee_name = form_data.get("employee_name", "-")
         record_date = form_data.get("record_date")
         record_time = form_data.get("record_time")
 
-        # حفظ بيانات البلاغ في Supabase مع الحالة الافتتاحية "new"
+        # حفظ بيانات البلاغ في Supabase
         record = {
             "ticket_number": ticket_number,
             "patient_name": patient_name,
@@ -96,6 +108,7 @@ def index():
             "patient_phone": patient_phone,
             "requested_service": requested_service,
             "service_name": service_name,
+            "concerned_person": concerned_person,
             "employee_name": employee_name,
             "record_date": record_date,
             "record_time": record_time,
@@ -104,7 +117,7 @@ def index():
         try:
             supabase.table("patient_records").insert(record).execute()
 
-            # إرسال إشعار الواتساب بالتنسيق الجديد بعد نجاح الحفظ
+            # إرسال إشعار الواتساب
             send_whatsapp_notification(record)
 
             return redirect(url_for("index"))
@@ -160,7 +173,6 @@ def save_note():
                 400,
             )
 
-        # تحديث الملاحظات والحالة الجديدة معاً في جدول سوبابيس
         response = (
             supabase.table("patient_records")
             .update({
