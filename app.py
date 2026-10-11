@@ -132,10 +132,10 @@ def index():
             )
 
     # =========================
-    # جلب السجلات
+    # جلب السجلات مرتبة بحيث يكون الأحدث في الأعلى
     # =========================
     try:
-        response = supabase.table("patient_records").select("*").execute()
+        response = supabase.table("patient_records").select("*").order("id", desc=True).execute()
         records = response.data or []
     except Exception as e:
         print("Error fetching records from Supabase:", e)
