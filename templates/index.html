@@ -291,9 +291,34 @@
                         <input type="text" id="requested_service" name="requested_service" class="form-control" placeholder="اكتب موضوع البلاغ هنا..." required>
                     </div>
 
+                    <!-- القسم المعني (قائمة منسدلة جديدة بالأقسام المطلوبة) -->
                     <div class="mb-3">
                         <label>القسم المعني</label>
-                        <input type="text" id="service_name" name="service_name" class="form-control" placeholder="اكتب القسم المعني..." required>
+                        <select id="service_name" name="service_name" class="form-select" required>
+                            <option value="" selected disabled>اختر القسم المعني</option>
+                            <option value="تمريض الباطنة">تمريض الباطنة</option>
+                            <option value="أطباء الجراحة">أطباء الجراحة</option>
+                            <option value="تمريض الجراحة">تمريض الجراحة</option>
+                            <option value="أطباء العظام">أطباء العظام</option>
+                            <option value="تمريض العظام">تمريض العظام</option>
+                            <option value="أطباء المخ والأعصاب">أطباء المخ والأعصاب</option>
+                            <option value="تمريض المخ والأعصاب">تمريض المخ والأعصاب</option>
+                            <option value="صيدلية">صيدلية</option>
+                            <option value="الأشعة">الأشعة</option>
+                            <option value="المعلومات الصحية">المعلومات الصحية</option>
+                            <option value="مكتب الدخول">مكتب الدخول</option>
+                            <option value="الصحة الرقمية">الصحة الرقمية</option>
+                            <option value="إدارة المرافق">إدارة المرافق</option>
+                            <option value="الطب المنزلي">الطب المنزلي</option>
+                            <option value="الوفيات">الوفيات</option>
+                            <option value="الخدمة الاجتماعية">الخدمة الاجتماعية</option>
+                            <option value="العلاج الطبيعي">العلاج الطبيعي</option>
+                            <option value="أطباء النفسية">أطباء النفسية</option>
+                            <option value="تمريض النفسية">تمريض النفسية</option>
+                            <option value="الإمداد">الإمداد</option>
+                            <option value="المختبر">المختبر</option>
+                            <option value="إدارة القبول">إدارة القبول</option>
+                        </select>
                     </div>
 
                     <div class="mb-3">
