@@ -344,9 +344,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label>الموظف المسؤول</label>
+                        <label>موظف تجربة المريض</label>
                         <select id="employee_select" name="employee_name" class="form-select" required>
-                            <option value="" selected disabled>اختر الموظف المسؤول</option>
+                            <option value="" selected disabled>اختر موظف تجربة المريض</option>
                             <option value="عبدالله الزهراني">عبدالله الزهراني</option>
                             <option value="احمد عيسى">احمد عيسى</option>
                             <option value="ابتسام المغامسي">ابتسام المغامسي</option>
@@ -401,13 +401,12 @@
                                 <th style="min-width:200px;">الموضوع</th>
                                 <th>القسم المعني</th>
                                 <th>الشخص المعني</th>
-                                <th>الموظف المسؤول</th>
+                                <th>موظف تجربة المريض</th>
                                 <th>التاريخ</th>
                                 <th>الوقت</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- تم استخدام records مباشرة بدون reverse لأن بايثون رتبها تنازلياً بالأحدث -->
                             {% for record in records %}
                             {% set current_status = record.get('status', 'new') %}
                             <tr>
