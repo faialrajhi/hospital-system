@@ -1,6 +1,8 @@
 from datetime import datetime
+import io
 import os
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, jsonify, redirect, render_template, request, send_file, url_for
+import pandas as pd
 import requests
 from supabase import Client, create_client
 
@@ -144,14 +146,49 @@ def index():
 
 
 # =========================
-# Export Excel
+# Export Excel (تصدير السجلات الفعلي)
 # =========================
 @app.route("/export-excel", methods=["GET"])
 def export_excel():
-    return jsonify({
-        "success": True,
-        "message": "تم طلب تصدير السجلات إلى إكسل بنجاح.",
-    })
+    try:
+        response = supabase.table("patient_records").select("*").execute()
+        records = response.data or []
+
+        if not records:
+            return jsonify({"success": False, "message": "لا توجد سجلات لتصديرها."}), 404
+
+        formatted_data = []
+        for r in records:
+            formatted_data.append({
+                "حالة البلاغ": r.get("status", "-"),
+                "رقم البلاغ": r.get("ticket_number", "-"),
+                "رقم الملف": r.get("file_number", "-"),
+                "اسم المبلغ": r.get("patient_name", "-"),
+                "الموضوع": r.get("requested_service", "-"),
+                "القسم المعني": r.get("service_name", "-"),
+                "الشخص المعني": r.get("concerned_person", "-"),
+                "الموظف المسؤول": r.get("employee_name", "-"),
+                "التاريخ": r.get("record_date", "-"),
+                "الوقت": r.get("record_time", "-"),
+                "الإجراء المتخذ والملاحظات": r.get("action_notes", "-")
+            })
+
+        df = pd.DataFrame(formatted_data)
+
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='بلاغات 937')
+        output.seek(0)
+
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name='hospital_records_937.xlsx'
+        )
+    except Exception as e:
+        print("Error exporting to Excel:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 # =========================
