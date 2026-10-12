@@ -15,59 +15,60 @@
         body {
             background-color: #f4f7f9;
             color: #2c3e50;
-            padding: 20px;
+            padding: 15px;
+            overflow-x: hidden; /* منع تحرك الشاشة يمين ويسار نهائياً */
         }
         .container {
             width: 100%;
-            max-width: 1600px;
+            max-width: 1450px; /* تقليص العرض الكلي ليناسب الشاشات تماماً */
             margin: 0 auto;
         }
         .header-banner {
             background: linear-gradient(135deg, #1F4E78 0%, #163a5d 100%);
             color: white;
-            padding: 20px 25px;
-            border-radius: 12px;
+            padding: 18px 25px;
+            border-radius: 10px;
             text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(31,78,120,0.15);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(31,78,120,0.15);
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 90px;
+            min-height: 80px;
         }
         .header-banner img {
-            height: 70px;
+            height: 250px;
             width: auto;
             position: absolute;
-            right: 25px;
-            border-radius: 8px;
+            right: 20px;
+            border-radius: 6px;
         }
         .header-banner h2 {
-            font-size: 1.7rem;
+            font-size: 1.6rem;
             font-weight: 700;
         }
-        /* ترتيب الـ Layout: النموذج يمين والجدول يسار بشكل مرتب ومتوازن */
+        /* ضبط التخطيط ليكون ثابتاً ومنسقاً */
         .main-layout {
             display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 20px;
+            grid-template-columns: 320px minmax(0, 1fr); /* الجدول يأخذ المساحة المتبقية بدون تمدد زائد */
+            gap: 15px;
             align-items: start;
         }
         .card {
             background: white;
-            border-radius: 12px;
-            padding: 18px 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            margin-bottom: 20px;
+            border-radius: 10px;
+            padding: 15px 18px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+            margin-bottom: 15px;
             border: 1px solid #eef2f5;
         }
         .card-title {
             color: #1F4E78;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
             border-bottom: 2px solid #f0f4f8;
             text-align: center;
         }
@@ -76,17 +77,17 @@
         }
         label {
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: #34495e;
         }
         .form-control, .form-select {
             width: 100%;
-            padding: 8px 10px;
+            padding: 7px 9px;
             border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 0.88rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
             outline: none;
             transition: all 0.2s ease;
             background-color: #fff;
@@ -97,10 +98,10 @@
         }
         .btn {
             width: 100%;
-            padding: 9px;
+            padding: 8px;
             border: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
             font-weight: 700;
             cursor: pointer;
             transition: background 0.2s;
@@ -117,9 +118,9 @@
             color: white;
             text-decoration: none;
             display: inline-block;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 6px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 600;
             text-align: center;
         }
@@ -127,16 +128,17 @@
             background-color: #163a5d;
         }
         .table-responsive {
-            overflow-x: auto;
+            width: 100%;
+            overflow-x: auto; /* الجدول نفسه يحتوي التمرير لو زاد عرضه فقط داخله بدون تحريك الشاشة العامة */
         }
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
         }
         th, td {
-            padding: 9px 6px;
+            padding: 8px 5px;
             border-bottom: 1px solid #edf2f7;
             vertical-align: middle;
         }
@@ -151,7 +153,7 @@
         }
         .text-muted {
             color: #888;
-            padding: 20px;
+            padding: 15px;
         }
         .topic-clamp {
             display: -webkit-box;
@@ -159,9 +161,9 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 250px;
+            max-width: 200px;
             margin: 0 auto;
-            line-height: 1.4;
+            line-height: 1.3;
             cursor: pointer;
             text-align: right;
         }
@@ -170,11 +172,10 @@
             max-width: 100%;
         }
         
-        /* القائمة المنسدلة المباشرة للحالة داخل الصفوف */
         .status-select-inline {
             padding: 4px 6px;
             border-radius: 6px;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
             border: 1px solid #cbd5e1;
             outline: none;
@@ -185,17 +186,16 @@
         .status-resolved { background-color: #e0f2fe; color: #0369a1; }
         .status-closed { background-color: #d1fae5; color: #065f46; }
 
-        /* شريط البحث والفلترة */
         .search-filter-box {
             background-color: #f8fafc;
-            padding: 10px 12px;
+            padding: 10px;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border: 1px solid #e2e8f0;
         }
         .status-filter-bar {
             display: flex;
-            gap: 5px;
+            gap: 4px;
             flex-wrap: wrap;
             margin-top: 8px;
             padding-top: 8px;
@@ -203,10 +203,10 @@
             align-items: center;
         }
         .filter-status-btn {
-            padding: 4px 9px;
-            font-size: 0.78rem;
+            padding: 3px 8px;
+            font-size: 0.75rem;
             font-weight: 700;
-            border-radius: 6px;
+            border-radius: 5px;
             border: 1px solid #cbd5e1;
             background-color: #fff;
             cursor: pointer;
@@ -221,7 +221,7 @@
         }
         .filter-buttons {
             display: flex;
-            gap: 6px;
+            gap: 5px;
         }
         .filter-buttons button {
             width: auto;
@@ -237,7 +237,7 @@
     </div>
 
     <div class="main-layout">
-        <!-- 1. لوحة إدخال البيانات (صارت على اليمين بشكل مرتب) -->
+        <!-- 1. لوحة إدخال البيانات -->
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البلاغ</h4>
@@ -319,37 +319,36 @@
             </div>
         </div>
 
-        <!-- 2. جدول السجلات (صار على اليسار وبحجم متناسق) -->
+        <!-- 2. جدول السجلات -->
         <div class="table-container">
             <div class="card">
-                <h4 class="card-title" style="text-align:right; margin-bottom:12px;">السجلات</h4>
+                <h4 class="card-title" style="text-align:right; margin-bottom:10px;">السجلات</h4>
                 
                 <div class="search-filter-box">
-                    <div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
-                        <div style="flex:1; min-width:120px;">
-                            <label for="filter_ticket" style="font-size:0.78rem; margin-bottom:2px;">رقم البلاغ:</label>
-                            <input type="text" id="filter_ticket" class="form-control" placeholder="ابحث برقم البلاغ.." style="padding:5px 8px; font-size:0.82rem;">
-                        </div>
+                    <div style="display:flex; gap:6px; align-items:flex-end; flex-wrap:wrap;">
                         <div style="flex:1; min-width:110px;">
-                            <label for="filter_start" style="font-size:0.78rem; margin-bottom:2px;">من تاريخ:</label>
-                            <input type="date" id="filter_start" class="form-control" style="padding:5px 8px; font-size:0.82rem;">
+                            <label for="filter_ticket" style="font-size:0.75rem; margin-bottom:2px;">رقم البلاغ:</label>
+                            <input type="text" id="filter_ticket" class="form-control" placeholder="ابحث برقم البلاغ.." style="padding:5px 7px; font-size:0.8rem;">
                         </div>
-                        <div style="flex:1; min-width:110px;">
-                            <label for="filter_end" style="font-size:0.78rem; margin-bottom:2px;">إلى تاريخ:</label>
-                            <input type="date" id="filter_end" class="form-control" style="padding:5px 8px; font-size:0.82rem;">
+                        <div style="flex:1; min-width:105px;">
+                            <label for="filter_start" style="font-size:0.75rem; margin-bottom:2px;">من تاريخ:</label>
+                            <input type="date" id="filter_start" class="form-control" style="padding:5px 7px; font-size:0.8rem;">
+                        </div>
+                        <div style="flex:1; min-width:105px;">
+                            <label for="filter_end" style="font-size:0.75rem; margin-bottom:2px;">إلى تاريخ:</label>
+                            <input type="date" id="filter_end" class="form-control" style="padding:5px 7px; font-size:0.8rem;">
                         </div>
                         <div class="filter-buttons">
-                            <button type="button" class="btn" style="background-color:#1F4E78; color:#fff; padding:5px 10px; font-size:0.82rem; border-radius:6px; margin-top:0;" onclick="applyFilters()">بحث</button>
-                            <button type="button" class="btn" style="padding:5px 10px; font-size:0.82rem; border-radius:6px; margin-top:0;" onclick="clearFilters()">مسح</button>
+                            <button type="button" class="btn" style="background-color:#1F4E78; color:#fff; padding:5px 9px; font-size:0.8rem; border-radius:6px; margin-top:0;" onclick="applyFilters()">بحث</button>
+                            <button type="button" class="btn" style="padding:5px 9px; font-size:0.8rem; border-radius:6px; margin-top:0;" onclick="clearFilters()">مسح</button>
                         </div>
                         <div>
                             <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل Excel</a>
                         </div>
                     </div>
 
-                    <!-- شريط أزرار تصفية الحالة السريعة -->
                     <div class="status-filter-bar">
-                        <span style="font-size:0.8rem; font-weight:700; color:#34495e; margin-left: 5px;">فلترة بالحالة:</span>
+                        <span style="font-size:0.78rem; font-weight:700; color:#34495e; margin-left: 4px;">فلترة بالحالة:</span>
                         <button type="button" class="filter-status-btn active" onclick="filterByStatus('all', this)" style="background-color: #1F4E78; color: #fff;">الكل</button>
                         <button type="button" class="filter-status-btn" onclick="filterByStatus('new', this)" style="background-color: #fee2e2; color: #991b1b;">🔴 جديد</button>
                         <button type="button" class="filter-status-btn" onclick="filterByStatus('in_progress', this)" style="background-color: #fef3c7; color: #92400e;">🟠 قيد المعالجة</button>
@@ -367,7 +366,7 @@
                                 <th>رقم البلاغ</th>
                                 <th>رقم الملف</th>
                                 <th>اسم المبلغ</th>
-                                <th style="min-width:180px;">الموضوع</th>
+                                <th style="min-width:160px;">الموضوع</th>
                                 <th>القسم المعني</th>
                                 <th>الشخص المعني</th>
                                 <th>موظف تجربة المريض</th>
