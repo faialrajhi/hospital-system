@@ -15,11 +15,11 @@
         body {
             background-color: #f4f7f9;
             color: #2c3e50;
-            padding: 15px;
+            padding: 20px;
         }
         .container {
             width: 100%;
-            max-width: 1750px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         .header-banner {
@@ -34,62 +34,59 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100px;
+            min-height: 90px;
         }
         .header-banner img {
-            height: 80px;
+            height: 70px;
             width: auto;
             position: absolute;
             right: 25px;
             border-radius: 8px;
         }
         .header-banner h2 {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             font-weight: 700;
-            letter-spacing: 0.5px;
         }
+        /* ترتيب الـ Layout: النموذج يمين والجدول يسار بشكل مرتب ومتوازن */
         .main-layout {
             display: grid;
-            grid-template-columns: 360px 1fr;
+            grid-template-columns: 350px 1fr;
             gap: 20px;
             align-items: start;
         }
         .card {
             background: white;
             border-radius: 12px;
-            padding: 20px 22px;
+            padding: 18px 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.04);
             margin-bottom: 20px;
             border: 1px solid #eef2f5;
         }
-        .form-container, .table-container {
-            width: 100%;
-        }
         .card-title {
             color: #1F4E78;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            margin-bottom: 18px;
+            margin-bottom: 15px;
             padding-bottom: 8px;
             border-bottom: 2px solid #f0f4f8;
             text-align: center;
         }
         .mb-3 {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-weight: 600;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             color: #34495e;
         }
         .form-control, .form-select {
             width: 100%;
-            padding: 9px 11px;
+            padding: 8px 10px;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             outline: none;
             transition: all 0.2s ease;
             background-color: #fff;
@@ -100,14 +97,14 @@
         }
         .btn {
             width: 100%;
-            padding: 10px;
+            padding: 9px;
             border: none;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
             transition: background 0.2s;
-            margin-top: 6px;
+            margin-top: 5px;
             background-color: #38bdf8;
             color: #0f172a;
         }
@@ -120,9 +117,9 @@
             color: white;
             text-decoration: none;
             display: inline-block;
-            padding: 7px 12px;
+            padding: 6px 12px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
             text-align: center;
         }
@@ -136,10 +133,10 @@
             width: 100%;
             border-collapse: collapse;
             text-align: center;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
         }
         th, td {
-            padding: 10px 8px;
+            padding: 9px 6px;
             border-bottom: 1px solid #edf2f7;
             vertical-align: middle;
         }
@@ -155,18 +152,6 @@
         .text-muted {
             color: #888;
             padding: 20px;
-            white-space: normal;
-        }
-        .patient-name-link {
-            color: #1F4E78;
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            white-space: nowrap;
-        }
-        .patient-name-link:hover {
-            color: #163a5d;
         }
         .topic-clamp {
             display: -webkit-box;
@@ -174,12 +159,11 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 280px;
+            max-width: 250px;
             margin: 0 auto;
             line-height: 1.4;
             cursor: pointer;
             text-align: right;
-            transition: max-height 0.3s ease;
         }
         .topic-clamp.expanded {
             -webkit-line-clamp: unset;
@@ -188,9 +172,9 @@
         
         /* القائمة المنسدلة المباشرة للحالة داخل الصفوف */
         .status-select-inline {
-            padding: 5px 8px;
+            padding: 4px 6px;
             border-radius: 6px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 700;
             border: 1px solid #cbd5e1;
             outline: none;
@@ -201,10 +185,17 @@
         .status-resolved { background-color: #e0f2fe; color: #0369a1; }
         .status-closed { background-color: #d1fae5; color: #065f46; }
 
-        /* أزرار تصفية الحالة الجديدة */
+        /* شريط البحث والفلترة */
+        .search-filter-box {
+            background-color: #f8fafc;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
         .status-filter-bar {
             display: flex;
-            gap: 6px;
+            gap: 5px;
             flex-wrap: wrap;
             margin-top: 8px;
             padding-top: 8px;
@@ -212,8 +203,8 @@
             align-items: center;
         }
         .filter-status-btn {
-            padding: 5px 10px;
-            font-size: 0.8rem;
+            padding: 4px 9px;
+            font-size: 0.78rem;
             font-weight: 700;
             border-radius: 6px;
             border: 1px solid #cbd5e1;
@@ -227,68 +218,6 @@
         .filter-status-btn.active {
             border-color: #1F4E78;
             box-shadow: 0 0 0 2px rgba(31,78,120,0.2);
-        }
-
-        #notesModal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.45);
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .notes-modal-box {
-            width: 100%;
-            max-width: 600px;
-            background-color: white;
-            border-radius: 14px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.18);
-        }
-        .notes-modal-title {
-            color: #1F4E78;
-            font-size: 1.25rem;
-            font-weight: 700;
-            text-align: center;
-            padding-bottom: 12px;
-            margin-bottom: 18px;
-            border-bottom: 2px solid #f0f4f8;
-        }
-        .patient-info-box {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 9px;
-            padding: 12px;
-            margin-bottom: 15px;
-        }
-        .patient-info-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
-        .patient-info-label {
-            font-weight: 700;
-            color: #34495e;
-        }
-        .patient-info-value {
-            color: #1F4E78;
-            font-weight: 600;
-        }
-        #actionNotesInput {
-            min-height: 100px;
-            resize: vertical;
-        }
-        .notes-modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .notes-modal-buttons button {
-            flex: 1;
-            margin-top: 0;
         }
         .filter-buttons {
             display: flex;
@@ -308,7 +237,7 @@
     </div>
 
     <div class="main-layout">
-        <!-- لوحة إدخال البيانات -->
+        <!-- 1. لوحة إدخال البيانات (صارت على اليمين بشكل مرتب) -->
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البلاغ</h4>
@@ -390,37 +319,37 @@
             </div>
         </div>
 
-        <!-- جدول السجلات -->
+        <!-- 2. جدول السجلات (صار على اليسار وبحجم متناسق) -->
         <div class="table-container">
             <div class="card">
-                <h4 class="card-title" style="text-align:right; margin-bottom:15px;">السجلات</h4>
+                <h4 class="card-title" style="text-align:right; margin-bottom:12px;">السجلات</h4>
                 
-                <div style="background-color:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; border:1px solid #e2e8f0;">
-                    <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-                        <div style="flex:1; min-width:130px;">
-                            <label for="filter_ticket" style="font-size:0.8rem; margin-bottom:3px;">رقم البلاغ:</label>
-                            <input type="text" id="filter_ticket" class="form-control" placeholder="ابحث برقم البلاغ.." style="padding:6px 9px; font-size:0.85rem;">
-                        </div>
+                <div class="search-filter-box">
+                    <div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
                         <div style="flex:1; min-width:120px;">
-                            <label for="filter_start" style="font-size:0.8rem; margin-bottom:3px;">من تاريخ:</label>
-                            <input type="date" id="filter_start" class="form-control" style="padding:6px 9px; font-size:0.85rem;">
+                            <label for="filter_ticket" style="font-size:0.78rem; margin-bottom:2px;">رقم البلاغ:</label>
+                            <input type="text" id="filter_ticket" class="form-control" placeholder="ابحث برقم البلاغ.." style="padding:5px 8px; font-size:0.82rem;">
                         </div>
-                        <div style="flex:1; min-width:120px;">
-                            <label for="filter_end" style="font-size:0.8rem; margin-bottom:3px;">إلى تاريخ:</label>
-                            <input type="date" id="filter_end" class="form-control" style="padding:6px 9px; font-size:0.85rem;">
+                        <div style="flex:1; min-width:110px;">
+                            <label for="filter_start" style="font-size:0.78rem; margin-bottom:2px;">من تاريخ:</label>
+                            <input type="date" id="filter_start" class="form-control" style="padding:5px 8px; font-size:0.82rem;">
+                        </div>
+                        <div style="flex:1; min-width:110px;">
+                            <label for="filter_end" style="font-size:0.78rem; margin-bottom:2px;">إلى تاريخ:</label>
+                            <input type="date" id="filter_end" class="form-control" style="padding:5px 8px; font-size:0.82rem;">
                         </div>
                         <div class="filter-buttons">
-                            <button type="button" class="btn" style="background-color:#1F4E78; color:#fff; padding:6px 12px; font-size:0.85rem; border-radius:6px; margin-top:0;" onclick="applyFilters()">بحث</button>
-                            <button type="button" class="btn" style="padding:6px 12px; font-size:0.85rem; border-radius:6px; margin-top:0;" onclick="clearFilters()">مسح البحث</button>
+                            <button type="button" class="btn" style="background-color:#1F4E78; color:#fff; padding:5px 10px; font-size:0.82rem; border-radius:6px; margin-top:0;" onclick="applyFilters()">بحث</button>
+                            <button type="button" class="btn" style="padding:5px 10px; font-size:0.82rem; border-radius:6px; margin-top:0;" onclick="clearFilters()">مسح</button>
                         </div>
                         <div>
-                            <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل إلى Excel</a>
+                            <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل Excel</a>
                         </div>
                     </div>
 
-                    <!-- شريط أزرار تصفية حالة البلاغ السريعة -->
+                    <!-- شريط أزرار تصفية الحالة السريعة -->
                     <div class="status-filter-bar">
-                        <span style="font-size:0.82rem; font-weight:700; color:#34495e; margin-left: 5px;">فلترة بالحالة:</span>
+                        <span style="font-size:0.8rem; font-weight:700; color:#34495e; margin-left: 5px;">فلترة بالحالة:</span>
                         <button type="button" class="filter-status-btn active" onclick="filterByStatus('all', this)" style="background-color: #1F4E78; color: #fff;">الكل</button>
                         <button type="button" class="filter-status-btn" onclick="filterByStatus('new', this)" style="background-color: #fee2e2; color: #991b1b;">🔴 جديد</button>
                         <button type="button" class="filter-status-btn" onclick="filterByStatus('in_progress', this)" style="background-color: #fef3c7; color: #92400e;">🟠 قيد المعالجة</button>
@@ -438,7 +367,7 @@
                                 <th>رقم البلاغ</th>
                                 <th>رقم الملف</th>
                                 <th>اسم المبلغ</th>
-                                <th style="min-width:200px;">الموضوع</th>
+                                <th style="min-width:180px;">الموضوع</th>
                                 <th>القسم المعني</th>
                                 <th>الشخص المعني</th>
                                 <th>موظف تجربة المريض</th>
@@ -449,7 +378,6 @@
                         <tbody>
                             {% for record in records %}
                             {% set current_status = record.get('status', 'new') %}
-                            <!-- أضفنا داتا أتربيوت هنا لحفظ الحالة لسهولة الفلترة -->
                             <tr data-status="{{ current_status }}">
                                 <td>
                                     <select class="status-select-inline status-{{ current_status }}" onchange="updateStatusDirectly('{{ record.get('id') }}', this)">
@@ -462,18 +390,14 @@
                                 <td><strong>{{ loop.index }}</strong></td>
                                 <td class="col-ticket" style="white-space:nowrap;">{{ record.get('ticket_number', '-') }}</td>
                                 <td style="white-space:nowrap;">{{ record.get('file_number', '-') }}</td>
-                                <td>
-                                    <span class="patient-name-link" onclick="openNotesModal('{{ record.get('id') }}', '{{ record.get('patient_name', '-') }}', '{{ record.get('ticket_number', '-') }}', '{{ record.get('action_notes', '') }}')" title="اضغط لتعديل الملاحظات">
-                                        {{ record.get('patient_name', '-') }} 📝
-                                    </span>
-                                </td>
+                                <td style="white-space:nowrap; font-weight:700; color:#1F4E78;">{{ record.get('patient_name', '-') }}</td>
                                 <td>
                                     <div class="topic-clamp" onclick="toggleTopic(this)" title="اضغط لتوسيع/طي النص">
                                         {{ record.get('requested_service', '-') }}
                                     </div>
                                 </td>
                                 <td style="white-space:nowrap;">{{ record.get('service_name', '-') }}</td>
-                                <td>{{ record.get('concerned_person', '-') }}</td>
+                                <td style="white-space:nowrap;">{{ record.get('concerned_person', '-') }}</td>
                                 <td style="white-space:nowrap;">{{ record.get('employee_name', '-') }}</td>
                                 <td class="col-date" style="white-space:nowrap;">{{ record.get('record_date', '-') }}</td>
                                 <td class="col-time" style="white-space:nowrap;">{{ record.get('record_time', '-') }}</td>
@@ -487,35 +411,6 @@
                     </table>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- نافذة تعديل الملاحظات والإجراء المتخذ -->
-<div id="notesModal" onclick="closeNotesModal()">
-    <div class="notes-modal-box" onclick="event.stopPropagation()">
-        <h3 class="notes-modal-title">تعديل تفاصيل الإجراء المتخذ والملاحظات</h3>
-        <div class="patient-info-box">
-            <div class="patient-info-row">
-                <span class="patient-info-label">اسم المبلغ:</span>
-                <span id="notesPatientName" class="patient-info-value">--</span>
-            </div>
-            <div class="patient-info-row">
-                <span class="patient-info-label">رقم البلاغ:</span>
-                <span id="notesNationalId" class="patient-info-value">--</span>
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="actionNotesInput">تفاصيل الإجراء المتخذ:</label>
-            <textarea id="actionNotesInput" class="form-control" placeholder="اكتب تفاصيل الإجراء المتخذ والملاحظات هنا..."></textarea>
-        </div>
-
-        <input type="hidden" id="activeRecordId">
-
-        <div class="notes-modal-buttons">
-            <button type="button" class="btn" style="background-color:#1F4E78; color:#fff;" onclick="savePatientNote()">حفظ الملاحظات</button>
-            <button type="button" class="btn" onclick="closeNotesModal()">إغلاق</button>
         </div>
     </div>
 </div>
@@ -535,21 +430,15 @@
         element.classList.toggle('expanded');
     }
 
-    /* فلترة الجدول حسب زر الحالة المختار */
     function filterByStatus(status, btnElement) {
         currentStatusFilter = status;
-
-        // إزالة التحديد عن كل الأزرار وإضافته للزر المضغط
         document.querySelectorAll('.filter-status-btn').forEach(btn => btn.classList.remove('active'));
         btnElement.classList.add('active');
-
         applyFilters();
     }
 
     function updateStatusDirectly(recordId, selectElement) {
         const newStatus = selectElement.value;
-        
-        // تحديث الخاصية في الصف مباشرة لكي تتوافق مع الفلترة الحالية
         const row = selectElement.closest('tr');
         row.setAttribute('data-status', newStatus);
 
@@ -562,7 +451,7 @@
         .then(data => {
             if (data.success) {
                 selectElement.className = "status-select-inline status-" + newStatus;
-                applyFilters(); // تطبيق الفلترة بعد التغيير
+                applyFilters();
             } else {
                 alert('خطأ في تحديث الحالة: ' + data.message);
             }
@@ -570,42 +459,6 @@
         .catch(error => {
             console.error('Error:', error);
             alert('حدث خطأ أثناء الاتصال بالخادم.');
-        });
-    }
-
-    function openNotesModal(id, name, ticketNum, notes) {
-        document.getElementById('activeRecordId').value = id;
-        document.getElementById('notesPatientName').innerText = name;
-        document.getElementById('notesNationalId').innerText = ticketNum;
-        document.getElementById('actionNotesInput').value = notes !== 'None' ? notes : '';
-        document.getElementById('notesModal').style.display = 'flex';
-    }
-
-    function closeNotesModal() {
-        document.getElementById('notesModal').style.display = 'none';
-    }
-
-    function savePatientNote() {
-        const recordId = document.getElementById('activeRecordId').value;
-        const actionNotes = document.getElementById('actionNotesInput -> value').value; // تم التصحيح أدناه
-
-        fetch('/save-note', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ record_id: recordId, action_notes: document.getElementById('actionNotesInput').value })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('تم حفظ الملاحظات بنجاح!');
-                location.reload();
-            } else {
-                alert('خطأ: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('حدث خطأ أثناء الحفظ.');
         });
     }
 
@@ -643,7 +496,7 @@
         currentStatusFilter = 'all';
 
         document.querySelectorAll('.filter-status-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelector('.filter-status-btn').classList.add('active'); // إعادة تفعيل زر الكل
+        document.querySelector('.filter-status-btn').classList.add('active');
 
         const rows = document.querySelectorAll('#recordsTable tbody tr');
         rows.forEach(row => row.style.display = '');
