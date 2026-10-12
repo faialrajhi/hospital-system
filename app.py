@@ -21,14 +21,16 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 WHATSAPP_TOKEN = "EAAYVhdiuLegBStKMrrKepioP6n95TvkQE9JLWK3ytxWm0iJs7Bsv9smWNlQWrwZBEXWhslFpZBmzrJRJOQXRRNH74zLYajkURvbpQsJTTuU1IaOODc8nQSAU0lL2v0GZArLAnGsoqH04uifqioJtFbWcoJ8xWOPBVDWxKG8gGpZCbVUKAXj50lS9jCzWVQZDZD"
 PHONE_NUMBER_ID = "1356121924253605"
 
-# قائمة الأرقام المستلمة للإشعار
+# قائمة الأرقام الخمسة المعتمدة لإرسال الإشعارات
 WHATSAPP_RECIPIENTS = [
-    "966565142164",  # الرقم الأول
+    "966508330343",  # الرقم الأول
+    "966597070666",  # الرقم الثاني (استبدلي علامات X بالرقم الفعلي)
+   
 ]
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ متضمناً موظف تجربة المريض والشخص المعني"""
+    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام الخمسة المعتمدة"""
     print("=== START WHATSAPP SENDING ===")
     if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
         print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
@@ -134,7 +136,7 @@ def index():
 @app.route("/export-excel", methods=["GET"])
 def export_excel():
     try:
-        response = supabase.table("patient_records").select("*").execute()
+        response = supabase.table("patient_records").select("*").order("id", desc=True).execute()
         records = response.data or []
 
         if not records:
@@ -181,18 +183,21 @@ def save_note():
     try:
         data = request.get_json()
         record_id = data.get("record_id")
-        action_notes = data.get("action_notes", "").strip()
-        status = data.get("status", "new")
+        action_notes = data.get("action_notes")
+        status = data.get("status")
 
         if not record_id:
             return jsonify({"success": False, "message": "لم يتم تحديد سجل البلاغ."}), 400
 
-        supabase.table("patient_records").update({
-            "action_notes": action_notes,
-            "status": status
-        }).eq("id", record_id).execute()
+        update_data = {}
+        if status is not None:
+            update_data["status"] = status
+        if action_notes is not None:
+            update_data["action_notes"] = action_notes.strip()
 
-        return jsonify({"success": True, "message": "تم تحديث حالة البلاغ والملاحظات بنجاح."})
+        supabase.table("patient_records").update(update_data).eq("id", record_id).execute()
+
+        return jsonify({"success": True, "message": "تم التحديث بنجاح."})
     except Exception as e:
         print("Error saving patient note:", e)
         return jsonify({"success": False, "message": str(e)}), 500
