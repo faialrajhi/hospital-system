@@ -185,18 +185,49 @@
             -webkit-line-clamp: unset;
             max-width: 100%;
         }
-        .badge-status {
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 0.78rem;
+        
+        /* القائمة المنسدلة المباشرة للحالة داخل الصفوف */
+        .status-select-inline {
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 0.82rem;
             font-weight: 700;
-            display: inline-block;
-            white-space: nowrap;
+            border: 1px solid #cbd5e1;
+            outline: none;
+            cursor: pointer;
         }
-        .badge-new { background-color: #fee2e2; color: #991b1b; }
-        .badge-in_progress { background-color: #fef3c7; color: #92400e; }
-        .badge-resolved { background-color: #e0f2fe; color: #0369a1; }
-        .badge-closed { background-color: #d1fae5; color: #065f46; }
+        .status-new { background-color: #fee2e2; color: #991b1b; }
+        .status-in_progress { background-color: #fef3c7; color: #92400e; }
+        .status-resolved { background-color: #e0f2fe; color: #0369a1; }
+        .status-closed { background-color: #d1fae5; color: #065f46; }
+
+        /* أزرار تصفية الحالة الجديدة */
+        .status-filter-bar {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #cbd5e1;
+            align-items: center;
+        }
+        .filter-status-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-status-btn:hover {
+            opacity: 0.85;
+        }
+        .filter-status-btn.active {
+            border-color: #1F4E78;
+            box-shadow: 0 0 0 2px rgba(31,78,120,0.2);
+        }
 
         #notesModal {
             display: none;
@@ -298,7 +329,6 @@
                         <input type="text" id="patient_name" name="patient_name" class="form-control" placeholder="اسم المبلغ" required>
                     </div>
 
-                    <!-- حقول مخفية لتوافق قاعدة البيانات -->
                     <input type="hidden" name="national_id" value="0000000000">
                     <input type="hidden" name="patient_phone" value="0500000000">
                     <input type="hidden" id="record_date" name="record_date">
@@ -387,6 +417,16 @@
                             <a href="{{ url_for('export_excel') }}" class="btn-success">تحميل إلى Excel</a>
                         </div>
                     </div>
+
+                    <!-- شريط أزرار تصفية حالة البلاغ السريعة -->
+                    <div class="status-filter-bar">
+                        <span style="font-size:0.82rem; font-weight:700; color:#34495e; margin-left: 5px;">فلترة بالحالة:</span>
+                        <button type="button" class="filter-status-btn active" onclick="filterByStatus('all', this)" style="background-color: #1F4E78; color: #fff;">الكل</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('new', this)" style="background-color: #fee2e2; color: #991b1b;">🔴 جديد</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('in_progress', this)" style="background-color: #fef3c7; color: #92400e;">🟠 قيد المعالجة</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('resolved', this)" style="background-color: #e0f2fe; color: #0369a1;">🔵 تم الحل</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('closed', this)" style="background-color: #d1fae5; color: #065f46;">🟢 مغلق</button>
+                    </div>
                 </div>
 
                 <div class="table-responsive">
@@ -409,22 +449,22 @@
                         <tbody>
                             {% for record in records %}
                             {% set current_status = record.get('status', 'new') %}
-                            <tr>
+                            <!-- أضفنا داتا أتربيوت هنا لحفظ الحالة لسهولة الفلترة -->
+                            <tr data-status="{{ current_status }}">
                                 <td>
-                                    <span class="badge-status badge-{{ current_status }}">
-                                        {% if current_status == 'new' %}جديد
-                                        {% elif current_status == 'in_progress' %}قيد المعالجة
-                                        {% elif current_status == 'resolved' %}تم الحل
-                                        {% elif current_status == 'closed' %}مغلق
-                                        {% else %}جديد{% endif %}
-                                    </span>
+                                    <select class="status-select-inline status-{{ current_status }}" onchange="updateStatusDirectly('{{ record.get('id') }}', this)">
+                                        <option value="new" {% if current_status == 'new' %}selected{% endif %}>🔴 جديد</option>
+                                        <option value="in_progress" {% if current_status == 'in_progress' %}selected{% endif %}>🟠 قيد المعالجة</option>
+                                        <option value="resolved" {% if current_status == 'resolved' %}selected{% endif %}>🔵 تم الحل</option>
+                                        <option value="closed" {% if current_status == 'closed' %}selected{% endif %}>🟢 مغلق</option>
+                                    </select>
                                 </td>
                                 <td><strong>{{ loop.index }}</strong></td>
                                 <td class="col-ticket" style="white-space:nowrap;">{{ record.get('ticket_number', '-') }}</td>
                                 <td style="white-space:nowrap;">{{ record.get('file_number', '-') }}</td>
                                 <td>
-                                    <span class="patient-name-link" onclick="openNotesModal('{{ record.get('id') }}', '{{ record.get('patient_name', '-') }}', '{{ record.get('ticket_number', '-') }}', '{{ current_status }}', '{{ record.get('action_notes', '') }}')">
-                                        {{ record.get('patient_name', '-') }}
+                                    <span class="patient-name-link" onclick="openNotesModal('{{ record.get('id') }}', '{{ record.get('patient_name', '-') }}', '{{ record.get('ticket_number', '-') }}', '{{ record.get('action_notes', '') }}')" title="اضغط لتعديل الملاحظات">
+                                        {{ record.get('patient_name', '-') }} 📝
                                     </span>
                                 </td>
                                 <td>
@@ -451,10 +491,10 @@
     </div>
 </div>
 
-<!-- نافذة إدارة البلاغ وتغيير الحالة -->
+<!-- نافذة تعديل الملاحظات والإجراء المتخذ -->
 <div id="notesModal" onclick="closeNotesModal()">
     <div class="notes-modal-box" onclick="event.stopPropagation()">
-        <h3 class="notes-modal-title">إدارة وتحديث حالة البلاغ</h3>
+        <h3 class="notes-modal-title">تعديل تفاصيل الإجراء المتخذ والملاحظات</h3>
         <div class="patient-info-box">
             <div class="patient-info-row">
                 <span class="patient-info-label">اسم المبلغ:</span>
@@ -467,30 +507,22 @@
         </div>
 
         <div class="mb-3">
-            <label for="statusSelect">اختر حالة البلاغ:</label>
-            <select id="statusSelect" class="form-select">
-                <option value="new">🔴 جديد</option>
-                <option value="in_progress">🟠 قيد المعالجة</option>
-                <option value="resolved">🔵 تم الحل</option>
-                <option value="closed">🟢 مغلق</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
             <label for="actionNotesInput">تفاصيل الإجراء المتخذ:</label>
-            <textarea id="actionNotesInput" class="form-control" placeholder="اكتب تفاصيل الإجراء المتخذ هنا..."></textarea>
+            <textarea id="actionNotesInput" class="form-control" placeholder="اكتب تفاصيل الإجراء المتخذ والملاحظات هنا..."></textarea>
         </div>
 
         <input type="hidden" id="activeRecordId">
 
         <div class="notes-modal-buttons">
-            <button type="button" class="btn" style="background-color:#1F4E78; color:#fff;" onclick="savePatientNote()">حفظ التحديثات</button>
+            <button type="button" class="btn" style="background-color:#1F4E78; color:#fff;" onclick="savePatientNote()">حفظ الملاحظات</button>
             <button type="button" class="btn" onclick="closeNotesModal()">إغلاق</button>
         </div>
     </div>
 </div>
 
 <script>
+    let currentStatusFilter = 'all';
+
     function setDateTimeAndSubmit() {
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
@@ -503,11 +535,48 @@
         element.classList.toggle('expanded');
     }
 
-    function openNotesModal(id, name, ticketNum, status, notes) {
+    /* فلترة الجدول حسب زر الحالة المختار */
+    function filterByStatus(status, btnElement) {
+        currentStatusFilter = status;
+
+        // إزالة التحديد عن كل الأزرار وإضافته للزر المضغط
+        document.querySelectorAll('.filter-status-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        applyFilters();
+    }
+
+    function updateStatusDirectly(recordId, selectElement) {
+        const newStatus = selectElement.value;
+        
+        // تحديث الخاصية في الصف مباشرة لكي تتوافق مع الفلترة الحالية
+        const row = selectElement.closest('tr');
+        row.setAttribute('data-status', newStatus);
+
+        fetch('/save-note', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ record_id: recordId, status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                selectElement.className = "status-select-inline status-" + newStatus;
+                applyFilters(); // تطبيق الفلترة بعد التغيير
+            } else {
+                alert('خطأ في تحديث الحالة: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء الاتصال بالخادم.');
+        });
+    }
+
+    function openNotesModal(id, name, ticketNum, notes) {
         document.getElementById('activeRecordId').value = id;
         document.getElementById('notesPatientName').innerText = name;
         document.getElementById('notesNationalId').innerText = ticketNum;
-        document.getElementById('statusSelect').value = status || 'new';
         document.getElementById('actionNotesInput').value = notes !== 'None' ? notes : '';
         document.getElementById('notesModal').style.display = 'flex';
     }
@@ -518,18 +587,17 @@
 
     function savePatientNote() {
         const recordId = document.getElementById('activeRecordId').value;
-        const actionNotes = document.getElementById('actionNotesInput').value;
-        const status = document.getElementById('statusSelect').value;
+        const actionNotes = document.getElementById('actionNotesInput -> value').value; // تم التصحيح أدناه
 
         fetch('/save-note', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ record_id: recordId, action_notes: actionNotes, status: status })
+            body: JSON.stringify({ record_id: recordId, action_notes: document.getElementById('actionNotesInput').value })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('تم تحديث حالة البلاغ بنجاح!');
+                alert('تم حفظ الملاحظات بنجاح!');
                 location.reload();
             } else {
                 alert('خطأ: ' + data.message);
@@ -551,14 +619,16 @@
             if (row.querySelector('.text-muted')) return;
             const ticketCell = row.querySelector('.col-ticket').innerText.toLowerCase();
             const dateCell = row.querySelector('.col-date').innerText;
+            const rowStatus = row.getAttribute('data-status');
 
             let matchesTicket = !filterTicket || ticketCell.includes(filterTicket);
             let matchesDate = true;
+            let matchesStatus = (currentStatusFilter === 'all' || rowStatus === currentStatusFilter);
 
             if (filterStart && dateCell < filterStart) matchesDate = false;
             if (filterEnd && dateCell > filterEnd) matchesDate = false;
 
-            if (matchesTicket && matchesDate) {
+            if (matchesTicket && matchesDate && matchesStatus) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
@@ -570,6 +640,11 @@
         document.getElementById('filter_ticket').value = '';
         document.getElementById('filter_start').value = '';
         document.getElementById('filter_end').value = '';
+        currentStatusFilter = 'all';
+
+        document.querySelectorAll('.filter-status-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.filter-status-btn').classList.add('active'); // إعادة تفعيل زر الكل
+
         const rows = document.querySelectorAll('#recordsTable tbody tr');
         rows.forEach(row => row.style.display = '');
     }
