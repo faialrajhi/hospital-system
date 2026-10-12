@@ -21,15 +21,17 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 WHATSAPP_TOKEN = "EAAYVhdiuLegBSquRTaq5RHRySuJphcRY1jB3hvLvaXxzZBZAagZCfzmprEjYS71KmkmEL0IP9wkIcOroLvuXZAB32vpnSeiSA6lfnJZBRREk6q905CWKbWFUwaVmdTi4V3iZANSqNJZAY00dTbogjx1KSxhAcoYQYqn840JumAyb4ftMZCGDgDErvgiNbKgr2IOowKvdBTluNxlGEiY6iu5gkODZCUTsdZCSrWlkC2L6ZBNeEvO0N8eN3p20BxS2KDmdDkRa0iBZAkyZC4X8eNZAo2M5rhM9u58ekyJbPkxwZDZD"
 PHONE_NUMBER_ID = "1356121924253605"
 
-# قائمة الأرقام الخمسة المعتمدة لإرسال الإشعارات
+# قائمة الأرقام الأربعة المعتمدة لإرسال الإشعارات
 WHATSAPP_RECIPIENTS = [
-    "966508330343",  # الرقم الأول
-    "966597070666"
+    "966597070666",
+    "966508330343",
+    "966549098884",
+    "966569781804"
 ]
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام الخمسة المعتمدة"""
+    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام الأربعة المعتمدة"""
     print("=== START WHATSAPP SENDING ===")
     if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
         print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
