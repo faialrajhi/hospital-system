@@ -11,26 +11,25 @@ app = Flask(__name__)
 # =========================
 # Supabase Configuration
 # =========================
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "رابط_السوبابيس_هنا")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "مفتاح_السوبابيس_هنا")
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://urnawuapfkhxvqvepzit.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybmF3dWFwZmtoeHZxdmVweml0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODA5NTQxMCwiZXhwIjoyMTAzNjcxNDEwfQ.hg8Ki6qvoI_Fhammt_87t-HfTZPSdvl6nYn5bUtThzo")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # =========================
 # Meta WhatsApp Cloud API Configuration
 # =========================
-WHATSAPP_TOKEN = "EAAYVhdiuLegBStKMrrKepioP6n95TvkQE9JLWK3ytxWm0iJs7Bsv9smWNlQWrwZBEXWhslFpZBmzrJRJOQXRRNH74zLYajkURvbpQsJTTuU1IaOODc8nQSAU0lL2v0GZArLAnGsoqH04uifqioJtFbWcoJ8xWOPBVDWxKG8gGpZCbVUKAXj50lS9jCzWVQZDZD"
+WHATSAPP_TOKEN = "EAAYVhdiuLegBShV9yacntWRZB7fpMxu7oginY5rRhiJs6vaMD37qCVMhfSuh44VRymsycThvmZAKK36GwzptH4XCUXug4k2iRL2mRDZCupgD7AaDZAZCic8ZBLZCvPnQZBLJJAZBoAC7WPGTaGreM9UKvTZAqrote5Kvm7gp8zueLibq0N1gOkn6N1ZBAfJFLdZBflslfPRP11eNiODKab8UlWw3BZCZBraTeuC60tvXXZBJmVCcVEz8DhK2iC2JzfowTkyb4UYLZB4nxBwdPSQlBHYAmqf6WTpEZBumML2DxdDsZD"
 PHONE_NUMBER_ID = "1356121924253605"
 
 # قائمة الأرقام الخمسة المعتمدة لإرسال الإشعارات
 WHATSAPP_RECIPIENTS = [
     "966508330343",  # الرقم الأول
     "966597070666",  # الرقم الثاني (استبدلي علامات X بالرقم الفعلي)
-   
 ]
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام الخمسة المعتمدة"""
+    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام المعتمدة"""
     print("=== START WHATSAPP SENDING ===")
     if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
         print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
