@@ -18,20 +18,21 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # =========================
 # Meta WhatsApp Cloud API Configuration
 # =========================
-WHATSAPP_TOKEN = "EAAYVhdiuLegBSjVFYylfMbWZBYqGD4eN4s32ZBsEeq9jBDDZA8qUWbGEt7eZCe1RzYc6B1fZB1aBubnLa3nOXp3tEA6UMZAZCVf8FHnB04Tk3abejMxH02LpnVuV5uuHLqslpm3lGZA90mTmTJPaeCwWakOwoVANTaQa2lbNvMZBWGZC60SmFT8rIQhjsDeaIskoQWafiEsaLj5KNwpJDbjCmI62H5irCaiCYaiZCqQJfd96mbO0fDgV0Fi"
+WHATSAPP_TOKEN = "EAAYVhdiuLegBSotTXu7IQqTd0ld0z9iQPjZBocqFp56vsVJEHrnvi7YP4HcWBCJdu5QalMjFOdaxvhex8ELhVFyWgwQEz9GQ8MGaZBHpK7ICbyjmGmL3oMgbo9mtDIrXHLa9mc9W0k5V1jtWEqcXsHwmqZC971tRKAEJSZCChQQZBFhwwEjvyHQEQCCphLwx1rDurURSK19HGmR7dqWa0JnjRbZBf7XzwofhIrBJGwR1R0CsHww0B5ZAJC5z1Q4RpstxgBYYYVyZBm2Ntrk7fHtid1S3KKJKMih7AgZDZD"
 PHONE_NUMBER_ID = "1356121924253605"
 
-# قائمة الأرقام الأربعة المعتمدة لإرسال الإشعارات
+# قائمة الأرقام الخمسة المعتمدة لإرسال الإشعارات (تم إضافة الرقم الجديد)
 WHATSAPP_RECIPIENTS = [
     "966597070666",
     "966508330343",
     "966549098884",
-    "966569781804"
+    "966569781804",
+    "966533385549"
 ]
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام الأربعة المعتمدة"""
+    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام الخمسة المعتمدة"""
     print("=== START WHATSAPP SENDING ===")
     if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
         print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
