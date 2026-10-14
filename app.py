@@ -19,7 +19,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # Meta WhatsApp Cloud API Configuration
 # =========================
 WHATSAPP_TOKEN = "EAAYVhdiuLegBSotTXu7IQqTd0ld0z9iQPjZBocqFp56vsVJEHrnvi7YP4HcWBCJdu5QalMjFOdaxvhex8ELhVFyWgwQEz9GQ8MGaZBHpK7ICbyjmGmL3oMgbo9mtDIrXHLa9mc9W0k5V1jtWEqcXsHwmqZC971tRKAEJSZCChQQZBFhwwEjvyHQEQCCphLwx1rDurURSK19HGmR7dqWa0JnjRbZBf7XzwofhIrBJGwR1R0CsHww0B5ZAJC5z1Q4RpstxgBYYYVyZBm2Ntrk7fHtid1S3KKJKMih7AgZDZD"
-PHONE_NUMBER_ID = "1356121924253605"
+PHONE_NUMBER_ID = "1370711846128093"
 
 # قائمة الأرقام الخمسة المعتمدة لإرسال الإشعارات (تم إضافة الرقم الجديد)
 WHATSAPP_RECIPIENTS = [
