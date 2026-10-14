@@ -20,6 +20,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # =========================
 WHATSAPP_TOKEN = os.environ.get("WHATSAPP_TOKEN")
 PHONE_NUMBER_ID = "1370711846128093"
+
 WHATSAPP_RECIPIENTS = [
     "966597070666",
     "966508330343",
@@ -29,8 +30,9 @@ WHATSAPP_RECIPIENTS = [
     "966591159111"
 ]
 
+
 def get_next_ticket_number():
-    """يحسب رقم البلاغ التالي بتنسيق يبدأ بحرف B مع تسلسل تصاعدي (مثال: B1, B2...)"""
+    """يحسب رقم البلاغ التالي بدقة بناءً على عدد السجلات الفعلية + 1 (مثال: B1, B2...)"""
     try:
         response = supabase.table("patient_records").select("id", count="exact").execute()
         total_records = len(response.data) if response.data else 0
@@ -97,10 +99,8 @@ def index():
     if request.method == "POST":
         form_data = request.form
         
-        # إذا ترك الحقل فارغاً، نستخدم التنسيق التلقائي المقترح
-        ticket_number = form_data.get("ticket_number")
-        if not ticket_number or not str(ticket_number).strip():
-            ticket_number = get_next_ticket_number()
+        # الاعتماد الكامل على التسلسل التلقائي الصحيح
+        ticket_number = get_next_ticket_number()
 
         patient_name = form_data.get("patient_name")
         national_id = form_data.get("national_id", "0000000000")
