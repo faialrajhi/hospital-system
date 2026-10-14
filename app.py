@@ -21,7 +21,6 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 WHATSAPP_TOKEN = "EAAYVhdiuLegBSotTXu7IQqTd0ld0z9iQPjZBocqFp56vsVJEHrnvi7YP4HcWBCJdu5QalMjFOdaxvhex8ELhVFyWgwQEz9GQ8MGaZBHpK7ICbyjmGmL3oMgbo9mtDIrXHLa9mc9W0k5V1jtWEqcXsHwmqZC971tRKAEJSZCChQQZBFhwwEjvyHQEQCCphLwx1rDurURSK19HGmR7dqWa0JnjRbZBf7XzwofhIrBJGwR1R0CsHww0B5ZAJC5z1Q4RpstxgBYYYVyZBm2Ntrk7fHtid1S3KKJKMih7AgZDZD"
 PHONE_NUMBER_ID = "1370711846128093"
 
-# قائمة الأرقام الخمسة المعتمدة لإرسال الإشعارات (تم إضافة الرقم الجديد)
 WHATSAPP_RECIPIENTS = [
     "966597070666",
     "966508330343",
@@ -31,8 +30,20 @@ WHATSAPP_RECIPIENTS = [
 ]
 
 
+def get_next_ticket_number():
+    """يحسب رقم البلاغ التالي بناءً على إجمالي عدد السجلات الحالية + 1 ليكون التسلسل تصاعدياً وصحيحاً"""
+    try:
+        response = supabase.table("patient_records").select("id", count="exact").execute()
+        # عدد السجلات الكلي في القاعدة
+        total_records = len(response.data) if response.data else 0
+        return total_records + 1
+    except Exception as e:
+        print("Error calculating next ticket number:", e)
+        return 1
+
+
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام الخمسة المعتمدة"""
+    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام المعتمدة"""
     print("=== START WHATSAPP SENDING ===")
     if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
         print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
@@ -73,11 +84,8 @@ def send_whatsapp_notification(data):
         }
 
         try:
-            print(f"Sending request to Meta API for recipient: {recipient}")
             response = requests.post(url, headers=headers, json=payload, timeout=10)
-            print(f"=== META API RAW RESPONSE FOR {recipient} ===")
-            print("Status Code:", response.status_code)
-            print("Response Body:", response.text)
+            print(f"Meta API response for {recipient}:", response.status_code)
         except Exception as e:
             print(f"❌ Exception caught while sending WhatsApp to {recipient}:", e)
 
@@ -89,7 +97,10 @@ def send_whatsapp_notification(data):
 def index():
     if request.method == "POST":
         form_data = request.form
-        ticket_number = form_data.get("ticket_number")
+        
+        # دائماً نعتمد الرقم التسلسلي التلقائي الصحيح (عدد السجلات الحالية + 1)
+        ticket_number = str(get_next_ticket_number())
+
         patient_name = form_data.get("patient_name")
         national_id = form_data.get("national_id", "0000000000")
         file_number = form_data.get("file_number", "-")
@@ -124,12 +135,17 @@ def index():
             return jsonify({"success": False, "message": f"حدث خطأ أثناء حفظ البيانات: {str(e)}"}), 500
 
     try:
+        # جلب السجلات مرتبة من الأجدد للأقدم (ليظهر الأحدث في أعلى الجدول دائماً)
         response = supabase.table("patient_records").select("*").order("id", desc=True).execute()
         records = response.data or []
     except Exception as e:
         print("Error fetching records from Supabase:", e)
         records = []
-    return render_template("index.html", records=records)
+
+    # حساب الرقم التالي لعرضه في خانة الإدخال بالفورم
+    next_ticket_number = get_next_ticket_number()
+
+    return render_template("index.html", records=records, next_ticket_number=next_ticket_number)
 
 
 # =========================
@@ -183,7 +199,7 @@ def export_excel():
 @app.route("/save-note", methods=["POST"])
 def save_note():
     try:
-        data = request.get_json()
+        data = request.get_xml() if False else request.get_json()
         record_id = data.get("record_id")
         action_notes = data.get("action_notes")
         status = data.get("status")
