@@ -16,11 +16,11 @@
             background-color: #f4f7f9;
             color: #2c3e50;
             padding: 15px;
-            overflow-x: hidden; /* منع تحرك الشاشة يمين ويسار نهائياً */
+            overflow-x: hidden;
         }
         .container {
             width: 100%;
-            max-width: 1450px; /* تقليص العرض الكلي ليناسب الشاشات تماماً */
+            max-width: 1450px;
             margin: 0 auto;
         }
         .header-banner {
@@ -48,10 +48,9 @@
             font-size: 1.6rem;
             font-weight: 700;
         }
-        /* ضبط التخطيط ليكون ثابتاً ومنسقاً */
         .main-layout {
             display: grid;
-            grid-template-columns: 320px minmax(0, 1fr); /* الجدول يأخذ المساحة المتبقية بدون تمدد زائد */
+            grid-template-columns: 320px minmax(0, 1fr);
             gap: 15px;
             align-items: start;
         }
@@ -129,7 +128,7 @@
         }
         .table-responsive {
             width: 100%;
-            overflow-x: auto; /* الجدول نفسه يحتوي التمرير لو زاد عرضه فقط داخله بدون تحريك الشاشة العامة */
+            overflow-x: auto;
         }
         table {
             width: 100%;
@@ -171,7 +170,6 @@
             -webkit-line-clamp: unset;
             max-width: 100%;
         }
-        
         .status-select-inline {
             padding: 4px 6px;
             border-radius: 6px;
@@ -185,7 +183,6 @@
         .status-in_progress { background-color: #fef3c7; color: #92400e; }
         .status-resolved { background-color: #e0f2fe; color: #0369a1; }
         .status-closed { background-color: #d1fae5; color: #065f46; }
-
         .search-filter-box {
             background-color: #f8fafc;
             padding: 10px;
@@ -245,7 +242,7 @@
                     
                     <div class="mb-3">
                         <label>رقم البلاغ</label>
-                        <input type="text" id="ticket_number" name="ticket_number" class="form-control" placeholder="مثال: B 4892325" required>
+                        <input type="text" id="ticket_number" name="ticket_number" class="form-control" value="{{ next_ticket_number }}" placeholder="مثال: 1, 2, 3..." required>
                     </div>
 
                     <div class="mb-3">
