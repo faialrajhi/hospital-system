@@ -18,6 +18,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # =========================
 # Meta WhatsApp Cloud API Configuration
 # =========================
+WHATSAPP_TOKEN = os.environ.get("WHATSAPP_TOKEN")
 PHONE_NUMBER_ID = "1370711846128093"
 WHATSAPP_RECIPIENTS = [
     "966597070666",
@@ -27,7 +28,6 @@ WHATSAPP_RECIPIENTS = [
     "966533385549",
     "966591159111"
 ]
-
 
 def get_next_ticket_number():
     """يحسب رقم البلاغ التالي بتنسيق يبدأ بحرف B مع تسلسل تصاعدي (مثال: B1, B2...)"""
