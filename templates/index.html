@@ -383,7 +383,7 @@
                                         <option value="closed" {% if current_status == 'closed' %}selected{% endif %}>🟢 مغلق</option>
                                     </select>
                                 </td>
-                                <td><strong>{{ loop.index }}</strong></td>
+                                <td><strong>{{ records|length - loop.index0 }}</strong></td>
                                 <td class="col-ticket" style="white-space:nowrap;">{{ record.get('ticket_number', '-') }}</td>
                                 <td style="white-space:nowrap;">{{ record.get('file_number', '-') }}</td>
                                 <td style="white-space:nowrap; font-weight:700; color:#1F4E78;">{{ record.get('patient_name', '-') }}</td>
