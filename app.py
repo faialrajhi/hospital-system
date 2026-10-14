@@ -18,28 +18,27 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # =========================
 # Meta WhatsApp Cloud API Configuration
 # =========================
-WHATSAPP_TOKEN = "EAAYVhdiuLegBSotTXu7IQqTd0ld0z9iQPjZBocqFp56vsVJEHrnvi7YP4HcWBCJdu5QalMjFOdaxvhex8ELhVFyWgwQEz9GQ8MGaZBHpK7ICbyjmGmL3oMgbo9mtDIrXHLa9mc9W0k5V1jtWEqcXsHwmqZC971tRKAEJSZCChQQZBFhwwEjvyHQEQCCphLwx1rDurURSK19HGmR7dqWa0JnjRbZBf7XzwofhIrBJGwR1R0CsHww0B5ZAJC5z1Q4RpstxgBYYYVyZBm2Ntrk7fHtid1S3KKJKMih7AgZDZD"
 PHONE_NUMBER_ID = "1370711846128093"
-
 WHATSAPP_RECIPIENTS = [
     "966597070666",
     "966508330343",
     "966549098884",
     "966569781804",
-    "966533385549"
+    "966533385549",
+    "966591159111"
 ]
 
 
 def get_next_ticket_number():
-    """يحسب رقم البلاغ التالي بناءً على إجمالي عدد السجلات الحالية + 1 ليكون التسلسل تصاعدياً وصحيحاً"""
+    """يحسب رقم البلاغ التالي بتنسيق يبدأ بحرف B مع تسلسل تصاعدي (مثال: B1, B2...)"""
     try:
         response = supabase.table("patient_records").select("id", count="exact").execute()
-        # عدد السجلات الكلي في القاعدة
         total_records = len(response.data) if response.data else 0
-        return total_records + 1
+        next_id = total_records + 1
+        return f"B{next_id}"
     except Exception as e:
         print("Error calculating next ticket number:", e)
-        return 1
+        return "B1"
 
 
 def send_whatsapp_notification(data):
@@ -98,8 +97,10 @@ def index():
     if request.method == "POST":
         form_data = request.form
         
-        # دائماً نعتمد الرقم التسلسلي التلقائي الصحيح (عدد السجلات الحالية + 1)
-        ticket_number = str(get_next_ticket_number())
+        # إذا ترك الحقل فارغاً، نستخدم التنسيق التلقائي المقترح
+        ticket_number = form_data.get("ticket_number")
+        if not ticket_number or not str(ticket_number).strip():
+            ticket_number = get_next_ticket_number()
 
         patient_name = form_data.get("patient_name")
         national_id = form_data.get("national_id", "0000000000")
@@ -135,14 +136,12 @@ def index():
             return jsonify({"success": False, "message": f"حدث خطأ أثناء حفظ البيانات: {str(e)}"}), 500
 
     try:
-        # جلب السجلات مرتبة من الأجدد للأقدم (ليظهر الأحدث في أعلى الجدول دائماً)
         response = supabase.table("patient_records").select("*").order("id", desc=True).execute()
         records = response.data or []
     except Exception as e:
         print("Error fetching records from Supabase:", e)
         records = []
 
-    # حساب الرقم التالي لعرضه في خانة الإدخال بالفورم
     next_ticket_number = get_next_ticket_number()
 
     return render_template("index.html", records=records, next_ticket_number=next_ticket_number)
@@ -199,7 +198,7 @@ def export_excel():
 @app.route("/save-note", methods=["POST"])
 def save_note():
     try:
-        data = request.get_xml() if False else request.get_json()
+        data = request.get_json()
         record_id = data.get("record_id")
         action_notes = data.get("action_notes")
         status = data.get("status")
