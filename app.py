@@ -86,7 +86,8 @@ def send_whatsapp_notification(data):
 
         try:
             response = requests.post(url, headers=headers, json=payload, timeout=10)
-            print(f"Meta API response for {recipient}:", response.status_code)
+            # التعديل هنا لطباعة رد ميتا بالتفصيل لمعرفة سبب الخطأ 400
+            print(f"Meta API response for {recipient}: {response.status_code} - {response.text}")
         except Exception as e:
             print(f"❌ Exception caught while sending WhatsApp to {recipient}:", e)
 
