@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "hospital_937_secret_key_2026")
 
 # =========================
-# حسابات المستخدمين (اسم المستخدم وكلمة المرور)
+# قائمة الموظفين (اسم المستخدم، كلمة المرور، والاسم العربي الكامل)
 # =========================
 USERS = {
     "abdullah": {"password": "123", "name": "عبدالله الزهراني"},
@@ -48,7 +48,7 @@ def get_next_ticket_number():
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ آلياً لمجموعة الواتساب عبر Green API"""
+    """دالة ترسل إشعار البلاغ آلياً لمجموعة الواتساب عبر Green API مع اسم الموظف العربي"""
     if not GREEN_API_TOKEN:
         return
 
@@ -84,7 +84,7 @@ def login():
 
         if username in USERS and USERS[username]["password"] == password:
             session["user"] = username
-            session["employee_name"] = USERS[username]["name"]
+            session["employee_name"] = USERS[username]["name"] # حفظ الاسم العربي الكامل في الجلسة
             return redirect(url_for("index"))
         else:
             return render_template("login.html", error="اسم المستخدم أو كلمة المرور غير صحيحة")
@@ -113,6 +113,9 @@ def index():
         form_data = request.form
         ticket_number = get_next_ticket_number()
 
+        # أخذ اسم الموظف تلقائياً من الـ session (الاسم العربي الكامل)
+        logged_emp_name = session.get("employee_name", "موظف النظام")
+
         record = {
             "ticket_number": ticket_number,
             "patient_name": form_data.get("patient_name"),
@@ -122,7 +125,7 @@ def index():
             "requested_service": form_data.get("requested_service"),
             "service_name": form_data.get("service_name"),
             "concerned_person": form_data.get("concerned_person", "-"),
-            "employee_name": form_data.get("employee_name", session.get("employee_name", "-")),
+            "employee_name": logged_emp_name,
             "record_date": form_data.get("record_date"),
             "record_time": form_data.get("record_time"),
             "status": "new"
