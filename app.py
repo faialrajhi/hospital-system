@@ -10,14 +10,21 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "hospital_937_secret_key_2026")
 
 # =========================
-# قائمة الموظفين (اسم المستخدم، كلمة المرور، والاسم العربي الكامل)
+# قائمة المستخدمين (موظفين ومدراء)
 # =========================
 USERS = {
-    "abdullah": {"password": "123", "name": "عبدالله الزهراني"},
-    "ahmed": {"password": "123", "name": "احمد عيسى"},
-    "ebtisam": {"password": "123", "name": "ابتسام المغامسي"},
-    "nozha": {"password": "123", "name": "نزهه السلولي"},
-    "khaled": {"password": "123", "name": "خالد الزهراني"}
+    # الموظفون (إدخال وتعديل)
+    "abdullah": {"password": "123", "name": "عبدالله الزهراني", "role": "employee"},
+    "ahmed": {"password": "123", "name": "احمد عيسى", "role": "employee"},
+    "ebtisam": {"password": "123", "name": "ابتسام المغامسي", "role": "employee"},
+    "nozha": {"password": "123", "name": "نزهه السلولي", "role": "employee"},
+    "khaled": {"password": "123", "name": "خالد الزهراني", "role": "employee"},
+    
+    # المدراء (اطلاع فقط)
+    "mohd": {"password": "123", "name": "محمد", "role": "admin"},
+    "turky": {"password": "123", "name": "تركي", "role": "admin"},
+    "raja": {"password": "123", "name": "رجاء", "role": "admin"},
+    "hosam": {"password": "123", "name": "حسام", "role": "admin"}
 }
 
 # =========================
@@ -32,7 +39,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # =========================
 GREEN_API_INSTANCE_ID = os.environ.get("GREEN_API_INSTANCE_ID", "710722772629")
 GREEN_API_TOKEN = os.environ.get("GREEN_API_TOKEN2", os.environ.get("GREEN_API_TOKEN", "e2ff31ea0b24f838a230552e4acabd61fd93c37be6d408ebd"))
-WHATSAPP_GROUP_ID = os.environ.get("WHATSAPP_GROUP_ID", "120363430636448417@g.us")
+WHATSAPP_GROUP_ID = os.environ.get("WHATSAPP_GROUP_ID", "120363044377285466@g.us")
 
 
 def get_next_ticket_number():
@@ -48,7 +55,7 @@ def get_next_ticket_number():
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ آلياً لمجموعة الواتساب عبر Green API مع اسم الموظف العربي"""
+    """دالة ترسل إشعار البلاغ آلياً لمجموعة الواتساب عبر Green API"""
     if not GREEN_API_TOKEN:
         return
 
@@ -84,7 +91,8 @@ def login():
 
         if username in USERS and USERS[username]["password"] == password:
             session["user"] = username
-            session["employee_name"] = USERS[username]["name"] # حفظ الاسم العربي الكامل في الجلسة
+            session["employee_name"] = USERS[username]["name"]
+            session["role"] = USERS[username]["role"]
             return redirect(url_for("index"))
         else:
             return render_template("login.html", error="اسم المستخدم أو كلمة المرور غير صحيحة")
@@ -110,10 +118,11 @@ def index():
         return redirect(url_for("login"))
 
     if request.method == "POST":
+        if session.get("role") == "admin":
+            return jsonify({"success": False, "message": "عذراً، حسابات المدراء للاطلاع فقط."}), 403
+
         form_data = request.form
         ticket_number = get_next_ticket_number()
-
-        # أخذ اسم الموظف تلقائياً من الـ session (الاسم العربي الكامل)
         logged_emp_name = session.get("employee_name", "موظف النظام")
 
         record = {
@@ -128,7 +137,8 @@ def index():
             "employee_name": logged_emp_name,
             "record_date": form_data.get("record_date"),
             "record_time": form_data.get("record_time"),
-            "status": "new"
+            "status": "new",
+            "action_taken": ""
         }
         try:
             supabase.table("patient_records").insert(record).execute()
@@ -145,7 +155,13 @@ def index():
 
     next_ticket_number = get_next_ticket_number()
 
-    return render_template("index.html", records=records, next_ticket_number=next_ticket_number, logged_employee=session.get("employee_name"))
+    return render_template(
+        "index.html", 
+        records=records, 
+        next_ticket_number=next_ticket_number, 
+        logged_employee=session.get("employee_name"),
+        user_role=session.get("role", "employee")
+    )
 
 
 # =========================
@@ -173,6 +189,7 @@ def export_excel():
                 "الموضوع": r.get("requested_service", "-"),
                 "القسم المعني": r.get("service_name", "-"),
                 "الشخص المعني": r.get("concerned_person", "-"),
+                "الإجراء المتخذ": r.get("action_taken", "-"),
                 "موظف تجربة المريض": r.get("employee_name", "-"),
                 "التاريخ": r.get("record_date", "-"),
                 "الوقت": r.get("record_time", "-")
@@ -189,13 +206,26 @@ def export_excel():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
+# =========================
+# حفظ تحديث الحالة والإن إجراء المتخذ
+# =========================
 @app.route("/save-note", methods=["POST"])
 def save_note():
     if "user" not in session:
         return jsonify({"success": False, "message": "غير مصرح."}), 401
+    
+    if session.get("role") == "admin":
+        return jsonify({"success": False, "message": "عذراً، حسابات المدراء للاطلاع فقط."}), 403
+
     try:
         data = request.get_json()
-        supabase.table("patient_records").update({"status": data.get("status")}).eq("id", data.get("record_id")).execute()
+        update_data = {}
+        if "status" in data:
+            update_data["status"] = data["status"]
+        if "action_taken" in data:
+            update_data["action_taken"] = data["action_taken"]
+
+        supabase.table("patient_records").update(update_data).eq("id", data.get("record_id")).execute()
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
