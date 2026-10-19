@@ -19,7 +19,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # Green API Configuration
 # =========================
 GREEN_API_INSTANCE_ID = os.environ.get("GREEN_API_INSTANCE_ID", "710722772629")
-GREEN_API_TOKEN = os.environ.get("GREEN_API_TOKEN")  # أضيفي رمز apiTokenInstance في متغيرات البيئة في Render
+GREEN_API_TOKEN = os.environ.get("GREEN_API_TOKEN2", "2e2ff31ea0b24f838a230552e4acabd61fd93c37be6d408ebd")
 WHATSAPP_GROUP_ID = os.environ.get("WHATSAPP_GROUP_ID", "120363044377285466@g.us")
 
 
@@ -40,7 +40,7 @@ def send_whatsapp_notification(data):
     print("=== START GREEN API WHATSAPP SENDING ===")
     
     if not GREEN_API_TOKEN:
-        print("⚠️ رمز Green API Token غير متاح! يرجى ضبط المتغير GREEN_API_TOKEN.")
+        print("⚠️ رمز Green API Token غير متاح! يرجى ضبط المتغير.")
         return
 
     url = f"https://7107.api.greenapi.com/waInstance{GREEN_API_INSTANCE_ID}/sendMessage/{GREEN_API_TOKEN}"
@@ -87,7 +87,6 @@ def index():
     if request.method == "POST":
         form_data = request.form
         
-        # الاعتماد الكامل على التسلسل التلقائي الصحيح
         ticket_number = get_next_ticket_number()
 
         patient_name = form_data.get("patient_name")
