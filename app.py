@@ -32,7 +32,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # =========================
 GREEN_API_INSTANCE_ID = os.environ.get("GREEN_API_INSTANCE_ID", "710722772629")
 GREEN_API_TOKEN = os.environ.get("GREEN_API_TOKEN2", os.environ.get("GREEN_API_TOKEN", "e2ff31ea0b24f838a230552e4acabd61fd93c37be6d408ebd"))
-WHATSAPP_GROUP_ID = os.environ.get("WHATSAPP_GROUP_ID", "120363044377285466@g.us")
+WHATSAPP_GROUP_ID = os.environ.get("WHATSAPP_GROUP_ID", "120363430636448417@g.us")
 
 
 def get_next_ticket_number():
