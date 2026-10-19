@@ -10,21 +10,21 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "hospital_937_secret_key_2026")
 
 # =========================
-# قائمة المستخدمين (موظفين ومدراء)
+# قائمة المستخدمين
 # =========================
 USERS = {
     # الموظفون (إدخال وتعديل)
-    "abdullah": {"password": "123", "name": "عبدالله الزهراني", "role": "employee"},
-    "ahmed": {"password": "123", "name": "احمد عيسى", "role": "employee"},
-    "ebtisam": {"password": "123", "name": "ابتسام المغامسي", "role": "employee"},
-    "nozha": {"password": "123", "name": "نزهه السلولي", "role": "employee"},
-    "khaled": {"password": "123", "name": "خالد الزهراني", "role": "employee"},
+    "abdullah": {"password": "123", "name": "عبدالله الزهراني", "role": "employee", "title": ""},
+    "ahmed": {"password": "123", "name": "احمد عيسى", "role": "employee", "title": ""},
+    "ebtisam": {"password": "123", "name": "ابتسام المغامسي", "role": "employee", "title": ""},
+    "nozha": {"password": "123", "name": "نزهه السلولي", "role": "employee", "title": ""},
+    "khaled": {"password": "123", "name": "خالد الزهراني", "role": "employee", "title": ""},
     
-    # المدراء (اطلاع فقط)
-    "mohd": {"password": "123", "name": "محمد", "role": "admin"},
-    "turky": {"password": "123", "name": "تركي", "role": "admin"},
-    "raja": {"password": "123", "name": "رجاء", "role": "admin"},
-    "hosam": {"password": "123", "name": "حسام", "role": "admin"}
+    # المشرفون والمدراء (اطلاع فقط)
+    "mohd": {"password": "123", "name": "محمد", "role": "admin", "title": ""},
+    "turky": {"password": "123", "name": "تركي", "role": "admin", "title": "(مدير)"},
+    "raja": {"password": "123", "name": "رجاء", "role": "admin", "title": ""},
+    "hosam": {"password": "123", "name": "حسام", "role": "admin", "title": ""}
 }
 
 # =========================
@@ -93,6 +93,7 @@ def login():
             session["user"] = username
             session["employee_name"] = USERS[username]["name"]
             session["role"] = USERS[username]["role"]
+            session["user_title"] = USERS[username]["title"]
             return redirect(url_for("index"))
         else:
             return render_template("login.html", error="اسم المستخدم أو كلمة المرور غير صحيحة")
@@ -119,7 +120,7 @@ def index():
 
     if request.method == "POST":
         if session.get("role") == "admin":
-            return jsonify({"success": False, "message": "عذراً، حسابات المدراء للاطلاع فقط."}), 403
+            return jsonify({"success": False, "message": "عذراً، هذا الحساب غير مصرح له بإنشاء بلاغات."}), 403
 
         form_data = request.form
         ticket_number = get_next_ticket_number()
@@ -160,7 +161,8 @@ def index():
         records=records, 
         next_ticket_number=next_ticket_number, 
         logged_employee=session.get("employee_name"),
-        user_role=session.get("role", "employee")
+        user_role=session.get("role", "employee"),
+        user_title=session.get("user_title", "")
     )
 
 
@@ -207,7 +209,7 @@ def export_excel():
 
 
 # =========================
-# حفظ تحديث الحالة والإن إجراء المتخذ
+# حفظ تحديث الحالة والإجراء المتخذ
 # =========================
 @app.route("/save-note", methods=["POST"])
 def save_note():
@@ -215,7 +217,7 @@ def save_note():
         return jsonify({"success": False, "message": "غير مصرح."}), 401
     
     if session.get("role") == "admin":
-        return jsonify({"success": False, "message": "عذراً، حسابات المدراء للاطلاع فقط."}), 403
+        return jsonify({"success": False, "message": "عذراً، هذا الحساب غير مصرح له بتعديل الحالات."}), 403
 
     try:
         data = request.get_json()
