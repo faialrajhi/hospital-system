@@ -418,6 +418,11 @@
 <script>
     let currentStatusFilter = 'all';
 
+    // تطبيق فلترة آخر 12 ساعة افتراضياً عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        applyDefault12HourFilter();
+    });
+
     function setDateTimeAndSubmit() {
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
@@ -462,16 +467,48 @@
         });
     }
 
+    // دالة الفلترة الافتراضية لآخر 12 ساعة
+    function applyDefault12HourFilter() {
+        const now = new Date();
+        const twelveHoursAgo = new Date(now.getTime() - (12 * 60 * 60 * 1000));
+        const rows = document.querySelectorAll('#recordsTable tbody tr');
+
+        rows.forEach(row => {
+            if (row.querySelector('.text-muted')) return;
+            
+            const dateCell = row.querySelector('.col-date').innerText.trim();
+            const timeCell = row.querySelector('.col-time').innerText.trim();
+            
+            if (dateCell && timeCell && dateCell !== '-') {
+                const recordDateTime = new Date(`${dateCell}T${timeCell}`);
+                if (!isNaN(recordDateTime) && recordDateTime >= twelveHoursAgo) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            } else {
+                row.style.display = '';
+            }
+        });
+    }
+
+    // دالة البحث الشاملة (تبحث في كافة السجلات)
     function applyFilters() {
         const filterTicket = document.getElementById('filter_ticket').value.trim().toLowerCase();
         const filterStart = document.getElementById('filter_start').value;
         const filterEnd = document.getElementById('filter_end').value;
         const rows = document.querySelectorAll('#recordsTable tbody tr');
 
+        // إذا كانت جميع حقول الفلترة فارغة، نكتفي بالفلترة الافتراضية لـ 12 ساعة
+        if (!filterTicket && !filterStart && !filterEnd && currentStatusFilter === 'all') {
+            applyDefault12HourFilter();
+            return;
+        }
+
         rows.forEach(row => {
             if (row.querySelector('.text-muted')) return;
             const ticketCell = row.querySelector('.col-ticket').innerText.toLowerCase();
-            const dateCell = row.querySelector('.col-date').innerText;
+            const dateCell = row.querySelector('.col-date').innerText.trim();
             const rowStatus = row.getAttribute('data-status');
 
             let matchesTicket = !filterTicket || ticketCell.includes(filterTicket);
@@ -489,6 +526,7 @@
         });
     }
 
+    // إعادة ضبط الفلاتر وإعادة عرض السجلات لآخر 12 ساعة
     function clearFilters() {
         document.getElementById('filter_ticket').value = '';
         document.getElementById('filter_start').value = '';
@@ -498,8 +536,7 @@
         document.querySelectorAll('.filter-status-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelector('.filter-status-btn').classList.add('active');
 
-        const rows = document.querySelectorAll('#recordsTable tbody tr');
-        rows.forEach(row => row.style.display = '');
+        applyDefault12HourFilter();
     }
 </script>
 </body>
