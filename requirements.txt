@@ -3,3 +3,4 @@ supabase
 gunicorn
 openpyxl
 pandas
+requests
