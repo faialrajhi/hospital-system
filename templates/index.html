@@ -170,6 +170,8 @@
             -webkit-line-clamp: unset;
             max-width: 100%;
         }
+        
+        /* تعديل خلفية الحالات لتكون شفافة تماماً مع إبقاء ألوان النصوص/النقاط */
         .status-select-inline {
             padding: 4px 6px;
             border-radius: 6px;
@@ -178,11 +180,13 @@
             border: 1px solid #cbd5e1;
             outline: none;
             cursor: pointer;
+            background-color: transparent !important;
         }
-        .status-new { background-color: #fee2e2; color: #991b1b; }
-        .status-in_progress { background-color: #fef3c7; color: #92400e; }
-        .status-resolved { background-color: #e0f2fe; color: #0369a1; }
-        .status-closed { background-color: #d1fae5; color: #065f46; }
+        .status-new { color: #991b1b; }
+        .status-in_progress { color: #92400e; }
+        .status-resolved { color: #0369a1; }
+        .status-closed { color: #065f46; }
+
         .search-filter-box {
             background-color: #f8fafc;
             padding: 10px;
@@ -347,10 +351,10 @@
                     <div class="status-filter-bar">
                         <span style="font-size:0.78rem; font-weight:700; color:#34495e; margin-left: 4px;">فلترة بالحالة:</span>
                         <button type="button" class="filter-status-btn active" onclick="filterByStatus('all', this)" style="background-color: #1F4E78; color: #fff;">الكل</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('new', this)" style="background-color: #fee2e2; color: #991b1b;">🔴 جديد</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('in_progress', this)" style="background-color: #fef3c7; color: #92400e;">🟠 قيد المعالجة</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('resolved', this)" style="background-color: #e0f2fe; color: #0369a1;">🔵 تم الحل</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('closed', this)" style="background-color: #d1fae5; color: #065f46;">🟢 مغلق</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('new', this)" style="background-color: transparent; color: #991b1b;">🔴 جديد</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('in_progress', this)" style="background-color: transparent; color: #92400e;">🟠 قيد المعالجة</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('resolved', this)" style="background-color: transparent; color: #0369a1;">🔵 تم الحل</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('closed', this)" style="background-color: transparent; color: #065f46;">🟢 مغلق</button>
                     </div>
                 </div>
 
