@@ -270,14 +270,14 @@
     </div>
 
     <div class="main-layout">
-        <!-- 1. لوحة إدخال البيانات (تظهر للموظفين فقط وتختفي عند دخول المدير) -->
+        <!-- 1. لوحة إدخال البيانات -->
         {% if user_role != 'admin' %}
         <div class="form-container">
             <div class="card">
                 <h4 class="card-title">لوحة إدخال البلاغ</h4>
                 
                 <div class="user-welcome-bar">
-                    <span>مرحباً بك، {{ logged_employee }} 👤</span>
+                    <span>مرحباً بك، {{ logged_employee }} 👤 {{ user_title }}</span>
                     <a href="/logout" class="logout-link">خروج</a>
                 </div>
 
@@ -356,7 +356,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <h4 class="card-title" style="margin-bottom:0; border-bottom:none;">السجلات</h4>
                     <div class="user-welcome-bar" style="margin-bottom:0;">
-                        <span>مرحباً بك، {{ logged_employee }} 👤 {% if user_role == 'admin' %}(حساب مدير - للاطلاع فقط){% endif %}</span>
+                        <span>مرحباً بك، {{ logged_employee }} 👤 {{ user_title }}</span>
                         <a href="/logout" class="logout-link">خروج</a>
                     </div>
                 </div>
@@ -445,7 +445,6 @@
                                 <td style="white-space:nowrap;">{{ record.get('service_name', '-') }}</td>
                                 <td style="white-space:nowrap;">{{ record.get('concerned_person', '-') }}</td>
                                 
-                                <!-- مربع الإجراء المتخذ -->
                                 <td>
                                     {% if user_role == 'admin' %}
                                         <span>{{ record.get('action_taken', '-') or '-' }}</span>
