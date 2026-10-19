@@ -16,19 +16,11 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXV
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # =========================
-# Meta WhatsApp Cloud API Configuration
+# Green API Configuration
 # =========================
-WHATSAPP_TOKEN = os.environ.get("WHATSAPP_TOKEN")
-PHONE_NUMBER_ID = "1370711846128093"
-
-WHATSAPP_RECIPIENTS = [
-    "966597070666",
-    "966508330343",
-    "966549098884",
-    "966569781804",
-    "966533385549",
-    "966591159111"
-]
+GREEN_API_INSTANCE_ID = os.environ.get("GREEN_API_INSTANCE_ID", "710722772629")
+GREEN_API_TOKEN = os.environ.get("GREEN_API_TOKEN")  # أضيفي رمز apiTokenInstance في متغيرات البيئة في Render
+WHATSAPP_GROUP_ID = os.environ.get("WHATSAPP_GROUP_ID", "120363044377285466@g.us")
 
 
 def get_next_ticket_number():
@@ -44,17 +36,14 @@ def get_next_ticket_number():
 
 
 def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ آلياً لكافة الأرقام المعتمدة"""
-    print("=== START WHATSAPP SENDING ===")
-    if not WHATSAPP_TOKEN or not PHONE_NUMBER_ID:
-        print("⚠️ التوكن أو رقم الهاتف غير متاحين!")
+    """دالة ترسل إشعار البلاغ آلياً لمجموعة الواتساب عبر Green API"""
+    print("=== START GREEN API WHATSAPP SENDING ===")
+    
+    if not GREEN_API_TOKEN:
+        print("⚠️ رمز Green API Token غير متاح! يرجى ضبط المتغير GREEN_API_TOKEN.")
         return
 
-    url = f"https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/messages"
-    headers = {
-        "Authorization": f"Bearer {WHATSAPP_TOKEN}",
-        "Content-Type": "application/json",
-    }
+    url = f"https://7107.api.greenapi.com/waInstance{GREEN_API_INSTANCE_ID}/sendMessage/{GREEN_API_TOKEN}"
 
     ticket_num = data.get("ticket_number", "-")
     patient_name = data.get("patient_name", "-")
@@ -74,22 +63,20 @@ def send_whatsapp_notification(data):
         f"موظف تجربة المريض / {employee_name}"
     )
 
-    for recipient in WHATSAPP_RECIPIENTS:
-        payload = {
-            "messaging_product": "whatsapp",
-            "to": recipient,
-            "type": "text",
-            "text": {
-                "body": message_text
-            }
-        }
+    payload = {
+        "chatId": WHATSAPP_GROUP_ID,
+        "message": message_text
+    }
 
-        try:
-            response = requests.post(url, headers=headers, json=payload, timeout=10)
-            # التعديل هنا لطباعة رد ميتا بالتفصيل لمعرفة سبب الخطأ 400
-            print(f"Meta API response for {recipient}: {response.status_code} - {response.text}")
-        except Exception as e:
-            print(f"❌ Exception caught while sending WhatsApp to {recipient}:", e)
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=10)
+        print(f"Green API Response: {response.status_code} - {response.text}")
+    except Exception as e:
+        print("❌ Exception caught while sending Green API WhatsApp message:", e)
 
 
 # =========================
