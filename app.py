@@ -12,7 +12,7 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://urnawuapfkhxvqvepzit.supa
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybmF3dWFwZmtoeHZxdmVweml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwOTU0MTAsImV4cCI6MjEwMzY3MTQxMH0.IfhRYq5D8072nOzJOMCW1A9c7i93D4mCd2I5Q3TJ-Kc")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# بيانات المستخدمين والصلاحيات المحدثة لجميع الموظفين والمشرفين والمدراء
+# بيانات المستخدمين والصلاحيات لجميع الموظفين والمشرفين والمدراء
 USERS = {
     "turky": {"password": "123", "role": "admin", "title": "مدير النظام", "can_edit": True},
     "mohd": {"password": "123", "role": "supervisor", "title": "مشرف أول", "can_edit": True},
@@ -59,7 +59,7 @@ def index():
     can_edit = session.get('can_edit', False)
     
     if request.method == 'POST' and can_edit:
-        action_type = request.form.get('action_type') # حفظ فقط أو حفظ وإرسال للقروب
+        action_type = request.form.get('action_type')
         
         ticket_number = request.form.get('ticket_number')
         file_number = request.form.get('file_number')
@@ -87,11 +87,13 @@ def index():
             # 1. حفظ السجل في قاعدة بيانات Supabase
             supabase.table("patient_records").insert(record_data).execute()
             
-            # 2. إرسال الإشعار آلياً للقروب في حال تم الضغط على زر "حفظ وإرسال"
+            # 2. إرسال الإشعار آلياً للقروب عبر Green-API مع فحص النتائج
             if action_type == 'save_and_send':
                 id_instance = os.environ.get("GREEN_API_ID_INSTANCE")
                 api_token = os.environ.get("GREEN_API_TOKEN")
                 chat_id = os.environ.get("WHATSAPP_GROUP_ID")
+                
+                print(f"DEBUG -> Instance: {id_instance}, ChatID: {chat_id}")
                 
                 if id_instance and api_token and chat_id:
                     url = f"https://api.green-api.com/waInstance{id_instance}/sendMessage/{api_token}"
@@ -113,7 +115,11 @@ def index():
                         "message": message_text
                     }
                     
-                    requests.post(url, json=payload)
+                    response = requests.post(url, json=payload)
+                    print(f"GREEN_API_STATUS: {response.status_code}")
+                    print(f"GREEN_API_TEXT: {response.text}")
+                else:
+                    print("ERROR: Missing Green-API environment variables in Render!")
                     
         except Exception as e:
             print(f"Error saving or sending record: {e}")
@@ -128,7 +134,6 @@ def index():
         print(f"Error fetching records: {e}")
         records = []
         
-    # حساب رقم البلاغ التالي
     next_ticket_number = "1"
     if records:
         try:
@@ -145,7 +150,6 @@ def index():
                            can_edit=can_edit,
                            next_ticket_number=next_ticket_number)
 
-# مسار حفظ الملاحظات والتوجيهات من النافذة المنبثقة أو تحديث الحالة مباشرة
 @app.route('/save-note', methods=['POST'])
 def save_note():
     if 'user' not in session:
