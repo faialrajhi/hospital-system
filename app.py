@@ -91,7 +91,7 @@ def index():
             if action_type == 'save_and_send':
                 id_instance = os.environ.get("GREEN_API_ID_INSTANCE")
                 api_token = os.environ.get("GREEN_API_TOKEN")
-                chat_id = os.environ.get("GREEN_API_CHAT_ID")
+                chat_id = os.environ.get("WHATSAPP_GROUP_ID")
                 
                 if id_instance and api_token and chat_id:
                     url = f"https://api.green-api.com/waInstance{id_instance}/sendMessage/{api_token}"
