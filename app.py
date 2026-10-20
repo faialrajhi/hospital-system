@@ -1,4 +1,5 @@
 import os
+import requests
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from datetime import datetime
 from supabase import create_client, Client
@@ -83,12 +84,39 @@ def index():
         }
         
         try:
+            # 1. حفظ السجل في قاعدة بيانات Supabase
             supabase.table("patient_records").insert(record_data).execute()
+            
+            # 2. إرسال الإشعار آلياً للقروب في حال تم الضغط على زر "حفظ وإرسال"
             if action_type == 'save_and_send':
-                # مكان ربط إرسال الواتساب/القروب مستقبلاً
-                pass
+                id_instance = os.environ.get("GREEN_API_ID_INSTANCE")
+                api_token = os.environ.get("GREEN_API_TOKEN")
+                chat_id = os.environ.get("GREEN_API_CHAT_ID")
+                
+                if id_instance and api_token and chat_id:
+                    url = f"https://api.green-api.com/waInstance{id_instance}/sendMessage/{api_token}"
+                    
+                    message_text = (
+                        f"🚨 *بلاغ جديد - وحدة الدعم المساندة*\n\n"
+                        f"📌 *رقم البلاغ:* {ticket_number}\n"
+                        f"📂 *رقم الملف:* {file_number}\n"
+                        f"👤 *اسم المبلغ:* {patient_name}\n"
+                        f"📝 *الموضوع:* {requested_service}\n"
+                        f"🏥 *القسم المعني:* {service_name}\n"
+                        f"👨‍⚕️ *الشخص المعني:* {concerned_person}\n"
+                        f"👤 *الموظف المسؤول:* {logged_employee}\n"
+                        f"📅 *التاريخ والوقت:* {record_date} {record_time}"
+                    )
+                    
+                    payload = {
+                        "chatId": chat_id,
+                        "message": message_text
+                    }
+                    
+                    requests.post(url, json=payload)
+                    
         except Exception as e:
-            print(f"Error saving record: {e}")
+            print(f"Error saving or sending record: {e}")
             
         return redirect(url_for('index'))
         
