@@ -192,22 +192,87 @@
             color: #888;
             padding: 15px;
         }
-        .topic-clamp {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 180px;
-            margin: 0 auto;
-            line-height: 1.3;
+        .patient-click {
+            color: #1F4E78;
+            font-weight: 700;
             cursor: pointer;
-            text-align: right;
+            text-decoration: underline;
         }
-        .topic-clamp.expanded {
-            -webkit-line-clamp: unset;
-            max-width: 100%;
+        .patient-click:hover {
+            color: #0ea5e9;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 550px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f0f4f8;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .modal-header h3 {
+            color: #1F4E78;
+            font-size: 1.2rem;
+        }
+        .close-btn {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: #000;
+        }
+        .notes-history {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+        }
+        .note-item {
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-right: 4px solid #1F4E78;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .note-author {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #0369a1;
+            margin-bottom: 3px;
+        }
+        .note-text {
+            font-size: 0.85rem;
+            color: #334155;
+        }
+
         .status-select-inline {
             padding: 4px 6px;
             border-radius: 6px;
@@ -263,14 +328,6 @@
         .filter-buttons button {
             width: auto;
             margin-top: 0;
-        }
-        .action-input {
-            width: 100%;
-            min-width: 130px;
-            padding: 4px 6px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 0.78rem;
         }
     </style>
 </head>
@@ -418,11 +475,11 @@
                                 <th>#</th>
                                 <th>رقم البلاغ</th>
                                 <th>رقم الملف</th>
-                                <th>اسم المبلغ</th>
+                                <th>اسم المبلغ (اضغط للتفاصيل)</th>
                                 <th style="min-width:160px;">الموضوع</th>
                                 <th>القسم المعني</th>
                                 <th>الشخص المعني</th>
-                                <th>الإجراء المتخذ</th>
+                                <th>الإجراء المتخذ / التوجيهات</th>
                                 <th>موظف تجربة المريض</th>
                                 <th>التاريخ</th>
                                 <th>الوقت</th>
@@ -452,21 +509,20 @@
                                 <td><strong>{{ records|length - loop.index0 }}</strong></td>
                                 <td class="col-ticket" style="white-space:nowrap;">{{ record.get('ticket_number', '-') }}</td>
                                 <td style="white-space:nowrap;">{{ record.get('file_number', '-') }}</td>
-                                <td style="white-space:nowrap; font-weight:700; color:#1F4E78;">{{ record.get('patient_name', '-') }}</td>
-                                <td>
-                                    <div class="topic-clamp" onclick="toggleTopic(this)" title="اضغط لتوسيع/طي النص">
-                                        {{ record.get('requested_service', '-') }}
-                                    </div>
+                                
+                                <!-- عند الضغط على الاسم تفتح الملاحظات والنوت -->
+                                <td style="white-space:nowrap;">
+                                    <span class="patient-click" onclick="openNotesModal('{{ record.get('id') }}', '{{ record.get('patient_name') }}', '{{ record.get('action_notes', '') }}')">
+                                        {{ record.get('patient_name', '-') }} 📝
+                                    </span>
                                 </td>
+
+                                <td>{{ record.get('requested_service', '-') }}</td>
                                 <td style="white-space:nowrap;">{{ record.get('service_name', '-') }}</td>
                                 <td style="white-space:nowrap;">{{ record.get('concerned_person', '-') }}</td>
                                 
-                                <td>
-                                    {% if user_role == 'admin' %}
-                                        <span>{{ record.get('action_taken', '-') or '-' }}</span>
-                                    {% else %}
-                                        <input type="text" class="action-input" value="{{ record.get('action_taken', '') }}" placeholder="اكتب الإجراء..." onchange="updateActionDirectly('{{ record.get('id') }}', this)">
-                                    {% endif %}
+                                <td style="max-width:200px; font-size:0.78rem; text-align:right;" id="action-cell-{{ record.get('id') }}">
+                                    {{ record.get('action_notes', 'لا يوجد إجراء بعد') }}
                                 </td>
 
                                 <td style="white-space:nowrap;">{{ record.get('employee_name', '-') }}</td>
@@ -486,7 +542,30 @@
     </div>
 </div>
 
+<!-- Modal النوت والإجراء المتخذ -->
+<div id="notesModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalPatientTitle">ملاحظات وإجراءات البلاغ</h3>
+            <span class="close-btn" onclick="closeNotesModal()">&times;</span>
+        </div>
+        
+        <label>سجل الإجراءات والتوجيهات السابقة:</label>
+        <div class="notes-history" id="modalNotesHistory">
+            <!-- يتم تحميل الملاحظات هنا تلقائياً -->
+        </div>
+
+        <div class="mb-3">
+            <label id="noteInputLabel">إضافة إجراء جديد / تعليق المدير والمشرفين:</label>
+            <textarea id="newNoteInput" class="form-control" rows="3" placeholder="اكتب الإجراء المتخذ أو تعليقك هنا..."></textarea>
+        </div>
+
+        <button type="button" class="btn btn-send" onclick="saveNoteFromModal()">حفظ الملاحظة / الإجراء</button>
+    </div>
+</div>
+
 <script>
+    let currentRecordId = null;
     let currentStatusFilter = 'all';
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -502,8 +581,55 @@
         document.getElementById('action_type').value = actionType;
     }
 
-    function toggleTopic(element) {
-        element.classList.toggle('expanded');
+    function openNotesModal(recordId, patientName, actionNotes) {
+        currentRecordId = recordId;
+        document.getElementById('modalPatientTitle').innerText = 'الإجراءات والتوجيهات - البلاغ: ' + patientName;
+        document.getElementById('newNoteInput').value = '';
+
+        const historyDiv = document.getElementById('modalNotesHistory');
+        if (actionNotes && actionNotes.trim() !== '') {
+            historyDiv.innerHTML = `<div class="note-item"><div class="note-text">${actionNotes}</div></div>`;
+        } else {
+            historyDiv.innerHTML = '<div style="color:#888; font-size:0.8rem; text-align:center;">لا يوجد إجراء متخذ مدون حالياً.</div>';
+        }
+
+        document.getElementById('notesModal').style.display = 'flex';
+    }
+
+    function closeNotesModal() {
+        document.getElementById('notesModal').style.display = 'none';
+    }
+
+    function saveNoteFromModal() {
+        const noteText = document.getElementById('newNoteInput').value.trim();
+        if (!noteText) {
+            alert('يرجى كتابة نص الإجراء أو التعليق أولاً.');
+            return;
+        }
+
+        fetch('/save-note', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                record_id: currentRecordId, 
+                action_notes: noteText 
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // تحديث الخلية في الجدول مباشرة
+                document.getElementById('action-cell-' + currentRecordId).innerText = data.updated_notes || noteText;
+                closeNotesModal();
+                alert('تم حفظ الإجراء/التوجيه بنجاح!');
+            } else {
+                alert('خطأ في حفظ الملاحظة: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء الاتصال بالخادم.');
+        });
     }
 
     function filterByStatus(status, btnElement) {
@@ -530,26 +656,6 @@
                 applyFilters();
             } else {
                 alert('خطأ في تحديث الحالة: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('حدث خطأ أثناء الاتصال بالخادم.');
-        });
-    }
-
-    function updateActionDirectly(recordId, inputElement) {
-        const actionText = inputElement.value;
-
-        fetch('/save-note', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ record_id: recordId, action_taken: actionText })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                alert('خطأ في حفظ الإجراء المتخذ: ' + data.message);
             }
         })
         .catch(error => {
