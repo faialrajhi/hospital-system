@@ -38,7 +38,7 @@
             min-height: 80px;
         }
         .header-banner img {
-            height: 230px;
+            height: 60px;
             width: auto;
             position: absolute;
             right: 20px;
@@ -120,20 +120,33 @@
             border-color: #1F4E78;
             box-shadow: 0 0 0 3px rgba(31, 78, 120, 0.12);
         }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
         .btn {
             width: 100%;
             padding: 8px;
             border: none;
             border-radius: 6px;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             font-weight: 700;
             cursor: pointer;
             transition: background 0.2s;
-            margin-top: 5px;
+        }
+        .btn-save {
+            background-color: #64748b;
+            color: #ffffff;
+        }
+        .btn-save:hover {
+            background-color: #475569;
+        }
+        .btn-send {
             background-color: #38bdf8;
             color: #0f172a;
         }
-        .btn:hover {
+        .btn-send:hover {
             background-color: #0ea5e9;
             color: #fff;
         }
@@ -195,7 +208,6 @@
             -webkit-line-clamp: unset;
             max-width: 100%;
         }
-        
         .status-select-inline {
             padding: 4px 6px;
             border-radius: 6px;
@@ -282,7 +294,8 @@
                 </div>
 
                 <form id="patientForm" action="/" method="POST">
-                    
+                    <input type="hidden" id="action_type" name="action_type" value="save_only">
+
                     <div class="mb-3">
                         <label>رقم البلاغ</label>
                         <input type="text" id="ticket_number" name="ticket_number" class="form-control" value="{{ next_ticket_number }}" placeholder="مثال: 1, 2, 3..." required>
@@ -344,7 +357,10 @@
 
                     <input type="hidden" name="employee_name" value="{{ logged_employee }}">
 
-                    <button type="submit" class="btn" onclick="setDateTimeAndSubmit()">حفظ السجل وإرسال الإشعار آلياً</button>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-save" onclick="setDateTimeAndSubmit('save_only')">حفظ بالسجل فقط</button>
+                        <button type="submit" class="btn btn-send" onclick="setDateTimeAndSubmit('save_and_send')">حفظ وإرسال الإشعار آلياً</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -477,12 +493,13 @@
         applyDefault12HourFilter();
     });
 
-    function setDateTimeAndSubmit() {
+    function setDateTimeAndSubmit(actionType) {
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
         const timeStr = now.toTimeString().split(' ')[0];
         document.getElementById('record_date').value = dateStr;
         document.getElementById('record_time').value = timeStr;
+        document.getElementById('action_type').value = actionType;
     }
 
     function toggleTopic(element) {
