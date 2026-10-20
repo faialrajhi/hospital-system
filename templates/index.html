@@ -587,8 +587,8 @@
         document.getElementById('newNoteInput').value = '';
 
         const historyDiv = document.getElementById('modalNotesHistory');
-        if (actionNotes && actionNotes.trim() !== '') {
-            historyDiv.innerHTML = `<div class="note-item"><div class="note-text">${actionNotes}</div></div>`;
+if (actionNotes && actionNotes.trim() !== '' && actionNotes.trim().toLowerCase() !== 'none') {
+        historyDiv.innerHTML = `<div class="note-item"><div class="note-text">${actionNotes}</div></div>`;
         } else {
             historyDiv.innerHTML = '<div style="color:#888; font-size:0.8rem; text-align:center;">لا يوجد إجراء متخذ مدون حالياً.</div>';
         }
