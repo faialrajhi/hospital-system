@@ -99,15 +99,15 @@ def index():
                     url = f"https://api.green-api.com/waInstance{id_instance}/sendMessage/{api_token}"
                     
                     message_text = (
-                        f"🚨 *بلاغ جديد - وحدة الدعم المساندة*\n\n"
-                        f"📌 *رقم البلاغ:* {ticket_number}\n"
-                        f"📂 *رقم الملف:* {file_number}\n"
-                        f"👤 *اسم المبلغ:* {patient_name}\n"
-                        f"📝 *الموضوع:* {requested_service}\n"
-                        f"🏥 *القسم المعني:* {service_name}\n"
-                        f"👨‍⚕️ *الشخص المعني:* {concerned_person}\n"
-                        f"👤 *الموظف المسؤول:* {logged_employee}\n"
-                        f"📅 *التاريخ والوقت:* {record_date} {record_time}"
+                        f"*بلاغ جديد*\n\n"
+                        f"*رقم البلاغ:* {ticket_number}\n"
+                        f"*رقم الملف:* {file_number}\n"
+                        f"*اسم المبلغ:* {patient_name}\n"
+                        f"*الموضوع:* {requested_service}\n"
+                        f"*القسم المعني:* {service_name}\n"
+                        f"*الشخص المعني:* {concerned_person}\n"
+                        f"*الموظف المسؤول:* {logged_employee}\n"
+                        f"*التاريخ والوقت:* {record_date} {record_time}"
                     )
                     
                     payload = {
