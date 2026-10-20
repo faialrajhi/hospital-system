@@ -11,19 +11,17 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://your-supabase-url.supabas
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "your-supabase-key")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# بيانات المستخدمين والصلاحيات
+# بيانات المستخدمين والصلاحيات المحدثة لجميع الموظفين والمشرفين والمدراء
 USERS = {
     "turky": {"password": "123", "role": "admin", "title": "مدير النظام", "can_edit": True},
     "mohd": {"password": "123", "role": "supervisor", "title": "مشرف أول", "can_edit": True},
     "raja": {"password": "123", "role": "supervisor", "title": "مشرف", "can_edit": False},
     "hosam": {"password": "123", "role": "supervisor", "title": "مشرف", "can_edit": False},
-    "ibrahim": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
-    "saleh": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
-    "ahlam": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
-    "maatouq": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
-    "saleem": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
-    "fowzi": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
-    "rami": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True}
+    "abdullah": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
+    "ahmed": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
+    "ebtisam": {"password": "123", "role": "employee", "title": "موظفة", "can_edit": True},
+    "nozha": {"password": "123", "role": "employee", "title": "موظفة", "can_edit": True},
+    "khaled": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True}
 }
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -166,7 +164,6 @@ def save_note():
 
 @app.route('/export-excel')
 def export_excel():
-    # دالة التصدير إن وجدت لديك
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
