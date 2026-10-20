@@ -1,237 +1,111 @@
-from datetime import datetime
-import io
 import os
-from flask import Flask, jsonify, redirect, render_template, request, send_file, url_for, session
-import pandas as pd
-import requests
-from supabase import Client, create_client
+from flask import Flask, render_template, request, redirect, url_for, session
+from datetime import datetime
+from supabase import create_client, Client
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "hospital_937_secret_key_2026")
+app.secret_key = os.environ.get('SECRET_KEY', 'support_unit_secret_key_123')
 
-# =========================
-# قائمة المستخدمين
-# =========================
-USERS = {
-    # الموظفون (إدخال وتعديل)
-    "abdullah": {"password": "123", "name": "عبدالله الزهراني", "role": "employee", "title": ""},
-    "ahmed": {"password": "123", "name": "احمد عيسى", "role": "employee", "title": ""},
-    "ebtisam": {"password": "123", "name": "ابتسام المغامسي", "role": "employee", "title": ""},
-    "nozha": {"password": "123", "name": "نزهه السلولي", "role": "employee", "title": ""},
-    "khaled": {"password": "123", "name": "خالد الزهراني", "role": "employee", "title": ""},
-    
-    # المشرفون والمدراء (اطلاع فقط)
-    "mohd": {"password": "123", "name": "محمد", "role": "admin", "title": ""},
-    "turky": {"password": "123", "name": "تركي", "role": "admin", "title": "(مدير)"},
-    "raja": {"password": "123", "name": "رجاء", "role": "admin", "title": ""},
-    "hosam": {"password": "123", "name": "حسام", "role": "admin", "title": ""}
-}
-
-# =========================
-# Supabase Configuration
-# =========================
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://urnawuapfkhxvqvepzit.supabase.co")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybmF3dWFwZmtoeHZxdmVweml0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODA5NTQxMCwiZXhwIjoyMTAzNjcxNDEwfQ.hg8Ki6qvoI_Fhammt_87t-HfTZPSdvl6nYn5bUtThzo")
+# إعدادات اتصال Supabase
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://your-supabase-url.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "your-supabase-key")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# =========================
-# Green API Configuration
-# =========================
-GREEN_API_INSTANCE_ID = os.environ.get("GREEN_API_INSTANCE_ID", "710722772629")
-GREEN_API_TOKEN = os.environ.get("GREEN_API_TOKEN2", os.environ.get("GREEN_API_TOKEN", "e2ff31ea0b24f838a230552e4acabd61fd93c37be6d408ebd"))
-WHATSAPP_GROUP_ID = os.environ.get("WHATSAPP_GROUP_ID", "120363044377285466@g.us")
+# بيانات المستخدمين والصلاحيات
+USERS = {
+    "turky": {"password": "123", "role": "Admin", "can_edit": True},
+    "mohd": {"password": "123", "role": "Supervisor", "can_edit": True},
+    "raja": {"password": "123", "role": "Supervisor", "can_edit": False},
+    "hosam": {"password": "123", "role": "Supervisor", "can_edit": False},
+    "ibrahim": {"password": "123", "role": "Employee", "can_edit": True},
+    "saleh": {"password": "123", "role": "Employee", "can_edit": True},
+    "ahlam": {"password": "123", "role": "Employee", "can_edit": True},
+    "maatouq": {"password": "123", "role": "Employee", "can_edit": True},
+    "saleem": {"password": "123", "role": "Employee", "can_edit": True},
+    "fowzi": {"password": "123", "role": "Employee", "can_edit": True},
+    "rami": {"password": "123", "role": "Employee", "can_edit": True}
+}
 
-
-def get_next_ticket_number():
-    """يحسب رقم البلاغ التالي بدقة بناءً على عدد السجلات الفعلية + 1"""
-    try:
-        response = supabase.table("patient_records").select("id", count="exact").execute()
-        total_records = len(response.data) if response.data else 0
-        next_id = total_records + 1
-        return f"B{next_id}"
-    except Exception as e:
-        print("Error calculating next ticket number:", e)
-        return "B1"
-
-
-def send_whatsapp_notification(data):
-    """دالة ترسل إشعار البلاغ آلياً لمجموعة الواتساب عبر Green API"""
-    if not GREEN_API_TOKEN:
-        return
-
-    url = f"https://7107.api.greenapi.com/waInstance{GREEN_API_INSTANCE_ID}/sendMessage/{GREEN_API_TOKEN}"
-
-    message_text = (
-        f"رقم البلاغ/ {data.get('ticket_number', '-')}\n"
-        f"اسم المستفيد / {data.get('patient_name', '-')}\n"
-        f"رقم الملف/ {data.get('file_number', '-')}\n"
-        f"الموضوع / {data.get('requested_service', '-')}\n"
-        f"القسم / {data.get('service_name', '-')}\n"
-        f"الشخص المعني / {data.get('concerned_person', '-')}\n"
-        f"موظف تجربة المريض / {data.get('employee_name', '-')}"
-    )
-
-    payload = {"chatId": WHATSAPP_GROUP_ID, "message": message_text}
-    headers = {"Content-Type": "application/json"}
-
-    try:
-        requests.post(url, headers=headers, json=payload, timeout=10)
-    except Exception as e:
-        print("❌ Error sending WhatsApp message:", e)
-
-
-# =========================
-# مسار تسجيل الدخول Login
-# =========================
-@app.route("/login", methods=["GET", "POST"])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == "POST":
-        username = request.form.get("username", "").strip().lower()
-        password = request.form.get("password", "").strip()
-
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('username').strip().lower()
+        password = request.form.get('password')
+        
         if username in USERS and USERS[username]["password"] == password:
-            session["user"] = username
-            session["employee_name"] = USERS[username]["name"]
-            session["role"] = USERS[username]["role"]
-            session["user_title"] = USERS[username]["title"]
-            return redirect(url_for("index"))
+            session['user'] = username
+            session['role'] = USERS[username]["role"]
+            session['can_edit'] = USERS[username]["can_edit"]
+            return redirect(url_for('index'))
         else:
-            return render_template("login.html", error="اسم المستخدم أو كلمة المرور غير صحيحة")
+            error = 'اسم المستخدم أو كلمة المرور غير صحيحة'
+            
+    return render_template('login.html', error=error)
 
-    return render_template("login.html")
-
-
-# =========================
-# تسجيل الخروج Logout
-# =========================
-@app.route("/logout")
+@app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for("login"))
+    return redirect(url_for('login'))
 
-
-# =========================
-# الصفحة الرئيسية (محمية بتسجيل الدخول)
-# =========================
-@app.route("/", methods=["GET", "POST"])
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    if "user" not in session:
-        return redirect(url_for("login"))
-
-    if request.method == "POST":
-        if session.get("role") == "admin":
-            return jsonify({"success": False, "message": "عذراً، هذا الحساب غير مصرح له بإنشاء بلاغات."}), 403
-
-        form_data = request.form
-        ticket_number = get_next_ticket_number()
-        logged_emp_name = session.get("employee_name", "موظف النظام")
-
-        record = {
-            "ticket_number": ticket_number,
-            "patient_name": form_data.get("patient_name"),
-            "national_id": form_data.get("national_id", "0000000000"),
-            "file_number": form_data.get("file_number", "-"),
-            "patient_phone": form_data.get("patient_phone", "0500000000"),
-            "requested_service": form_data.get("requested_service"),
-            "service_name": form_data.get("service_name"),
-            "concerned_person": form_data.get("concerned_person", "-"),
-            "employee_name": logged_emp_name,
-            "record_date": form_data.get("record_date"),
-            "record_time": form_data.get("record_time"),
-            "status": "new",
-            "action_taken": ""
-        }
-        try:
-            supabase.table("patient_records").insert(record).execute()
-            send_whatsapp_notification(record)
-            return redirect(url_for("index"))
-        except Exception as e:
-            return jsonify({"success": False, "message": str(e)}), 500
-
-    try:
-        response = supabase.table("patient_records").select("*").order("id", desc=True).execute()
-        records = response.data or []
-    except Exception as e:
-        records = []
-
-    next_ticket_number = get_next_ticket_number()
-
-    return render_template(
-        "index.html", 
-        records=records, 
-        next_ticket_number=next_ticket_number, 
-        logged_employee=session.get("employee_name"),
-        user_role=session.get("role", "employee"),
-        user_title=session.get("user_title", "")
-    )
-
-
-# =========================
-# تصدير ملف Excel
-# =========================
-@app.route("/export-excel", methods=["GET"])
-def export_excel():
-    if "user" not in session:
-        return redirect(url_for("login"))
-
-    try:
-        response = supabase.table("patient_records").select("*").order("id", desc=True).execute()
-        records = response.data or []
-
-        if not records:
-            return jsonify({"success": False, "message": "لا توجد سجلات."}), 404
-
-        formatted_data = []
-        for r in records:
-            formatted_data.append({
-                "حالة البلاغ": r.get("status", "-"),
-                "رقم البلاغ": r.get("ticket_number", "-"),
-                "رقم الملف": r.get("file_number", "-"),
-                "اسم المبلغ": r.get("patient_name", "-"),
-                "الموضوع": r.get("requested_service", "-"),
-                "القسم المعني": r.get("service_name", "-"),
-                "الشخص المعني": r.get("concerned_person", "-"),
-                "الإجراء المتخذ": r.get("action_taken", "-"),
-                "موظف تجربة المريض": r.get("employee_name", "-"),
-                "التاريخ": r.get("record_date", "-"),
-                "الوقت": r.get("record_time", "-")
-            })
-
-        df = pd.DataFrame(formatted_data)
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='بلاغات 937')
-        output.seek(0)
-
-        return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name='hospital_records_937.xlsx')
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
-
-
-# =========================
-# حفظ تحديث الحالة والإجراء المتخذ
-# =========================
-@app.route("/save-note", methods=["POST"])
-def save_note():
-    if "user" not in session:
-        return jsonify({"success": False, "message": "غير مصرح."}), 401
+    if 'user' not in session:
+        return redirect(url_for('login'))
+        
+    logged_employee = session['user']
+    can_edit = session.get('can_edit', False)
     
-    if session.get("role") == "admin":
-        return jsonify({"success": False, "message": "عذراً، هذا الحساب غير مصرح له بتعديل الحالات."}), 403
-
+    if request.method == 'POST' and can_edit:
+        action_type = request.form.get('action_type') # يحدد نوع الزر (حفظ فقط أم حفظ وإرسال)
+        
+        patient_name = request.form.get('patient_name')
+        file_number = request.form.get('file_number')
+        national_id = request.form.get('national_id')
+        patient_phone = request.form.get('patient_phone')
+        requested_service = request.form.get('service_type')
+        service_name = request.form.get('department')
+        action_notes = request.form.get('notes')
+        record_date = request.form.get('record_date') or datetime.now().strftime('%Y-%m-%d')
+        record_time = request.form.get('record_time') or datetime.now().strftime('%H:%M:%S')
+        
+        # تجهيز البيانات بأسماء الأعمدة المطابقة لـ Supabase 100%
+        record_data = {
+            "patient_name": patient_name,
+            "file_number": file_number,
+            "national_id": national_id,
+            "patient_phone": patient_phone,
+            "requested_service": requested_service,
+            "service_name": service_name,
+            "action_notes": action_notes,
+            "employee_name": logged_employee,
+            "record_date": record_date,
+            "record_time": record_time
+        }
+        
+        try:
+            # حفظ البيانات في Supabase
+            supabase.table("patient_records").insert(record_data).execute()
+            
+            # إذا ضغط المستخدم على "حفظ وإرسال للقروب" ينفذ الإرسال للقروب
+            if action_type == 'save_and_send':
+                # يمكن ربطه بشرائح إرسال الواتساب/القروب مستقبلاً
+                pass
+                
+        except Exception as e:
+            print(f"Error saving record: {e}")
+            
+        return redirect(url_for('index'))
+        
+    # جلب السجلات للعرض
     try:
-        data = request.get_json()
-        update_data = {}
-        if "status" in data:
-            update_data["status"] = data["status"]
-        if "action_taken" in data:
-            update_data["action_taken"] = data["action_taken"]
-
-        supabase.table("patient_records").update(update_data).eq("id", data.get("record_id")).execute()
-        return jsonify({"success": True})
+        response = supabase.table("patient_records").select("*").order("id", desc=True).execute()
+        records = response.data if response.data else []
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+        print(f"Error fetching records: {e}")
+        records = []
+        
+    return render_template('index.html', records=records, logged_employee=logged_employee, can_edit=can_edit)
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
