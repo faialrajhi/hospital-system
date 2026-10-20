@@ -8,8 +8,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'support_unit_secret_key_123')
 
 # إعدادات اتصال Supabase
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://your-supabase-url.supabase.co")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "your-supabase-key")
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://urnawuapfkhxvqvepzit.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybmF3dWFwZmtoeHZxdmVweml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwOTU0MTAsImV4cCI6MjEwMzY3MTQxMH0.IfhRYq5D8072nOzJOMCW1A9c7i93D4mCd2I5Q3TJ-Kc")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # بيانات المستخدمين والصلاحيات المحدثة لجميع الموظفين والمشرفين والمدراء
