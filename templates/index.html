@@ -284,10 +284,8 @@
             cursor: pointer;
             background-color: transparent !important;
         }
-        .status-new { color: #991b1b; }
-        .status-in_progress { color: #92400e; }
-        .status-resolved { color: #0369a1; }
-        .status-closed { color: #065f46; }
+        .status-closed_satisfied { color: #065f46; }
+        .status-closed_unsatisfied { color: #6c757d; }
 
         .search-filter-box {
             background-color: #f8fafc;
@@ -461,10 +459,8 @@
                     <div class="status-filter-bar">
                         <span style="font-size:0.78rem; font-weight:700; color:#34495e; margin-left: 4px;">فلترة بالحالة:</span>
                         <button type="button" class="filter-status-btn active" onclick="filterByStatus('all', this)" style="background-color: #1F4E78; color: #fff;">الكل</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('new', this)" style="background-color: transparent; color: #991b1b;">🔴 جديد</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('in_progress', this)" style="background-color: transparent; color: #92400e;">🟠 قيد المعالجة</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('resolved', this)" style="background-color: transparent; color: #0369a1;">🔵 تم الحل</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('closed', this)" style="background-color: transparent; color: #065f46;">🟢 مغلق</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('مغلق راضي', this)" style="background-color: transparent; color: #065f46;">🟢 مغلق راضي</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('مغلق غير راضي', this)" style="background-color: transparent; color: #6c757d;">⚪️ مغلق غير راضي</button>
                     </div>
                 </div>
 
@@ -488,22 +484,17 @@
                         </thead>
                         <tbody>
                             {% for record in records %}
-                            {% set current_status = record.get('status', 'new') %}
+                            {% set current_status = record.get('status', 'مغلق راضي') %}
                             <tr data-status="{{ current_status }}">
                                 <td>
                                     {% if user_role == 'admin' %}
-                                        <span class="status-select-inline status-{{ current_status }}">
-                                            {% if current_status == 'new' %}🔴 جديد
-                                            {% elif current_status == 'in_progress' %}🟠 قيد المعالجة
-                                            {% elif current_status == 'resolved' %}🔵 تم الحل
-                                            {% elif current_status == 'closed' %}🟢 مغلق{% endif %}
+                                        <span class="status-select-inline {% if current_status == 'مغلق غير راضي' %}status-closed_unsatisfied{% else %}status-closed_satisfied{% endif %}">
+                                            {% if current_status == 'مغلق غير راضي' %}⚪️ مغلق غير راضي{% else %}🟢 مغلق راضي{% endif %}
                                         </span>
                                     {% else %}
-                                        <select class="status-select-inline status-{{ current_status }}" onchange="updateStatusDirectly('{{ record.get('id') }}', this)">
-                                            <option value="new" {% if current_status == 'new' %}selected{% endif %}>🔴 جديد</option>
-                                            <option value="in_progress" {% if current_status == 'in_progress' %}selected{% endif %}>🟠 قيد المعالجة</option>
-                                            <option value="resolved" {% if current_status == 'resolved' %}selected{% endif %}>🔵 تم الحل</option>
-                                            <option value="closed" {% if current_status == 'closed' %}selected{% endif %}>🟢 مغلق</option>
+                                        <select class="status-select-inline {% if current_status == 'مغلق غير راضي' %}status-closed_unsatisfied{% else %}status-closed_satisfied{% endif %}" onchange="updateStatusDirectly('{{ record.get('id') }}', this)">
+                                            <option value="مغلق راضي" {% if current_status == 'مغلق راضي' %}selected{% endif %}>🟢 مغلق راضي</option>
+                                            <option value="مغلق غير راضي" {% if current_status == 'مغلق غير راضي' %}selected{% endif %}>⚪️ مغلق غير راضي</option>
                                         </select>
                                     {% endif %}
                                 </td>
@@ -511,7 +502,6 @@
                                 <td class="col-ticket" style="white-space:nowrap;">{{ record.get('ticket_number', '-') }}</td>
                                 <td style="white-space:nowrap;">{{ record.get('file_number', '-') }}</td>
                                 
-                                <!-- عند الضغط على الاسم تفتح الملاحظات والنوت -->
                                 <td style="white-space:nowrap;">
                                     <span class="patient-click" onclick="openNotesModal('{{ record.get('id') }}', '{{ record.get('patient_name') }}', '{{ record.get('action_notes', '') }}')">
                                         {{ record.get('patient_name', '-') }} 📝
@@ -623,7 +613,6 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // تحديث الخلية في الجدول مباشرة
                 document.getElementById('action-cell-' + currentRecordId).innerText = data.updated_notes || noteText;
                 closeNotesModal();
                 alert('تم حفظ الإجراء/التوجيه بنجاح!');
@@ -657,7 +646,7 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                selectElement.className = "status-select-inline status-" + newStatus;
+                selectElement.className = "status-select-inline " + (newStatus === 'مغلق غير راضي' ? 'status-closed_unsatisfied' : 'status-closed_satisfied');
                 applyFilters();
             } else {
                 alert('خطأ في تحديث الحالة: ' + data.message);
