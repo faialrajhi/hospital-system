@@ -80,7 +80,7 @@ def index():
             "employee_name": logged_employee,
             "record_date": record_date,
             "record_time": record_time,
-            "status": "new"
+            "status": "مغلق راضي"  # الحالة الافتراضية للبلاغات الجديدة
         }
         
         try:
