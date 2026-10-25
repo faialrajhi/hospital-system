@@ -12,17 +12,17 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://urnawuapfkhxvqvepzit.supa
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybmF3dWFwZmtoeHZxdmVweml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwOTU0MTAsImV4cCI6MjEwMzY3MTQxMH0.IfhRYq5D8072nOzJOMCW1A9c7i93D4mCd2I5Q3TJ-Kc")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# بيانات المستخدمين والصلاحيات لجميع الموظفين والمشرفين والمدراء
+# بيانات المستخدمين والصلاحيات مع تحديد الاسم الكامل للمدير وباقي الموظفين
 USERS = {
-    "turky": {"password": "123", "role": "admin", "title": "مدير النظام", "can_edit": True},
-    "mohd": {"password": "123", "role": "supervisor", "title": "مشرف أول", "can_edit": True},
-    "raja": {"password": "123", "role": "supervisor", "title": "مشرف", "can_edit": False},
-    "hosam": {"password": "123", "role": "supervisor", "title": "مشرف", "can_edit": False},
-    "abdullah": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
-    "ahmed": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True},
-    "ebtisam": {"password": "123", "role": "employee", "title": "موظفة", "can_edit": True},
-    "nozha": {"password": "123", "role": "employee", "title": "موظفة", "can_edit": True},
-    "khaled": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True}
+    "turky": {"password": "123", "role": "admin", "title": "مدير النظام", "can_edit": True, "full_name": "تركي محمد المولد"},
+    "mohd": {"password": "123", "role": "supervisor", "title": "مشرف أول", "can_edit": True, "full_name": "محمد"},
+    "raja": {"password": "123", "role": "supervisor", "title": "مشرف", "can_edit": False, "full_name": "رجا"},
+    "hosam": {"password": "123", "role": "supervisor", "title": "مشرف", "can_edit": False, "full_name": "حسام"},
+    "abdullah": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True, "full_name": "عبدالله"},
+    "ahmed": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True, "full_name": "أحمد"},
+    "ebtisam": {"password": "123", "role": "employee", "title": "موظفة", "can_edit": True, "full_name": "ابتسام"},
+    "nozha": {"password": "123", "role": "employee", "title": "موظفة", "can_edit": True, "full_name": "نزهة"},
+    "khaled": {"password": "123", "role": "employee", "title": "موظف", "can_edit": True, "full_name": "خالد"}
 }
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -37,6 +37,8 @@ def login():
             session['role'] = USERS[username]["role"]
             session['user_title'] = USERS[username]["title"]
             session['can_edit'] = USERS[username]["can_edit"]
+            # تخزين الاسم الكامل في الجلسة لاستخدامه في العرض والملاحظات
+            session['full_name'] = USERS[username].get("full_name", username)
             return redirect(url_for('index'))
         else:
             error = 'اسم المستخدم أو كلمة المرور غير صحيحة'
@@ -53,7 +55,8 @@ def index():
     if 'user' not in session:
         return redirect(url_for('login'))
         
-    logged_employee = session['user']
+    # جلب الاسم الكامل للمستخدم المسجل حالياً
+    logged_employee = session.get('full_name', session.get('user'))
     user_role = session.get('role', 'employee')
     user_title = session.get('user_title', 'موظف')
     can_edit = session.get('can_edit', False)
@@ -160,7 +163,7 @@ def save_note():
     new_action_note = data.get('action_notes')
     status = data.get('status')
     
-    logged_user = session.get('user', 'مستخدم')
+    logged_user = session.get('full_name', session.get('user', 'مستخدم'))
     role_title = session.get('user_title', 'موظف')
     current_time_str = datetime.now().strftime('%Y-%m-%d %H:%M')
     
