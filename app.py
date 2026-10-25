@@ -12,9 +12,9 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://urnawuapfkhxvqvepzit.supa
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybmF3dWFwZmtoeHZxdmVweml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwOTU0MTAsImV4cCI6MjEwMzY3MTQxMH0.IfhRYq5D8072nOzJOMCW1A9c7i93D4mCd2I5Q3TJ-Kc")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# بيانات المستخدمين والصلاحيات مع تحديد الاسم الكامل للمدير وباقي الموظفين
+# بيانات المستخدمين والصلاحيات (تم ضبط تركي ليكون له دور يتيح له الإدخال والتعديل الكامل)
 USERS = {
-    "turky": {"password": "123", "role": "admin", "title": "مدير النظام", "can_edit": True, "full_name": "تركي محمد المولد"},
+    "turky": {"password": "123", "role": "employee", "title": "مدير النظام", "can_edit": True, "full_name": "تركي محمد المولد"},
     "mohd": {"password": "123", "role": "supervisor", "title": "مشرف أول", "can_edit": True, "full_name": "محمد"},
     "raja": {"password": "123", "role": "supervisor", "title": "مشرف", "can_edit": False, "full_name": "رجا"},
     "hosam": {"password": "123", "role": "supervisor", "title": "مشرف", "can_edit": False, "full_name": "حسام"},
@@ -37,7 +37,6 @@ def login():
             session['role'] = USERS[username]["role"]
             session['user_title'] = USERS[username]["title"]
             session['can_edit'] = USERS[username]["can_edit"]
-            # تخزين الاسم الكامل في الجلسة لاستخدامه في العرض والملاحظات
             session['full_name'] = USERS[username].get("full_name", username)
             return redirect(url_for('index'))
         else:
@@ -55,7 +54,6 @@ def index():
     if 'user' not in session:
         return redirect(url_for('login'))
         
-    # جلب الاسم الكامل للمستخدم المسجل حالياً
     logged_employee = session.get('full_name', session.get('user'))
     user_role = session.get('role', 'employee')
     user_title = session.get('user_title', 'موظف')
@@ -83,7 +81,7 @@ def index():
             "employee_name": logged_employee,
             "record_date": record_date,
             "record_time": record_time,
-            "status": "مغلق راضي"  # الحالة الافتراضية للبلاغات الجديدة
+            "status": "مغلق راضي"
         }
         
         try:
