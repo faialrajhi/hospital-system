@@ -38,7 +38,7 @@
             min-height: 80px;
         }
         .header-banner img {
-            height: 195px;
+            height: 60px;
             width: auto;
             position: absolute;
             right: 20px;
@@ -316,6 +316,9 @@
             background-color: #fff;
             cursor: pointer;
             transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
         .filter-status-btn:hover {
             opacity: 0.85;
@@ -323,6 +326,14 @@
         .filter-status-btn.active {
             border-color: #1F4E78;
             box-shadow: 0 0 0 2px rgba(31,78,120,0.2);
+        }
+        /* كلاس العداد بجانب الحالة */
+        .count-badge {
+            background-color: rgba(0,0,0,0.08);
+            padding: 1px 5px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 800;
         }
         .filter-buttons {
             display: flex;
@@ -430,7 +441,7 @@
         <div class="table-container">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h4 class="card-title" style="margin-bottom:0; border-bottom:none;">السجلات</h4>
+                    <h4 class="card-title" style="margin-bottom:0; border-bottom:none;">السجلات والإحصائيات اليومية</h4>
                     <div class="user-welcome-bar" style="margin-bottom:0;">
                         <span>مرحباً بك، {{ logged_employee }}</span>
                         <a href="/logout" class="logout-link">خروج</a>
@@ -461,14 +472,14 @@
                     </div>
 
                     <div class="status-filter-bar">
-                        <span style="font-size:0.78rem; font-weight:700; color:#34495e; margin-left: 4px;">فلترة بالحالة:</span>
-                        <button type="button" class="filter-status-btn active" onclick="filterByStatus('all', this)" style="background-color: #1F4E78; color: #fff;">الكل</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('new', this)" style="background-color: transparent; color: #991b1b;">🔴 جديد</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('delayed', this)" style="background-color: transparent; color: #c2410c;">⏰ متأخر</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('in_progress', this)" style="background-color: transparent; color: #92400e;">🟠 قيد المعالجة</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('resolved', this)" style="background-color: transparent; color: #0369a1;">🔵 تم الحل</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('مغلق راضي', this)" style="background-color: transparent; color: #065f46;">🟢 مغلق راضي</button>
-                        <button type="button" class="filter-status-btn" onclick="filterByStatus('مغلق غير راضي', this)" style="background-color: transparent; color: #6c757d;">⚪️ مغلق غير راضي</button>
+                        <span style="font-size:0.78rem; font-weight:700; color:#34495e; margin-left: 4px;">فلترة وإحصائيات اليوم:</span>
+                        <button type="button" class="filter-status-btn active" onclick="filterByStatus('all', this)" style="background-color: #1F4E78; color: #fff;">الكل <span class="count-badge" id="count-all">0</span></button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('new', this)" style="background-color: transparent; color: #991b1b;">🔴 جديد <span class="count-badge" id="count-new">0</span></button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('delayed', this)" style="background-color: transparent; color: #c2410c;">⏰ متأخر <span class="count-badge" id="count-delayed">0</span></button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('in_progress', this)" style="background-color: transparent; color: #92400e;">🟠 قيد المعالجة <span class="count-badge" id="count-in_progress">0</span></button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('resolved', this)" style="background-color: transparent; color: #0369a1;">🔵 تم الحل <span class="count-badge" id="count-resolved">0</span></button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('مغلق راضي', this)" style="background-color: transparent; color: #065f46;">🟢 مغلق راضي <span class="count-badge" id="count-satisfied">0</span></button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('مغلق غير راضي', this)" style="background-color: transparent; color: #6c757d;">⚪️ مغلق غير راضي <span class="count-badge" id="count-unsatisfied">0</span></button>
                     </div>
                 </div>
 
@@ -583,17 +594,59 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         checkDelayedTickets();
+        updateDailyStatistics();
         applyDefault12HourFilter();
     });
 
-    // دالة للتحقق التلقائي من البلاغات التي مضى عليها أكثر من ساعتين وهي جديدة
+    // دالة لحساب وتحديث عدادات الإحصائيات اليومية
+    function updateDailyStatistics() {
+        const rows = document.querySelectorAll('#recordsTable tbody tr');
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        let counts = {
+            all: 0,
+            new: 0,
+            delayed: 0,
+            in_progress: 0,
+            resolved: 0,
+            satisfied: 0,
+            unsatisfied: 0
+        };
+
+        rows.forEach(row => {
+            if (row.querySelector('.text-muted')) return;
+            const dateCell = row.getAttribute('data-date');
+
+            // نحسب فقط بلاغات اليوم
+            if (dateCell === todayStr) {
+                counts.all++;
+                const status = row.getAttribute('data-status');
+                if (status === 'new') counts.new++;
+                else if (status === 'delayed') counts.delayed++;
+                else if (status === 'in_progress') counts.in_progress++;
+                else if (status === 'resolved') counts.resolved++;
+                else if (status === 'مغلق راضي') counts.satisfied++;
+                else if (status === 'مغلق غير راضي') counts.unsatisfied++;
+            }
+        });
+
+        // تحديث الأرقام بجانب كل زر فلتر
+        document.getElementById('count-all').innerText = counts.all;
+        document.getElementById('count-new').innerText = counts.new;
+        document.getElementById('count-delayed').innerText = counts.delayed;
+        document.getElementById('count-in_progress').innerText = counts.in_progress;
+        document.getElementById('count-resolved').innerText = counts.resolved;
+        document.getElementById('count-satisfied').innerText = counts.satisfied;
+        document.getElementById('count-unsatisfied').innerText = counts.unsatisfied;
+    }
+
+    // التحقق التلقائي من البلاغات المتأخرة (للتجربة: بعد 5 دقائق)
     function checkDelayedTickets() {
         const rows = document.querySelectorAll('#recordsTable tbody tr');
         const now = new Date();
 
         rows.forEach(row => {
             const statusAttr = row.getAttribute('data-status');
-            // نفحص البلاغات التي حالتها 'new' فقط
             if (statusAttr === 'new') {
                 const dateStr = row.getAttribute('data-date');
                 const timeStr = row.getAttribute('data-time');
@@ -602,9 +655,10 @@
                     const ticketDate = new Date(`${dateStr}T${timeStr}`);
                     if (!isNaN(ticketDate)) {
                         const diffMs = now - ticketDate;
-                        const diffHours = diffMs / (1000 * 60 * 60);
-// إذا مضى أكثر من ساعتين
-if (diffHours >= 2) {
+                        const diffMinutes = diffMs / (1000 * 60);
+
+                        // للتجربة: إذا مضى أكثر من 5 دقائق (يمكنك إرجاعها إلى diffHours >= 2 لاحقاً)
+                        if (diffMinutes >= 5) {
                             row.setAttribute('data-status', 'delayed');
                             const selectOrSpan = row.querySelector('.status-select-inline');
                             if (selectOrSpan) {
@@ -621,6 +675,7 @@ if (diffHours >= 2) {
                 }
             }
         });
+        updateDailyStatistics();
     }
 
     function setDateTimeAndSubmit(actionType) {
@@ -703,6 +758,7 @@ if (diffHours >= 2) {
         .then(data => {
             if (data.success) {
                 selectElement.className = "status-select-inline status-" + newStatus;
+                updateDailyStatistics();
                 applyFilters();
             } else {
                 alert('خطأ في تحديث الحالة: ' + data.message);
