@@ -38,7 +38,7 @@
             min-height: 80px;
         }
         .header-banner img {
-            height: 195px;
+            height: 60px;
             width: auto;
             position: absolute;
             right: 20px;
@@ -285,6 +285,7 @@
             background-color: transparent !important;
         }
         .status-new { color: #991b1b; }
+        .status-delayed { color: #c2410c; }
         .status-in_progress { color: #92400e; }
         .status-resolved { color: #0369a1; }
         .status-closed_satisfied { color: #065f46; }
@@ -463,6 +464,7 @@
                         <span style="font-size:0.78rem; font-weight:700; color:#34495e; margin-left: 4px;">فلترة بالحالة:</span>
                         <button type="button" class="filter-status-btn active" onclick="filterByStatus('all', this)" style="background-color: #1F4E78; color: #fff;">الكل</button>
                         <button type="button" class="filter-status-btn" onclick="filterByStatus('new', this)" style="background-color: transparent; color: #991b1b;">🔴 جديد</button>
+                        <button type="button" class="filter-status-btn" onclick="filterByStatus('delayed', this)" style="background-color: transparent; color: #c2410c;">⏰ متأخر</button>
                         <button type="button" class="filter-status-btn" onclick="filterByStatus('in_progress', this)" style="background-color: transparent; color: #92400e;">🟠 قيد المعالجة</button>
                         <button type="button" class="filter-status-btn" onclick="filterByStatus('resolved', this)" style="background-color: transparent; color: #0369a1;">🔵 تم الحل</button>
                         <button type="button" class="filter-status-btn" onclick="filterByStatus('مغلق راضي', this)" style="background-color: transparent; color: #065f46;">🟢 مغلق راضي</button>
@@ -491,11 +493,12 @@
                         <tbody>
                             {% for record in records %}
                             {% set current_status = record.get('status', 'new') %}
-                            <tr data-status="{{ current_status }}">
+                            <tr data-status="{{ current_status }}" data-date="{{ record.get('record_date', '') }}" data-time="{{ record.get('record_time', '') }}">
                                 <td>
                                     {% if user_role == 'admin' %}
-                                        <span class="status-select-inline status-{{ current_status }}">
+                                        <span class="status-select-inline status-{{ current_status }}" data-original-status="{{ current_status }}">
                                             {% if current_status == 'new' %}🔴 جديد
+                                            {% elif current_status == 'delayed' %}⏰ متأخر
                                             {% elif current_status == 'in_progress' %}🟠 قيد المعالجة
                                             {% elif current_status == 'resolved' %}🔵 تم الحل
                                             {% elif current_status == 'مغلق راضي' %}🟢 مغلق راضي
@@ -503,8 +506,9 @@
                                             {% else %}{{ current_status }}{% endif %}
                                         </span>
                                     {% else %}
-                                        <select class="status-select-inline status-{{ current_status }}" onchange="updateStatusDirectly('{{ record.get('id') }}', this)">
+                                        <select class="status-select-inline status-{{ current_status }}" data-original-status="{{ current_status }}" onchange="updateStatusDirectly('{{ record.get('id') }}', this)">
                                             <option value="new" {% if current_status == 'new' %}selected{% endif %}>🔴 جديد</option>
+                                            <option value="delayed" {% if current_status == 'delayed' %}selected{% endif %}>⏰ متأخر</option>
                                             <option value="in_progress" {% if current_status == 'in_progress' %}selected{% endif %}>🟠 قيد المعالجة</option>
                                             <option value="resolved" {% if current_status == 'resolved' %}selected{% endif %}>🔵 تم الحل</option>
                                             <option value="مغلق راضي" {% if current_status == 'مغلق راضي' %}selected{% endif %}>🟢 مغلق راضي</option>
@@ -578,8 +582,47 @@
     let currentStatusFilter = 'all';
 
     document.addEventListener('DOMContentLoaded', function() {
+        checkDelayedTickets();
         applyDefault12HourFilter();
     });
+
+    // دالة للتحقق التلقائي من البلاغات التي مضى عليها أكثر من ساعتين وهي جديدة
+    function checkDelayedTickets() {
+        const rows = document.querySelectorAll('#recordsTable tbody tr');
+        const now = new Date();
+
+        rows.forEach(row => {
+            const statusAttr = row.getAttribute('data-status');
+            // نفحص البلاغات التي حالتها 'new' فقط
+            if (statusAttr === 'new') {
+                const dateStr = row.getAttribute('data-date');
+                const timeStr = row.getAttribute('data-time');
+
+                if (dateStr && timeStr && dateStr !== '-') {
+                    const ticketDate = new Date(`${dateStr}T${timeStr}`);
+                    if (!isNaN(ticketDate)) {
+                        const diffMs = now - ticketDate;
+                        const diffHours = diffMs / (1000 * 60 * 60);
+
+                        // إذا مضى أكثر من ساعتين
+                        if (diffHours >= 2) {
+                            row.setAttribute('data-status', 'delayed');
+                            const selectOrSpan = row.querySelector('.status-select-inline');
+                            if (selectOrSpan) {
+                                if (selectOrSpan.tagName === 'SELECT') {
+                                    selectOrSpan.value = 'delayed';
+                                    selectOrSpan.className = 'status-select-inline status-delayed';
+                                } else {
+                                    selectOrSpan.innerText = '⏰ متأخر';
+                                    selectOrSpan.className = 'status-select-inline status-delayed';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     function setDateTimeAndSubmit(actionType) {
         const now = new Date();
