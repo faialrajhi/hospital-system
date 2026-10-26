@@ -12,7 +12,7 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://urnawuapfkhxvqvepzit.supa
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybmF3dWFwZmtoeHZxdmVweml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwOTU0MTAsImV4cCI6MjEwMzY3MTQxMH0.IfhRYq5D8072nOzJOMCW1A9c7i93D4mCd2I5Q3TJ-Kc")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# بيانات المستخدمين والصلاحيات (تم ضبط تركي ليكون له دور يتيح له الإدخال والتعديل الكامل)
+# بيانات المستخدمين والصلاحيات
 USERS = {
     "turky": {"password": "123", "role": "employee", "title": "مدير النظام", "can_edit": True, "full_name": "تركي محمد المولد"},
     "mohd": {"password": "123", "role": "supervisor", "title": "مشرف أول", "can_edit": True, "full_name": "محمد"},
@@ -81,7 +81,7 @@ def index():
             "employee_name": logged_employee,
             "record_date": record_date,
             "record_time": record_time,
-            "status": "مغلق راضي"
+            "status": "new"  # ضبط الحالة الافتراضية للبلاغات الجديدة لتكون جديد (🔴 جديد)
         }
         
         try:
