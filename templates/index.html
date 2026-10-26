@@ -604,8 +604,9 @@
                         const diffMs = now - ticketDate;
                         const diffHours = diffMs / (1000 * 60 * 60);
 
-                        // إذا مضى أكثر من ساعتين
-                        if (diffHours >= 2) {
+                       // إذا مضى أكثر من 5 دقائق (للتجربة)
+const diffMinutes = diffMs / (1000 * 60);
+if (diffMinutes >= 5) {
                             row.setAttribute('data-status', 'delayed');
                             const selectOrSpan = row.querySelector('.status-select-inline');
                             if (selectOrSpan) {
